@@ -326,7 +326,7 @@ Yes — audited zero-Arabic across the repo (system files, governance suite, 114
 
 **How are the bundled Claude skills (`06-templates/claude-skills/`) managed?**
 They are a pristine clone of the official `anthropics/skills` repo (17 skills: pdf/docx/pptx/xlsx, webapp-testing, mcp-builder, skill-creator, devops-toolkit, and more) kept as **reference-only** — AOS workflows never load or index their internals. Track them as a submodule so the published repo stays lean:
-`git submodule add https://github.com/anthropics/skills.git 06-templates/claude-skills`
+`git submodule add https://github.com/anthropics/skills.git .agent/06-templates/claude-skills`
 then remove the ignore line in `.gitignore`. Consumers clone with `git clone --recurse-submodules <repo-url>`.
 
 **Can I contribute?**

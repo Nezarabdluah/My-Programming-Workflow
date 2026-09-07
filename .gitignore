@@ -1,10 +1,10 @@
 # AOS v7.0 — gitignore (keeps the published repo lean; local copies stay untouched)
 # Third-party reference-only skills library (full external git clone, thousands of files).
 # PROFESSIONAL INTEGRATION PATH: track it as a submodule instead of ignoring it:
-#   git submodule add https://github.com/anthropics/skills.git 06-templates/claude-skills
+#   git submodule add https://github.com/anthropics/skills.git .agent/06-templates/claude-skills
 #   (then delete this ignore line). Consumers clone with: git clone --recurse-submodules <repo-url>
 # Rule: never load or index its internals from AOS workflows (see .agent/INDEX.md).
-06-templates/claude-skills/
+.agent/06-templates/claude-skills/
 # Python bytecode caches (regenerable)
 __pycache__/
 *.pyc
