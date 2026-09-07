@@ -1,0 +1,13 @@
+# Agent Rules Bootstrap — AOS v7.0 (pointer file; legacy format, kept for compatibility)
+
+This project is governed by the Agent Operating System (AOS v7.0) in `.agent/`.
+Entry: `AGENTS.md` (repo root) → `.agent/AGENTS.md` → `.agent/INDEX.md` → `.agent/01-core/session-prompt.md`.
+
+- Contract (always): `.agent/01-core/operating-contract.md`
+- Per task, ONE file at a time: `.agent/02-rules/<matching-file>`, resolved via `.agent/01-core/wiring-registry.md`
+- Workflows: `.agent/03-workflows/` (each file declares its own MUST injection block)
+- References: grep-only under `.agent/05-references/` — never full-read
+- Memory: `.agent/04-memory/` (project-context, active-tasks, learned-mistakes, decisions)
+- Governance: run `python .agent/governance/runner.py` before marking Done
+
+Classify every task (🟢 Simple / 🟡 Medium / 🔴 Sensitive); 🟡/🔴 require spec + human approval before code. Cite `// [REF-XX-N]` and `// [CONST-XX-N]`.
