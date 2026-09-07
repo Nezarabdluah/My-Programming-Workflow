@@ -30,6 +30,7 @@
 - [x] Final verification: 9/9 checks green (all paths valid, zero orphans, zero Arabic)
 
 ### REMAINING (updated 2026-09-07):
+- [x] T021: README refresh + GitHub push (🟢 DONE): 9 README updates (114 lessons, 20/20, EN governance, enforcement tags, FAQ); secret scan clean; git init/add/commit (652e89c) + fixed .gitignore path bugdropping claude-skills gitlink (540eec5); pushed main → https://github.com/Nezarabdluah/My-Programming-Workflow.
 - [x] T020: Lessons reconstruction (🔴 DONE 2026-09-07): R1-R10 complete — lessons 1-114 contiguous (91 reconstructed: CleanArch 34-40, DDD 41-48, GoF 49-60, OWASP2025 61-68, SQL 69-76, SE+Net 77-86, Pragmatic+Refactoring 87-97, Legacy+DevOps+AI 98-114 incl. capstone); books 1412→2337 lines, 0 Arabic project-wide; fixed 1 stray CJK char; claude-skills → submodule path+docs. Governance 8/2 (T01/T02 pre-existing).
 - [x] T018: Strict review (🟡 DONE): 0 Arabic files repo-wide; py_compile ALL OK; 47/47 referenced paths exist; books 1412 + 0 bare Arabic-Version headers; matrix/Step4 wiring intact; placeholders clean; governance 8/2 (T01/T02 pre-existing — task-state format findings, NOT fixed to avoid fabricating state); __pycache__ cleaned.
 - [x] T019: Matrix 20/20 (🟢 DONE): added Wiring Registry (Stage 0) + Governance Runner (Stage 5) rows — Resource Injection Matrix now literally maps every resource.
