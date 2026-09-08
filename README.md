@@ -46,50 +46,42 @@ git clone https://github.com/Nezarabdluah/My-Programming-Workflow.git
 
 ## 🔄 How a Task Flows
 
-```mermaid
-flowchart LR
-    S([Paste session prompt]) --> B[Boot: read memory<br/>print proof]
-    B --> C{Classify task}
-    C -->|Simple| P3[Path C: do it<br/>summarize]
-    C -->|Feature| P1[Path A: SDD spec<br/>approve plan]
-    C -->|Known type| P2[Path B: follow<br/>workflow file]
-    C -->|Full delivery| P4[Path D: pipeline<br/>stages 0-8]
-    P1 --> I[MUST inject:<br/>matrix + wiring<br/>constitution + REF]
-    P2 --> I
-    P4 --> I
-    I --> W[Implement + cite<br/>REF/CONST IDs]
-    W --> G{Governance<br/>runner.py}
-    G -->|pass| D([Done + memory saved])
-    G -->|fail| W
-    P3 --> D
-```
+**One session, seven moves — same rhythm every time:**
 
-```mermaid
-stateDiagram-v2
-    [*] --> Draft: specify feature
-    Draft --> Clarify: Q&A gaps
-    Clarify --> Approved: human sign-off ⏸
-    Approved --> Planning: MVP increments
-    Planning --> Ready: plan green-lit
-    Ready --> Executing: write code
-    Executing --> Validating: tests + gates
-    Validating --> Done: report + memory
-    Validating --> Executing: gate failed
-    Done --> [*]
-```
+1. **Boot** — you paste the session prompt; the agent reads memory and prints a proof report (project, stack, last task, pending items, version sync).
+2. **Classify** — every task is triaged: 🟢 Simple (do it now), 🟡 Medium (spec + tests), 🔴 Sensitive (ADR + security gates + human approval).
+3. **Route** — the task takes exactly one path:
+
+| Path | When | What happens |
+|---|---|---|
+| **A** — Feature | new functionality, big change | SDD spec → your approval → plan → implement |
+| **B** — Known type | backend, frontend, bug, UX, QA, security… | follow the matching workflow file step by step |
+| **C** — Trivial | typo, color, comment | done immediately + one-line summary |
+| **D** — Full delivery | production-grade work | pipeline stages 0–8 with decision gates |
+
+4. **Inject (MUST)** — before any code: injection matrix → wiring registry → constitution(s) → one rule file → prompt pack. Cited in code as `// [REF-XX-N]` and `// [CONST-XX-N]`.
+5. **Implement** — code is written against the approved plan only.
+6. **Govern** — `governance/runner.py` runs deterministic checks. Fail → back to implement. Pass → continue.
+7. **Close** — delivery report (slice coverage + decisions + review flags) and memory saved for the next session.
+
+**The SDD backbone for 🟡/🔴 tasks** (Path A and D):
+
+`Draft → Clarify → Approved ⏸ → Planning → Ready → Executing → Validating → Done`
+
+The ⏸ is sacred: **no code is written before you approve the spec and plan.**
 
 ## 🏗️ Architecture
 
-```mermaid
-flowchart TB
-    L0["L0 · Constitution<br/>AGENTS.md + operating-contract"]
-    L5["L5 · Governance<br/>runner.py — executable truth"]
-    L1["L1 · Memory Core<br/>04-memory/ — single context truth"]
-    L2["L2 · Pipeline<br/>03-workflows/ — stages 0–8"]
-    L3["L3 · Rules<br/>02-rules/ — one file at a time"]
-    L4["L4 · References<br/>05-references/ — grep-only"]
-    L0 --> L5 --> L1 --> L2 --> L3 --> L4
-```
+Six layers, one direction, zero ambiguity about what wins:
+
+| # | Layer | Contains | Authority |
+|---|---|---|---|
+| L0 | Constitution | `AGENTS.md` + operating contract | ⬆️ highest — wins every conflict |
+| L5 | Governance | `runner.py` — executable truth | overrides any model claim |
+| L1 | Memory Core | `04-memory/` — cumulative context | single source of truth |
+| L2 | Pipeline | `03-workflows/` — stages 0–8 | consumable, loaded per task |
+| L3 | Rules | `02-rules/` — 6 files | one file at a time, never two |
+| L4 | References | `05-references/` — books, REF, QA, DevOps | ⬇️ grep-only, never full-read |
 
 **Dependency flow is strictly one-way** (Workflows → Memory → References → Rules). Workflows never embed quality rules; rules never know their consumers. The injection matrix maps **20/20 resources** to every stage (`MUST` = gate blocked, `SHOULD`, `IF`).
 
