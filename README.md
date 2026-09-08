@@ -89,7 +89,12 @@ STEP 0 — BOOT:
 1. Read .agent/INDEX.md
 2. Read .agent/01-core/operating-contract.md
 3. Read .agent/04-memory/project-context.md
-4. Print boot report and ask for the first task.
+4. Read .agent/04-memory/learned-mistakes.md
+5. Read .agent/04-memory/active-tasks.md
+6. Read .agent/VERSION
+7. Read .agent/01-core/token-budget.md
+8. Read .agent/01-core/collaboration-rules.md
+9. Print boot report and ask for the first task.
 ```
 
 ### 4. Give it a task
@@ -433,6 +438,24 @@ AOS groups ALL related resources into **bundles** for each capability. When a ca
   └──────────────────────────┴──────────────────────────────────────────┘
 
   See: 01-core/wiring-registry.md → Knowledge Bundles section
+```
+
+**How bundles work in practice:**
+
+```
+  Task: "Fix N+1 query in OrdersRepository"
+
+  1. Classify → 🟡 Medium (business logic, multi-file)
+  2. Identify capability → DB Performance
+  3. Load FULL bundle:
+     ├── perf-constitution.md           (11 rules)
+     ├── database-performance.md        (7 REF-DB rules)
+     ├── engineering-rules-catalog-REF  (grep REF-DB-*)
+     ├── backend-prompts.md             (DB sections)
+     ├── entity-patterns.md             (query patterns)
+     └── engineering-books-16-distilled (grep "Lesson 5")
+  4. Apply rules → cite // [REF-DB-N1] in code
+  5. Run governance → ✅ PASSED
 ```
 
 ---
@@ -793,8 +816,14 @@ STEP 0 — BOOT & MATCH (silent, then report):
 3. If the project already contains code → also execute .agent/03-workflows/knowledge-bootstrapping.md
 
 SESSION MODE (budget ≤ 400 lines). Read in order:
-1. .agent/INDEX.md  2. .agent/01-core/operating-contract.md  3. .agent/04-memory/project-context.md
-4. .agent/04-memory/learned-mistakes.md  5. .agent/04-memory/active-tasks.md  6. .agent/VERSION
+1. .agent/INDEX.md
+2. .agent/01-core/operating-contract.md
+3. .agent/04-memory/project-context.md
+4. .agent/04-memory/learned-mistakes.md
+5. .agent/04-memory/active-tasks.md
+6. .agent/VERSION
+7. .agent/01-core/token-budget.md
+8. .agent/01-core/collaboration-rules.md
 
 Then print this boot report:
   Session started | System: AOS v7.0 (Knowledge & Memory-first)
@@ -811,7 +840,7 @@ TASK ROUTING:
 - Path C (trivial) → do it, summarize
 - Path D (full delivery) → master-pipeline stages 0–8
 
-SMART WIRING (before code): resolve via wiring-registry.md + 00-master-index.md; load ONE 02-rules/ file; grep 05-references/; cite // [REF-XX-N] and // [CONST-XX-N]
+SMART WIRING (before code): resolve via wiring-registry.md + 00-master-index.md; load ONE Knowledge Bundle for the active capability; grep 05-references/; cite // [REF-XX-N] and // [CONST-XX-N]
 
 HANDOFF: update memory files, print handoff summary
 CLOSEOUT: execute end-session.md, update all memory, print summary
