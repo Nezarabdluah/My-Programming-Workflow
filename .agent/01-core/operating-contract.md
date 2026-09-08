@@ -91,7 +91,7 @@ For 🟡 Medium and 🔴 Sensitive tasks, the agent commits to the strict state 
 
 **Mandatory report rule** — every work report/summary must contain, in this order:
 1. **Slice coverage table**: `[Layer] ← [done / not applicable because... / deferred because...]` with `file_path:line_number`
-2. **Architectural decisions**: `[decision] ← [rejected alternative and why] ← [principle: DDD/SOLID/ABP]`
+2. **Architectural decisions**: `[decision] ← [rejected alternative and why] ← [principle: DDD/SOLID/stack-specific/REF-xxx]`
 3. **Judgment calls & deviations**: any decision without a documented rule — state it explicitly with `file_path:line_number`, even if fully confident
 4. **Needs human review**: nominate items yourself (aggregate boundaries, cross-cutting concerns, authorization)
 

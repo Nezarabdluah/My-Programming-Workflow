@@ -23,8 +23,8 @@ gate:
     - 02-rules/architecture-and-design.md (if architecture task)
     - 02-rules/database-performance.md (if DB task)
     - 02-rules/network-and-api.md (if API task)
-    - prompts: backend-prompts.md (if .NET) | frontend-prompts.md (if Angular)
-    - templates: entity-pattern.md + standards.md (if ABP project)
+    - prompts: backend-prompts.md (if backend) | frontend-prompts.md (if frontend)
+    - templates: entity-pattern.md + standards.md (if stack plugin installed)
     - wiring-registry → relevant REF contracts
   decision: proceed
 ```

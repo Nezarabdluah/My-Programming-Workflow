@@ -32,7 +32,7 @@ You are a Systems Integration Architect evaluating cross-boundary communication.
 
 ## Event-Driven Decoupling (L19)
 
-8. **Observer over Direct Calls**: When a Domain action triggers side-effects across different concerns (e.g., OrderCompleted → send invoice + update inventory + notify admin), FORBIDDEN to inject and call those services directly. MUST publish Domain Events via ABP's `ILocalEventBus` or `IDistributedEventBus`.
+8. **Observer over Direct Calls**: When a Domain action triggers side-effects across different concerns (e.g., OrderCompleted → send invoice + update inventory + notify admin), FORBIDDEN to inject and call those services directly. MUST publish Domain Events via your framework's event bus (e.g., `ILocalEventBus`, `IDistributedEventBus`, `EventEmitter`).
 
 9. **Event Handler Isolation**: Each event handler MUST be independent and idempotent. Handler A's failure MUST NOT prevent Handler B from executing.
 

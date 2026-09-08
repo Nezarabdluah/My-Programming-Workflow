@@ -75,7 +75,7 @@
 ## 📦 06-templates/ — Project Templates (loaded only during project init)
 | Directory | Description |
 |-----------|-------------|
-| `dotnet-abp/` | ABP/.NET templates: entity-pattern, standards, persona, prompts, PR template, pre-commit config, GitHub security gate |
+| `dotnet-abp/` | Optional .NET/ABP plugin: entity-pattern, standards, persona, prompts, PR template, pre-commit config, GitHub security gate |
 | `claude-skills/` | Full git copy of a skills library — **reference only; never load, never index its internals** |
 
 ## 🏛️ adr/ — Architecture Decision Records

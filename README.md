@@ -624,27 +624,32 @@ For full project delivery, 9 stages with decision gates:
   ├──────────────────┼──────────────────────────────────────────────┤
   │ DevOps Reference │ 2195 lines, 18 [OPS-*] anchors             │
   ├──────────────────┼──────────────────────────────────────────────┤
-  │ ABP Templates    │ entity-pattern, standards, persona, prompts │
-  │                  │ PR template, pre-commit, GitHub security    │
+   │ Stack Templates  │ entity-pattern, standards, persona, prompts │
+   │                  │ PR template, pre-commit, GitHub security    │
   └──────────────────┴──────────────────────────────────────────────┘
 ```
 
 ---
 
-## Templates (.NET/ABP)
+## Stack-Specific Plugins (Optional)
 
 ```
   ┌─────────────────────────────┬─────────────────────────────────────┐
-  │ Template                    │ Purpose                             │
+  │ Plugin                      │ Purpose                             │
   ├─────────────────────────────┼─────────────────────────────────────┤
-  │ entity-pattern.md           │ Ready-to-copy entity patterns       │
-  │ standards.md                │ .NET/ABP coding standards           │
-  │ persona.md                  │ System prompt for .NET AI coding    │
-  │ prompts.md                  │ Ready-to-use .NET prompts           │
-  │ pull_request_template.md    │ PR template with security gate      │
-  │ pre-commit-config.yaml      │ gitleaks + dotnet format hooks      │
-  │ github-security-gate.yml    │ CI/CD security workflow             │
+  │ dotnet-abp/                 │ .NET/ABP: entity patterns,          │
+  │                             │ standards, persona, prompts,        │
+  │                             │ PR template, pre-commit, CI gate   │
+  ├─────────────────────────────┼─────────────────────────────────────┤
+  │ lang-python/                │ Python (community-contributed)      │
+  ├─────────────────────────────┼─────────────────────────────────────┤
+  │ lang-node/                  │ Node.js (community-contributed)     │
+  ├─────────────────────────────┼─────────────────────────────────────┤
+  │ lang-go/                    │ Go (community-contributed)          │
   └─────────────────────────────┴─────────────────────────────────────┘
+
+  AOS is STACK-AGNOSTIC. Plugins are optional.
+  See 06-templates/README.md for how to create your own.
 ```
 
 ---
@@ -873,8 +878,8 @@ FORBIDDEN: writing to main AOS source · loading two rule files at once · full-
   │       ├── 00-overview.md      #   DevOps overview + 18 anchors
   │       └── devops-enterprise-and-production-readiness.md # 2195 lines
   │
-  ├── 06-templates/              # Project templates
-  │   ├── dotnet-abp/            #   ABP/.NET specific
+  ├── 06-templates/              # Stack-specific plugins (optional)
+  │   ├── dotnet-abp/            #   .NET/ABP plugin (optional)
   │   │   ├── entity-pattern.md  #   Entity patterns
   │   │   ├── standards.md       #   Coding standards
   │   │   ├── persona.md         #   System prompt
@@ -920,7 +925,7 @@ AOS works with any AI coding assistant that can read local files.
 Any assistant reading local files: Claude, Cursor, Windsurf, Copilot, and more. Shims point them at `.agent/`; root `AGENTS.md` is auto-discovered by ~30 tools.
 
 **Which stack?**
-None forced. Only `06-templates/` is .NET/ABP-specific and loads conditionally.
+None forced. AOS is stack-agnostic. `06-templates/` contains optional plugins that load conditionally. Works with any language or framework.
 
 **Cost per task?**
 Boot ≤400 lines; one rule file at a time; references are grepped, never dumped.

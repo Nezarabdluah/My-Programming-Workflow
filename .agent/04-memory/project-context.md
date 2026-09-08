@@ -27,7 +27,7 @@ L2 (03-workflows/ + master-pipeline/) — Pipeline stages 0-8
     ↓ Each stage loads from:
 L3 (02-rules/) — 6 specialized rule files
 L4 (05-references/) — Constitutions + REF catalog + DevOps + QA + Books + Prompts
-    + 06-templates/ — ABP patterns, standards, PR template
+    + 06-templates/ — stack-specific plugins (dotnet-abp is optional)
 ```
 
 ## Critical Alerts
@@ -37,4 +37,4 @@ L4 (05-references/) — Constitutions + REF catalog + DevOps + QA + Books + Prom
 ## Next Steps
 1. T012: User provides remaining books content → translate to English
 2. Budget verification: count permanent load after all changes
-3. Dry-run: test the pipeline on a sample ABP project to verify resource injection works
+3. Dry-run: test the pipeline on a sample project to verify resource injection works

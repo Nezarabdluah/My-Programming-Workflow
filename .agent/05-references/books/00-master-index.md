@@ -46,8 +46,8 @@ When executing any pipeline stage, the model MUST:
 | Engineering Rules Catalog | `05-references/engineering-rules-catalog-REF.md` | Grep REF-ARCH-*, REF-MOD-* | MUST |
 | Books Archive | `05-references/books/engineering-books-16-distilled.txt` | Grep by lesson number/keyword for deep design rationale (fallback; constitutions are the primary contract) | IF deep-design |
 | Integration Constitution | `05-references/books/constitutions/integration-constitution.md` | Load if multi-module/microservice | IF multi-system |
-| ABP Entity Pattern | `06-templates/dotnet-abp/entity-pattern.md` | Load if designing entities | IF ABP project |
-| ABP Standards | `06-templates/dotnet-abp/standards.md` | Load if ABP project | IF ABP project |
+| Stack Entity Pattern | `06-templates/{stack}/entity-pattern.md` | Load if designing entities and stack plugin is installed | IF stack plugin |
+| Stack Standards | `06-templates/{stack}/standards.md` | Load if stack plugin is installed | IF stack plugin |
 
 ---
 
@@ -70,18 +70,18 @@ When executing any pipeline stage, the model MUST:
 | DDD Constitution | `05-references/books/constitutions/ddd-constitution.md` | Enforce Aggregate Root, Repository rules | MUST |
 | Performance Constitution | `05-references/books/constitutions/perf-constitution.md` | Enforce SARGable, Projection, No Lazy Loading | MUST |
 | Security Constitution | `05-references/books/constitutions/security-constitution.md` | Enforce validation layering, Mass Assignment | MUST |
-| Backend Prompts | `05-references/prompts/backend-prompts.md` | Inject for .NET/ABP code generation (generic backend patterns) | MUST |
-| ABP Prompts | `06-templates/dotnet-abp/prompts.md` | Inject ready-to-use ABP-specific snippets alongside Backend Prompts — no conflict, load both | IF ABP project |
+| Backend Prompts | `05-references/prompts/backend-prompts.md` | Inject for backend code generation (generic backend patterns) | MUST |
+| Stack Prompts | `06-templates/{stack}/prompts.md` | Inject ready-to-use stack-specific snippets alongside Backend Prompts — no conflict, load both | IF stack plugin |
 | Frontend Prompts | `05-references/prompts/frontend-prompts.md` | Inject for Angular code generation | IF frontend |
 | Database Rules | `02-rules/database-performance.md` | Cite REF-DB contracts | MUST |
 | Error Handling Rules | `02-rules/testing-and-quality.md` §3 | Cite REF-ERR contracts | MUST |
 | Engineering Rules Catalog | `05-references/engineering-rules-catalog-REF.md` | Grep REF-DB-*, REF-ERR-*, REF-API-* | MUST |
 | Books Archive | `05-references/books/engineering-books-16-distilled.txt` | Grep by lesson number/keyword for implementation rationale (fallback; constitutions are the primary contract) | IF deep-design |
 | Resilience Constitution | `05-references/books/constitutions/resilience-constitution.md` | Load if financial/inventory/concurrent ops | IF critical data |
-| ABP Entity Pattern | `06-templates/dotnet-abp/entity-pattern.md` | Follow for entity creation | IF ABP project |
-| ABP Standards | `06-templates/dotnet-abp/standards.md` | Follow naming/structure conventions | IF ABP project |
-| ABP Persona | `06-templates/dotnet-abp/persona.md` | Inject as system prompt for .NET code generation | IF ABP project |
-| Pre-commit Config | `06-templates/dotnet-abp/pre-commit-config.yaml` | Apply for git hooks | IF ABP project |
+| Stack Entity Pattern | `06-templates/{stack}/entity-pattern.md` | Follow for entity creation | IF stack plugin |
+| Stack Standards | `06-templates/{stack}/standards.md` | Follow naming/structure conventions | IF stack plugin |
+| Stack Persona | `06-templates/{stack}/persona.md` | Inject as system prompt for stack-specific code generation | IF stack plugin |
+| Pre-commit Config | `06-templates/{stack}/pre-commit-config.yaml` | Apply for git hooks | IF stack plugin |
 
 ---
 
@@ -118,8 +118,8 @@ When executing any pipeline stage, the model MUST:
 |----------|------|--------|-----------|
 | DevOps Reference | `05-references/devops-ops/devops-enterprise-and-production-readiness.md` | Grep OPS-DEPLOY, OPS-ROLLBACK anchors | MUST |
 | Resilience Constitution | `05-references/books/constitutions/resilience-constitution.md` | Verify rollback design, graceful degradation | MUST |
-| GitHub Security Gate | `06-templates/dotnet-abp/github-security-gate.yml` | Apply CI/CD security workflow | IF GitHub Actions |
-| PR Template | `06-templates/dotnet-abp/pull_request_template.md` | Use for pull request | IF ABP project |
+| GitHub Security Gate | `06-templates/{stack}/github-security-gate.yml` | Apply CI/CD security workflow | IF GitHub Actions |
+| PR Template | `06-templates/{stack}/pull_request_template.md` | Use for pull request | IF stack plugin |
 
 ---
 

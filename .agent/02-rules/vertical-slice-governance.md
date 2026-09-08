@@ -69,7 +69,7 @@ Every completion report (PR description, session summary, handoff) must contain,
 ### 3.2 Architectural decisions taken
 
 For each decision:
-`[decision] ← [rejected alternative and why] ← [principle: DDD/SOLID/ABP/REF-xxx]`
+`[decision] ← [rejected alternative and why] ← [principle: DDD/SOLID/stack-specific/REF-xxx]`
 
 Example:
 `Single Aggregate Root for Order ← rejected a Service injecting DbContext directly because it breaks D ← DDD Aggregate + DIP`
