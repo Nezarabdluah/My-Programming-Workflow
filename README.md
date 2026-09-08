@@ -33,13 +33,15 @@ AOS enforces mandatory resource injection, cumulative memory across sessions, an
 
 ## You Don't Need to Understand AOS to Use It
 
-If you only want to use AOS, here's everything you need:
-
 ```
-1. Copy .agent/ into your project
-2. Start your AI assistant with the session prompt
-3. Give it a task
-4. Let the workflow handle routing and governance
+  ┌─────────────────────────────────────────────────────────────┐
+  │                                                             │
+  │   1. Copy .agent/ into your project                        │
+  │   2. Start your AI with the session prompt                 │
+  │   3. Give it a task                                        │
+  │   4. Let the workflow handle everything                    │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
 ```
 
 Everything else — constitutions, wiring registry, REF directives, master pipeline — is **optional documentation** for when you want to customize or extend the system.
@@ -48,14 +50,15 @@ Everything else — constitutions, wiring registry, REF directives, master pipel
 
 ## Requirements
 
-**Required:**
-- Git
-- An AI coding assistant that can read local files (Claude Code, Cursor, Windsurf, Copilot, etc.)
-- Python 3.x (for governance runner)
-
-**Optional:**
-- CI/CD pipeline (GitHub Actions, Azure DevOps)
-- Git hooks (pre-commit, pre-push)
+```
+  ┌─────────────────────────────┬─────────────────────────────┐
+  │  REQUIRED                   │  OPTIONAL                   │
+  ├─────────────────────────────┼─────────────────────────────┤
+  │  Git                        │  CI/CD pipeline             │
+  │  AI assistant (file-reading)│  Git hooks                  │
+  │  Python 3.x (governance)    │  Spec-Kit                   │
+  └─────────────────────────────┴─────────────────────────────┘
+```
 
 ---
 
@@ -101,91 +104,232 @@ The API ignores the requested sorting field.
 
 ## See It in Action
 
-### Example: Fixing a Bug
-
-Here's exactly what happens when you give AOS a real task:
+### What You Do vs What AOS Does
 
 ```
-You:    "Fix the wallet transaction sorting bug.
-         The API ignores the requested sorting field."
-
-AOS:    [Mode: 🟡 Medium]
-        [Path: B — Known type → debug-common-errors.md]
-
-        1. CLASSIFY → 🟡 Medium (multi-file, business logic)
-        2. ROUTE → Bug workflow (debug-common-errors.md)
-        3. INJECT RESOURCES:
-           - Load: 02-rules/database-performance.md
-           - Load: 02-rules/testing-and-quality.md
-           - Grep: REF-DB-N1, REF-DB-PAG
-           - Load: debugging-prompts.md
-        4. INSPECT → Find root cause in OrderService.cs:47
-        5. IDENTIFY → Missing ORDER BY in query
-        6. FIX → Add proper sorting with SARGable query
-        7. TEST → Run unit tests → all green
-        8. GOVERN → python .agent/governance/runner.py → ✅ PASSED
-        9. REPORT → Vertical-slice coverage table
-        10. MEMORY → Update active-tasks.md + project-context.md
-
-AOS:    ✅ Done. Fixed in OrderService.cs:47
-        // [REF-DB-PAG]: Server-side pagination applied
-        // [REF-DB-SARG]: SARGable query enforced
-        Tests: 12/12 passing
-        Governance: [Enforcement: runner.py 🔶]
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    YOUR INTERACTION                         │
+  ├─────────────────────────────────────────────────────────────┤
+  │                                                             │
+  │   You:  "Fix wallet sorting bug"                           │
+  │              │                                              │
+  │              ▼                                              │
+  │   AOS:   [Mode: 🟡 Medium]                                 │
+  │          [Path: B → debug-common-errors.md]                 │
+  │              │                                              │
+  │              ▼                                              │
+  │   AOS:   1. Load rules (database + testing)                │
+  │          2. Grep: REF-DB-N1, REF-DB-PAG                    │
+  │          3. Inspect code → find root cause                  │
+  │          4. Fix: OrderService.cs:47                         │
+  │          5. Run tests → 12/12 passing                       │
+  │          6. Governance → ✅ PASSED                          │
+  │              │                                              │
+  │              ▼                                              │
+  │   AOS:   ✅ Done. // [REF-DB-PAG] applied                  │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
 ```
 
-### Example: Adding a Feature
+### Bug Fix Example (Step by Step)
 
 ```
-You:    "Add email notifications for order confirmations."
-
-AOS:    [Mode: 🔴 Sensitive]
-        [Path: A — Feature → SDD workflow]
-
-        1. SPECIFY → Draft user stories with acceptance criteria
-        2. CLARIFY → Ask you 3 questions about requirements
-        3. APPROVE → ⏸️ STOP — waiting for your approval
-        4. PLAN → Break into MVP increments
-        5. IMPLEMENT → Build vertically (DB → Domain → API → Frontend → Tests)
-        6. VALIDATE → Run all tests + governance
-        7. CLOSE → Delivery report + memory saved
-
-AOS:    📋 Spec saved to specs/order-notifications.md
-        ⏸️ Please review and approve the plan before I start coding.
+  ┌──────┬──────────────────────────────────┬──────────┐
+  │ Step │ What Happens                     │ Who      │
+  ├──────┼──────────────────────────────────┼──────────┤
+  │  1   │ You give the task                │ You      │
+  │  2   │ AOS classifies: 🟡 Medium        │ AOS      │
+  │  3   │ AOS routes: Bug workflow          │ AOS      │
+  │  4   │ AOS loads rules + references      │ AOS      │
+  │  5   │ AOS analyzes code                 │ AOS      │
+  │  6   │ AOS proposes fix                  │ AOS      │
+  │  7   │ AOS implements fix                │ AOS      │
+  │  8   │ AOS runs tests                    │ AOS      │
+  │  9   │ AOS runs governance               │ AOS      │
+  │ 10   │ AOS saves memory                  │ AOS      │
+  │ 11   │ You review the result             │ You      │
+  └──────┴──────────────────────────────────┴──────────┘
 ```
+
+### Feature Example (With Approval Gate)
+
+```
+  ┌──────┬──────────────────────────────────┬──────────┐
+  │ Step │ What Happens                     │ Who      │
+  ├──────┼──────────────────────────────────┼──────────┤
+  │  1   │ You: "Add email notifications"   │ You      │
+  │  2   │ AOS: Classify → 🔴 Sensitive     │ AOS      │
+  │  3   │ AOS: Draft spec + user stories   │ AOS      │
+  │  4   │ AOS: Ask you 3 questions         │ AOS      │
+  │  5   │ AOS: Present plan                │ AOS      │
+  │  6   │ ⏸️  AOS STOPS — waits for you    │ You      │
+  │  7   │ AOS: Implement vertically        │ AOS      │
+  │  8   │ AOS: Run tests + governance      │ AOS      │
+  │  9   │ AOS: Delivery report             │ AOS      │
+  └──────┴──────────────────────────────────┴──────────┘
+```
+
+> **Key insight**: AOS never writes code for 🟡/🔴 tasks without your approval first.
 
 ---
 
 ## How a Task Flows
 
-Every task follows the same 7-step rhythm:
-
-```mermaid
-graph LR
-    A["1. Boot"] --> B["2. Classify"]
-    B --> C["3. Route"]
-    C --> D["4. Inject"]
-    D --> E["5. Implement"]
-    E --> F["6. Govern"]
-    F --> G["7. Close"]
+```
+  ┌──────────┐     ┌──────────┐     ┌──────────┐
+  │  1.BOOT  │────▶│2.CLASSIFY│────▶│ 3.ROUTE  │
+  └──────────┘     └──────────┘     └──────────┘
+                                          │
+                    ┌─────────────────────┼─────────────────────┐
+                    │                     │                     │
+                    ▼                     ▼                     ▼
+              ┌──────────┐         ┌──────────┐         ┌──────────┐
+              │ A:Feature│         │ B:Known  │         │C:Trivial │
+              │  (SDD)   │         │  Type    │         │ (do now) │
+              └──────────┘         └──────────┘         └──────────┘
+                    │                     │                     │
+                    └─────────────────────┼─────────────────────┘
+                                          │
+                                          ▼
+                                   ┌────────────┐
+                                   │ 4. INJECT  │
+                                   │   Rules    │
+                                   │   Refs     │
+                                   │   Prompts  │
+                                   └────────────┘
+                                          │
+                                          ▼
+                                   ┌────────────┐
+                                   │5.IMPLEMENT │
+                                   └────────────┘
+                                          │
+                                          ▼
+                                   ┌────────────┐
+                                   │  6.GOVERN  │
+                                   │ runner.py  │
+                                   └────────────┘
+                                          │
+                                          ▼
+                                   ┌────────────┐
+                                   │  7.CLOSE   │
+                                   │  Memory    │
+                                   │  Saved     │
+                                   └────────────┘
 ```
 
 ### Task Classification
 
-| Mode | Signals | Process |
-|------|---------|---------|
-| 🟢 **Simple** | typo, color, comment (≤2 files) | Execute immediately + summary |
-| 🟡 **Medium** | business logic, multi-file | SDD spec → approval → tests green |
-| 🔴 **Sensitive** | DB, auth, architecture (>5 files) | ADR + OWASP + human gate |
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  MODE      SIGNALS                         PROCESS             │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  🟢 Simple   typo, color, comment (≤2 files)  Execute + summary│
+  │  🟡 Medium   business logic, multi-file        SDD → approve   │
+  │  🔴 Sensitive DB, auth, architecture (>5)      ADR + OWASP    │
+  └─────────────────────────────────────────────────────────────────┘
+```
+
+### Quick Decision Matrix
+
+```
+  ┌─────────────────────────────────────────────┬──────────────────┐
+  │ Question                                    │ Yes →            │
+  ├─────────────────────────────────────────────┼──────────────────┤
+  │ Does it touch security, auth, or perms?     │ 🔴 Sensitive     │
+  │ Does it modify the database schema?         │ 🔴 Sensitive     │
+  │ Does it affect more than 5 files?           │ 🔴 Sensitive     │
+  │ Does it add new business logic or an API?   │ 🟡 Medium        │
+  │ Is it purely visual or documentation-only?  │ 🟢 Simple        │
+  └─────────────────────────────────────────────┴──────────────────┘
+```
 
 ### Task Paths
 
-| Path | When | What Happens |
-|------|------|--------------|
-| **A** — Feature | new functionality | SDD spec → approval → plan → implement |
-| **B** — Known type | backend, frontend, bug, security | Follow matching workflow |
-| **C** — Trivial | typo, color, comment | Done immediately |
-| **D** — Full delivery | production-grade | Pipeline stages 0–8 |
+```
+  Path A ─── New Feature ──────── SDD spec → approve → plan → build
+  Path B ─── Known Type ───────── Follow matching workflow file
+  Path C ─── Trivial ──────────── Do it now, summarize
+  Path D ─── Full Delivery ────── Pipeline stages 0–8
+```
+
+---
+
+## Policy Engine
+
+AOS applies different policies based on task classification:
+
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  🔴 SENSITIVE (DB / Security / Architecture)                   │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  • ADR in decisions.md is MANDATORY                            │
+  │  • OWASP security policy activated                             │
+  │  • SARGable query checks activated                             │
+  │  • Human Approval Gate REQUIRED before code                    │
+  │  • Full compliance: rules + build + tests + security + report  │
+  └─────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  🟡 MEDIUM (Business Logic / Multi-file)                       │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  • Clean Code policy (functions ≤ 20 lines, units ≤ 200)      │
+  │  • Automatic local test runs                                   │
+  │  • Contract + build + tests required                           │
+  └─────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  🟢 SIMPLE (Trivial / Cosmetic)                                │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  • YAGNI policy activated                                      │
+  │  • Execute immediately                                         │
+  │  • Text summary only                                          │
+  └─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Spec-Driven Development (SDD)
+
+For 🟡 Medium and 🔴 Sensitive tasks, AOS follows this state machine:
+
+```
+  ┌───────┐    ┌─────────┐    ┌──────────┐    ┌─────────┐
+  │ DRAFT │───▶│ CLARIFY │───▶│ APPROVED │───▶│ PLANNING│
+  └───────┘    └─────────┘    └──────────┘    └─────────┘
+                                     │
+                                     ▼
+                              ┌──────────┐    ┌───────────┐
+                              │  READY   │───▶│ EXECUTING │
+                              └──────────┘    └───────────┘
+                                                   │
+                                                   ▼
+                                            ┌────────────┐    ┌──────┐
+                                            │ VALIDATING │───▶│ DONE │
+                                            └────────────┘    └──────┘
+```
+
+> **The ⏸️ is sacred**: no code is written before you approve the spec and plan.
+
+---
+
+## Conflict Resolution Priority
+
+When rules conflict, AOS resolves by priority:
+
+```
+  ┌──────┬─────────────────────────────────────────────────────────┐
+  │ Rank │ Priority                                                │
+  ├──────┼─────────────────────────────────────────────────────────┤
+  │  1   │ Security & data integrity (Zero Trust)                  │
+  │  2   │ Cumulative memory & knowledge integrity                 │
+  │  3   │ Correctness & tests (build succeeds, tests green)      │
+  │  4   │ Simplicity & reversibility (YAGNI)                      │
+  │  5   │ Performance & token budget                              │
+  │  6   │ Language/framework conventions                          │
+  └──────┴─────────────────────────────────────────────────────────┘
+
+  If an unlisted conflict arises → STOP and ask the developer.
+```
 
 ---
 
@@ -193,20 +337,22 @@ graph LR
 
 Six layers, one direction, zero ambiguity:
 
-```mermaid
-graph TB
-    L0["L0: Constitution<br/>AGENTS.md + operating-contract"]
-    L5["L5: Governance<br/>runner.py — executable truth"]
-    L1["L1: Memory Core<br/>04-memory/ — cumulative context"]
-    L2["L2: Pipeline<br/>03-workflows/ — stages 0–8"]
-    L3["L3: Rules<br/>02-rules/ — 6 specialized files"]
-    L4["L4: References<br/>05-references/ — grep-only"]
+```
+  ┌─────────────────────────────────────────────────────────┐
+  │  L0  Constitution      AGENTS.md + operating contract   │  ← HIGHEST
+  ├─────────────────────────────────────────────────────────┤
+  │  L5  Governance        runner.py — executable truth     │
+  ├─────────────────────────────────────────────────────────┤
+  │  L1  Memory Core       04-memory/ — cumulative context │
+  ├─────────────────────────────────────────────────────────┤
+  │  L2  Pipeline          03-workflows/ — stages 0–8      │
+  ├─────────────────────────────────────────────────────────┤
+  │  L3  Rules             02-rules/ — 6 specialized files │
+  ├─────────────────────────────────────────────────────────┤
+  │  L4  References        05-references/ — grep-only       │  ← LOWEST
+  └─────────────────────────────────────────────────────────┘
 
-    L0 --> L5
-    L5 --> L1
-    L1 --> L2
-    L2 --> L3
-    L3 --> L4
+  Dependency flow: L0 → L5 → L1 → L2 → L3 → L4 (one-way, never reversed)
 ```
 
 | Layer | Contains | Authority |
@@ -218,80 +364,219 @@ graph TB
 | **L3** Rules | `02-rules/` — 6 files | One file at a time, never two |
 | **L4** References | `05-references/` — books, REF, QA | Grep-only, never full-read |
 
-> Dependency flow is **strictly one-way**: Workflows → Memory → References → Rules.
-
 ---
 
-## Compatibility
+## Wiring Registry
 
-AOS works with any AI coding assistant that can read local files.
-
-| Tool | Auto-discovery | Session Prompt | Notes |
-|------|----------------|----------------|-------|
-| **Claude Code** | ✅ via `AGENTS.md` | ✅ paste manually | Best support — CLAUDE.md equivalent |
-| **Cursor** | ✅ via `.cursorrules` | ✅ paste manually | Shims point to `.agent/` |
-| **Windsurf** | ✅ via `.windsurfrules` | ✅ paste manually | Shims point to `.agent/` |
-| **GitHub Copilot** | ⚠️ partial | ✅ paste manually | Uses custom instructions |
-| **Any file-reading AI** | ✅ via `AGENTS.md` | ✅ paste manually | ~30 tools auto-discover |
-
-> **How it works**: `.cursorrules` and `.windsurfrules` are pointer files that tell the AI to read `.agent/AGENTS.md`. Root `AGENTS.md` is auto-discovered by ~30 tools.
-
----
-
-## Repository Structure
+The central DI container maps capabilities to dependencies:
 
 ```
-.agent/
-├── AGENTS.md                  # Master directive contract
-├── INDEX.md                   # Smart index — reach any file
-├── VERSION                    # Version + sync info
-├── 01-core/                   # Core (mandatory at session start)
-│   ├── operating-contract.md  #   Operational contract
-│   ├── session-prompt.md      #   Unified session prompt
-│   ├── task-classification.md #   🟢/🟡/🔴 indicators
-│   ├── token-budget.md        #   ≤400 lines/session policy
-│   └── wiring-registry.md     #   Central DI container
-├── 02-rules/                  # Specialized rules (ONE at a time)
-│   ├── architecture-and-design.md
-│   ├── database-performance.md
-│   ├── security-checklist.md
-│   ├── testing-and-quality.md
-│   ├── network-and-api.md
-│   └── vertical-slice-governance.md
-├── 03-workflows/              # Workflows (Markdown-driven)
-│   ├── master-pipeline/       #   Stages 0–8
-│   ├── security-gate/         #   Security gate (7 steps)
-│   └── mobile-qa/             #   Mobile QA
-├── 04-memory/                 # Cumulative contextual memory
-│   ├── project-context.md
-│   ├── active-tasks.md
-│   ├── decisions.md
-│   └── learned-mistakes.md
-├── 05-references/             # References (grep-only)
-│   ├── engineering-rules-catalog-REF.md
-│   ├── books/
-│   │   ├── 00-master-index.md #   Resource Injection Matrix
-│   │   └── constitutions/     #   6 constitutions (79 rules)
-│   └── prompts/
-├── 06-templates/              # Project templates
-│   └── dotnet-abp/            #   ABP/.NET specific
-├── governance/                # Deterministic enforcement
-│   ├── runner.py
-│   └── test_*.py
-└── adr/                       # Architecture Decision Records
+  ┌──────────────────────────┬──────────────────────┬──────────────────┐
+  │ Capability               │ Rule File            │ REF Contracts    │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ Architecture / DDD       │ architecture-and-    │ REF-ARCH-*       │
+  │                          │ design.md            │                  │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ Database / queries       │ database-            │ REF-DB-*         │
+  │                          │ performance.md       │                  │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ Security / auth          │ security-            │ REF-SEC-*        │
+  │                          │ checklist.md         │                  │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ Testing / quality        │ testing-and-         │ REF-TEST-*       │
+  │                          │ quality.md           │                  │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ API / network            │ network-and-         │ REF-NET-*        │
+  │                          │ api.md               │                  │
+  ├──────────────────────────┼──────────────────────┼──────────────────┤
+  │ Feature completeness     │ vertical-slice-      │ —                │
+  │ (🟡/🔴)                  │ governance.md        │                  │
+  └──────────────────────────┴──────────────────────┴──────────────────┘
+```
+
+**Resolution procedure:**
+```
+  1. Find your capability row
+  2. Load the constitution (L4-C)
+  3. Load the rule file (L3) — ONE at a time
+  4. Grep the reference anchor (L4) — never read full file
+  5. Cite in code: // [REF-DB-N1], // [CONST-SEC-3]
+```
+
+---
+
+## Token Budget
+
+AOS limits reading to prevent context overflow:
+
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  TOTAL CEILING: ≤ 400 lines per session                        │
+  ├─────────────────────────────────────────────────────────────────┤
+  │                                                                 │
+  │  ALWAYS LOADED (permanent):                                     │
+  │  ┌─────────────────────────────────────┬───────────────┐       │
+  │  │ File                                │ Size Class    │       │
+  │  ├─────────────────────────────────────┼───────────────┤       │
+  │  │ AGENTS.md                           │ Light         │       │
+  │  │ 01-core/operating-contract.md       │ Medium        │       │
+  │  │ 04-memory/project-context.md        │ Light         │       │
+  │  │ 04-memory/learned-mistakes.md       │ Light (max 20)│       │
+  │  │ VERSION                             │ Tiny          │       │
+  │  └─────────────────────────────────────┴───────────────┘       │
+  │                                                                 │
+  │  LOADED PER TASK (ONE at a time):                               │
+  │  ┌─────────────────────────────────────┬───────────────┐       │
+  │  │ One rules file from 02-rules/       │ Light–Medium  │       │
+  │  │ One workflow file from 03-workflows/ │ Light–Medium  │       │
+  │  └─────────────────────────────────────┴───────────────┘       │
+  │                                                                 │
+  │  NEVER AUTO-LOADED:                                             │
+  │  • 05-references/* (grep only)                                  │
+  │  • 06-templates/* (init only)                                   │
+  │  • 04-memory/mistakes-archive.md (archive only)                │
+  │                                                                 │
+  └─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Mistake Learning System
+
+When the developer corrects you, classify the mistake:
+
+```
+  ┌──────────┬──────────────────────────────────────────────────────┐
+  │ Type     │ Description                                          │
+  ├──────────┼──────────────────────────────────────────────────────┤
+  │ Type A   │ Rule exists in 02-rules/ but you didn't follow it   │
+  │          │ → Review why, add to checklist. Do NOT record.       │
+  ├──────────┼──────────────────────────────────────────────────────┤
+  │ Type B   │ New project-specific knowledge                       │
+  │          │ → Record in learned-mistakes.md immediately.         │
+  ├──────────┼──────────────────────────────────────────────────────┤
+  │ Type C   │ Missing general rule                                 │
+  │          │ → Propose adding to 02-rules/.                       │
+  └──────────┴──────────────────────────────────────────────────────┘
+
+  Rules:
+  • Max 20 active mistakes (newest on top)
+  • Repeated 3 times → escalates to fixed rule in 02-rules/
+```
+
+---
+
+## Vertical Slice Governance
+
+Every feature must cover 7 layers:
+
+```
+  ┌──────┬─────────────────────────────────────────────────────────┐
+  │  #   │ Layer                                                   │
+  ├──────┼─────────────────────────────────────────────────────────┤
+  │  1   │ Database — Schema/Migration                             │
+  │  2   │ Domain Layer — Aggregate/Entity/Value Object            │
+  │  3   │ Application Layer — Service + DTOs + Validation         │
+  │  4   │ API Contract — Endpoint + Authorization + Errors        │
+  │  5   │ Frontend — Component + State Management                 │
+  │  6   │ UI/UX & Animation — Design-system consistency           │
+  │  7   │ Tests — Unit + Integration per layer                    │
+  └──────┴─────────────────────────────────────────────────────────┘
+
+  MANDATORY REPORT FORMAT:
+  1. Slice coverage table: [Layer] ← [done / not applicable because...]
+  2. Architectural decisions: [decision] ← [rejected alternative]
+  3. Judgment calls: any deviation without a rule → state explicitly
+  4. Needs human review: nominate items yourself
+```
+
+> A report without the coverage table = **automatically rejected**.
+
+---
+
+## Master Pipeline (Path D)
+
+For full project delivery, 9 stages with decision gates:
+
+```
+  ┌───────┬─────────────────────────────┬───────┬──────┬──────────┐
+  │ Stage │ Name                        │  🟢   │  🟡  │    🔴    │
+  ├───────┼─────────────────────────────┼───────┼──────┼──────────┤
+  │   0   │ Intake & Classification     │  ✅   │  ✅  │   ✅     │
+  │   1   │ Requirements & Specs        │  —    │  ✅  │   ✅     │
+  │   2   │ Architecture & Design       │  —    │  —   │   ✅     │
+  │   3   │ Threat Model & Security     │  —    │  —   │   ✅     │
+  │   4   │ Implementation              │  ✅   │  ✅  │   ✅     │
+  │   5   │ Testing & Quality Gate      │  ✅   │  ✅  │   ✅     │
+  │   6   │ Production Readiness        │  —    │  —   │   ✅     │
+  │   7   │ Deployment & Rollout        │  —    │  —   │   ✅     │
+  │   8   │ Post-Launch Monitoring      │  —    │  —   │   ✅     │
+  └───────┴─────────────────────────────┴───────┴──────┴──────────┘
+
+  🟢 Simple   = stages 0, 4, 5 only (mini-build)
+  🟡 Medium   = stages 0, 1, 4, 5 (with specs)
+  🔴 Sensitive = ALL stages 0–8 (full pipeline)
+```
+
+---
+
+## QA Strategy
+
+```
+  ┌─────────────────────────────────┬───────┬──────┬──────────┐
+  │ Testing Activity                │  🟢   │  🟡  │    🔴    │
+  ├─────────────────────────────────┼───────┼──────┼──────────┤
+  │ Unit tests (critical paths)     │  ✅   │  ✅  │   ✅     │
+  │ Unit tests (comprehensive)      │  —    │  ✅  │   ✅     │
+  │ Integration tests               │  —    │  ✅  │   ✅     │
+  │ E2E / smoke tests               │  —    │  —   │   ✅     │
+  │ Performance / load tests        │  —    │  —   │   ✅     │
+  │ Security / penetration tests    │  —    │  —   │   ✅     │
+  └─────────────────────────────────┴───────┴──────┴──────────┘
+```
+
+---
+
+## Production Readiness (PRR)
+
+10-dimension scorecard before deployment:
+
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  PRR SCORECARD                                                 │
+  ├──────────────────────────────┬──────────────────────────────────┤
+  │ 1. Reliability               │ Error handling, circuit breaker  │
+  │ 2. Scalability               │ Load tested, pagination          │
+  │ 3. Observability             │ Logging, tracing, metrics        │
+  │ 4. Security                  │ Auth, IDOR, validation, secrets  │
+  │ 5. Disaster Recovery         │ Backup, rollback, RTO/RPO        │
+  │ 6. Documentation             │ API docs, ADRs, README           │
+  │ 7. Operational Runbook       │ Incident response, escalation    │
+  │ 8. Dependency Health         │ CVEs, licenses, SLAs             │
+  │ 9. Data Management           │ Migrations, retention, PII       │
+  │10. Compliance                │ Regulatory, audit trail          │
+  └──────────────────────────────┴──────────────────────────────────┘
+
+  All 🟢 → ✅ PRR PASSED
+  Any 🟡 (none 🔴) → ✅ PRR PASSED with conditions
+  Any 🔴 → ⛔ PRR FAILED
 ```
 
 ---
 
 ## Reference Library
 
-| Resource | Description |
-|----------|-------------|
-| **REF Catalog** | 34 directives: ARCH×7, DB×7, SEC×5, NET×5, TEST×2, OBS×2, RES×1, AI×1 |
-| **Constitutions** | 79 actionable rules from 16 engineering books |
-| **Books Archive** | 114 lessons — grep `Lesson N` for deep rationale |
-| **Prompt Packs** | backend / frontend / debugging |
-| **QA / DevOps** | 11 `[QA-*]` anchors · 18 `[OPS-*]` anchors |
+```
+  ┌──────────────────┬──────────────────────────────────────────────┐
+  │ Resource         │ Description                                  │
+  ├──────────────────┼──────────────────────────────────────────────┤
+  │ REF Catalog      │ 34 directives: ARCH×7 DB×7 SEC×5 NET×5     │
+  │ Constitutions    │ 79 rules from 16 engineering books           │
+  │ Books Archive    │ 114 lessons — grep "Lesson N"               │
+  │ Prompt Packs     │ backend / frontend / debugging               │
+  │ QA / DevOps      │ 11 [QA-*] anchors · 18 [OPS-*] anchors     │
+  └──────────────────┴──────────────────────────────────────────────┘
+```
 
 ---
 
@@ -303,13 +588,48 @@ python .agent/governance/runner.py
 
 **10 deterministic checks** — executable ground truth, not model claims.
 
-| Enforcement Level | Tag | Confidence |
-|-------------------|-----|------------|
-| CI pipeline ran | `[Enforcement: CI ✅]` | Highest |
-| Git hooks fired | `[Enforcement: hooks ⚠️]` | Good |
-| runner.py executed | `[Enforcement: runner.py 🔶]` | Acceptable |
-| Manual checklist | `[Enforcement: manual 🔶]` | Lowest acceptable |
-| Model claim only | `[Enforcement: claim ❌]` | **REJECTED** |
+```
+  ┌─────────────────────────┬────────────────────────┬──────────────┐
+  │ Enforcement Level       │ Tag                    │ Confidence   │
+  ├─────────────────────────┼────────────────────────┼──────────────┤
+  │ CI pipeline ran         │ [Enforcement: CI ✅]   │ Highest      │
+  │ Git hooks fired         │ [Enforcement: hooks ⚠️]│ Good         │
+  │ runner.py executed      │ [Enforcement: 🔶]      │ Acceptable   │
+  │ Manual checklist        │ [Enforcement: 🔶]      │ Lowest       │
+  │ Model claim only        │ [Enforcement: ❌]      │ REJECTED     │
+  └─────────────────────────┴────────────────────────┴──────────────┘
+```
+
+---
+
+## Collaboration Rules
+
+Pair programming protocol:
+
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  ROLES                                                         │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  You (Driver)     : implement, write code, verify              │
+  │  Developer (Nav)  : direct, review, make final decisions       │
+  └─────────────────────────────────────────────────────────────────┘
+
+  Golden Rule: Architectural decisions are NEVER delegated to the agent.
+```
+
+### Professional Execution Loop
+
+```
+  Context → Plan → Limited Execution → Hard Verification → Review
+```
+
+### Anti-Hallucination Rules
+
+```
+  ❌ "I expect this to work"           → FORBIDDEN
+  ❌ Quoted terminal output (hallucinated) → FORBIDDEN
+  ✅ Actual tool run with real output     → REQUIRED
+```
 
 ---
 
@@ -363,9 +683,87 @@ FORBIDDEN: writing to main AOS source · loading two rule files at once · full-
 
 ## Switching AI Tools
 
-1. Say **"switch tool"** — memory updates, handoff summary prints
-2. In the new tool, paste the session prompt + handoff summary
-3. Work resumes at the exact stopping point
+```
+  1. Say "switch tool"     → memory updates, handoff summary prints
+  2. In the new tool       → paste session prompt + handoff summary
+  3. Work resumes          → at the exact stopping point
+```
+
+---
+
+## Repository Structure
+
+```
+  .agent/
+  ├── AGENTS.md                  # Master directive contract
+  ├── INDEX.md                   # Smart index — reach any file
+  ├── VERSION                    # Version + sync info
+  │
+  ├── 01-core/                   # Core (mandatory at session start)
+  │   ├── operating-contract.md  #   Operational contract
+  │   ├── session-prompt.md      #   Unified session prompt
+  │   ├── task-classification.md #   🟢/🟡/🔴 indicators
+  │   ├── token-budget.md        #   ≤400 lines/session policy
+  │   ├── collaboration-rules.md #   Pair programming protocol
+  │   └── wiring-registry.md     #   Central DI container
+  │
+  ├── 02-rules/                  # Specialized rules (ONE at a time)
+  │   ├── architecture-and-design.md
+  │   ├── database-performance.md
+  │   ├── security-checklist.md
+  │   ├── testing-and-quality.md
+  │   ├── network-and-api.md
+  │   └── vertical-slice-governance.md
+  │
+  ├── 03-workflows/              # Workflows (Markdown-driven)
+  │   ├── master-pipeline/       #   Stages 0–8
+  │   ├── security-gate/         #   Security gate (7 steps)
+  │   ├── mobile-qa/             #   Mobile QA
+  │   ├── init-project.md        #   Project initialization
+  │   ├── start-session.md       #   Session start protocol
+  │   ├── end-session.md         #   Session end protocol
+  │   ├── requirements-analysis.md # SDD spec drafting
+  │   ├── debug-common-errors.md #   Bug fixing workflow
+  │   ├── knowledge-bootstrapping.md # Existing project setup
+  │   ├── qa-strategy.md         #   QA strategy
+  │   ├── production-readiness.md #  PRR scorecard
+  │   ├── create-backend-module.md
+  │   ├── create-frontend-module.md
+  │   └── improve-user-experience.md
+  │
+  ├── 04-memory/                 # Cumulative contextual memory
+  │   ├── project-context.md
+  │   ├── active-tasks.md
+  │   ├── decisions.md           #   ADR log (5 decisions)
+  │   ├── learned-mistakes.md    #   Mistake learning (Type A/B/C)
+  │   ├── project-knowledge.md
+  │   ├── codebase-map.md
+  │   └── mistakes-archive.md
+  │
+  ├── 05-references/             # References (grep-only)
+  │   ├── engineering-rules-catalog-REF.md
+  │   ├── books/
+  │   │   ├── 00-master-index.md #   Resource Injection Matrix
+  │   │   ├── 00-index.md
+  │   │   ├── constitutions/     #   6 constitutions (79 rules)
+  │   │   └── engineering-books-16-distilled.txt
+  │   ├── prompts/
+  │   ├── qa-testing/
+  │   └── devops-ops/
+  │
+  ├── 06-templates/              # Project templates
+  │   ├── dotnet-abp/            #   ABP/.NET specific
+  │   └── claude-skills/         #   Reference only
+  │
+  ├── governance/                # Deterministic enforcement
+  │   ├── runner.py
+  │   ├── test_memory.py
+  │   ├── test_rules.py
+  │   └── test_state.py
+  │
+  └── adr/                       # Architecture Decision Records
+      └── adr-template.md
+```
 
 ---
 
