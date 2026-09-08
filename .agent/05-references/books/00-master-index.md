@@ -2,6 +2,7 @@
 <!-- This is the SINGLE SOURCE OF TRUTH mapping ALL AOS resources to ALL pipeline stages -->
 <!-- Every stage MUST consult this file to know what to load, grep, and cite -->
 <!-- Status: MUST = gate blocked without it | SHOULD = recommended | IF = conditional -->
+<!-- Bundle = complete resource set for a capability (constitution + rules + templates + book refs) -->
 
 ---
 
@@ -9,9 +10,13 @@
 
 When executing any pipeline stage, the model MUST:
 1. Read this file's section for the current stage
-2. Load every MUST resource and cite it in code/docs
-3. Check every IF condition and load if matched
-4. Produce a Resource Utilization Summary before marking the stage as Done
+2. **Load the complete bundle** for each active capability (all files in the bundle, not just one)
+3. Grep reference anchors from the catalog — never read the full reference file
+4. Cite every applied rule: `// [REF-XXX-N]` for rules, `// [CONST-XXX-N]` for constitutions
+5. Produce a Resource Utilization Summary before marking the stage as Done
+
+> **Bundle loading rule**: when a bundle is listed, load ALL files in it — not selectively.
+> This ensures every piece of knowledge (books, rules, templates, prompts) is applied.
 
 ---
 
@@ -38,6 +43,8 @@ When executing any pipeline stage, the model MUST:
 
 ## Stage 2: Architecture & Design (ADR)
 
+> **Load Bundle**: Architecture & DDD (see `wiring-registry.md` → Knowledge Bundles)
+
 | Resource | Path | Action | Injection |
 |----------|------|--------|-----------|
 | Architecture Constitution | `05-references/books/constitutions/arch-constitution.md` | Full load — Dependency Rule, SDP/SAP | MUST |
@@ -53,6 +60,8 @@ When executing any pipeline stage, the model MUST:
 
 ## Stage 3: Threat Model (STRIDE)
 
+> **Load Bundle**: Security (see `wiring-registry.md` → Knowledge Bundles)
+
 | Resource | Path | Action | Injection |
 |----------|------|--------|-----------|
 | Security Constitution | `05-references/books/constitutions/security-constitution.md` | Full load — Zero Trust, XSS, BOLA, TOCTOU | MUST |
@@ -64,6 +73,8 @@ When executing any pipeline stage, the model MUST:
 
 ## Stage 4: Implementation
 
+> **Load Bundles**: Architecture & DDD + DB Performance + Security + Resilience (all active capabilities)
+
 | Resource | Path | Action | Injection |
 |----------|------|--------|-----------|
 | Architecture Constitution | `05-references/books/constitutions/arch-constitution.md` | Enforce layer isolation, DTO mandate | MUST |
@@ -71,8 +82,7 @@ When executing any pipeline stage, the model MUST:
 | Performance Constitution | `05-references/books/constitutions/perf-constitution.md` | Enforce SARGable, Projection, No Lazy Loading | MUST |
 | Security Constitution | `05-references/books/constitutions/security-constitution.md` | Enforce validation layering, Mass Assignment | MUST |
 | Backend Prompts | `05-references/prompts/backend-prompts.md` | Inject for backend code generation (generic backend patterns) | MUST |
-| Stack Prompts | `06-templates/{stack}/prompts.md` | Inject ready-to-use stack-specific snippets alongside Backend Prompts — no conflict, load both | IF stack plugin |
-| Frontend Prompts | `05-references/prompts/frontend-prompts.md` | Inject for Angular code generation | IF frontend |
+| Frontend Prompts | `05-references/prompts/frontend-prompts.md` | Inject for frontend code generation | IF frontend |
 | Database Rules | `02-rules/database-performance.md` | Cite REF-DB contracts | MUST |
 | Error Handling Rules | `02-rules/testing-and-quality.md` §3 | Cite REF-ERR contracts | MUST |
 | Engineering Rules Catalog | `05-references/engineering-rules-catalog-REF.md` | Grep REF-DB-*, REF-ERR-*, REF-API-* | MUST |
@@ -85,6 +95,8 @@ When executing any pipeline stage, the model MUST:
 ---
 
 ## Stage 5: Testing & Quality Gate
+
+> **Load Bundle**: Testing & Quality (see `wiring-registry.md` → Knowledge Bundles)
 
 | Resource | Path | Action | Injection |
 |----------|------|--------|-----------|
@@ -100,6 +112,8 @@ When executing any pipeline stage, the model MUST:
 ---
 
 ## Stage 6: Production Readiness (PRR)
+
+> **Load Bundle**: Production Readiness (see `wiring-registry.md` → Knowledge Bundles)
 
 | Resource | Path | Action | Injection |
 |----------|------|--------|-----------|

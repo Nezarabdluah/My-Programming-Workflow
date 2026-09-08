@@ -3,6 +3,9 @@
 > **AOS is fully stack-agnostic**. All templates here work with ANY programming language or framework.
 > Customize the pre-commit and CI/CD templates for your specific stack.
 
+> **Loading**: these templates are loaded as part of Knowledge Bundles defined in `01-core/wiring-registry.md`.
+> Do not load templates in isolation — load the entire bundle for your active capability.
+
 ---
 
 ## Available Templates

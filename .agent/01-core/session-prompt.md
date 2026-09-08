@@ -39,10 +39,12 @@ Reading budget at boot: ≤ 400 lines.
 ### Phase 1 — Mandatory AOS files (in order):
 1. `.agent/INDEX.md` ← the main index and routing.
 2. `.agent/01-core/operating-contract.md` ← the operational contract.
-3. `.agent/04-memory/project-context.md` ← last working point and session path.
-4. `.agent/04-memory/learned-mistakes.md` ← learned mistakes to avoid.
-5. `.agent/04-memory/active-tasks.md` ← active tasks and current SDD state.
-6. `.agent/VERSION` ← current AOS version for source comparison.
+3. `.agent/01-core/collaboration-rules.md` ← pair-programming protocol, anti-hallucination rules, stop gates.
+4. `.agent/01-core/token-budget.md` ← token budget and selective loading policy.
+5. `.agent/04-memory/project-context.md` ← last working point and session path.
+6. `.agent/04-memory/learned-mistakes.md` ← learned mistakes to avoid.
+7. `.agent/04-memory/active-tasks.md` ← active tasks and current SDD state.
+8. `.agent/VERSION` ← current AOS version for source comparison.
 
 ### Phase 2 — Proof of Read & Boot:
 Print the boot report to the developer in this format (if the project is new or just initialized, state that memory is empty):
@@ -125,14 +127,26 @@ Load the applicable constitutions from `05-references/books/constitutions/`:
 * Testing / quality → load `02-rules/testing-and-quality.md` → grep in `05-references/qa-testing/`
 * DevOps / CI/CD → load `02-rules/network-and-api.md` → grep in `05-references/devops-ops/`
 
-### Step 4 — Prompt & Template injection (conditional)
-* Backend code → inject `05-references/prompts/backend-prompts.md`
-* Frontend code → inject `05-references/prompts/frontend-prompts.md`
-* Debugging/errors → inject `05-references/prompts/debugging-prompts.md`
-* Entity creation → follow `06-templates/entity-patterns.md`
-* Coding standards → follow `06-templates/coding-standards.md`
-* Pre-commit setup → use `06-templates/pre-commit-template.yaml`
-* CI/CD setup → use `06-templates/github-security-gate.yml`
+### Step 4 — Knowledge Bundle injection (mandatory for code tasks)
+
+> Load the COMPLETE bundle for each active capability from `wiring-registry.md` → Knowledge Bundles.
+> A bundle = constitution + rules + templates + prompts + book references. Load ALL files in the bundle.
+
+* Architecture / DDD task → load **Architecture & DDD bundle** (arch-constitution + ddd-constitution + architecture-and-design.md + entity-patterns + coding-standards + book refs)
+* DB / queries task → load **DB Performance bundle** (perf-constitution + database-performance.md + backend-prompts + entity-patterns + book refs)
+* Security / auth task → load **Security bundle** (security-constitution + security-checklist.md + github-security-gate + PR template + book refs)
+* Resilience / concurrency task → load **Resilience bundle** (resilience-constitution + testing-and-quality §3 + book refs)
+* API / integration task → load **API & Integration bundle** (integration-constitution + network-and-api.md + backend-prompts + book refs)
+* Testing / quality task → load **Testing & Quality bundle** (security-constitution audit + perf-constitution audit + testing-and-quality.md + qa-strategy + governance runner + book refs)
+* Production readiness task → load **Production Readiness bundle** (resilience-constitution + production-readiness.md + devops reference + book refs)
+* Backend code → also inject `05-references/prompts/backend-prompts.md`
+* Frontend code → also inject `05-references/prompts/frontend-prompts.md`
+* Debugging/errors → also inject `05-references/prompts/debugging-prompts.md`
+
+### Step 4.5 — Memory context injection (conditional)
+* 🔴 Sensitive task → load `04-memory/decisions.md` (check for existing ADRs)
+* New files/structure touched → load `04-memory/codebase-map.md` (check existing structure)
+* Asked about patterns/conventions → load `04-memory/project-knowledge.md` (check discovered patterns)
 
 ### Step 5 — Citation (mandatory)
 * Cite rules: `// [REF-DB-N1]: prevent N+1 query`

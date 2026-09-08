@@ -2,6 +2,7 @@
   <img src="https://img.shields.io/badge/AOS-v7.0.0-blue?style=for-the-badge&labelColor=1a1a2e" alt="AOS Version"/>
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge&labelColor=1a1a2e" alt="License"/>
   <img src="https://img.shields.io/badge/works%20with-Claude%20%7C%20Cursor%20%7C%20Copilot%20%7C%20Windsurf-orange?style=for-the-badge&labelColor=1a1a2e" alt="AI Tools"/>
+  <img src="https://img.shields.io/badge/stack-agnostic-Universal-grey?style=for-the-badge&labelColor=1a1a2e" alt="Stack Agnostic"/>
 </p>
 
 <h1 align="center">AOS — Agent Operating System</h1>
@@ -12,10 +13,10 @@
 </p>
 
 <p align="center">
-  <a href="#-you-dont-need-to-understand-aos-to-use-it">Quick Start</a> •
+  <a href="#-quick-start">Quick Start</a> •
   <a href="#-see-it-in-action">See It in Action</a> •
   <a href="#-architecture">Architecture</a> •
-  <a href="#-workflows">Workflows</a> •
+  <a href="#-project-structure">Structure</a> •
   <a href="#-faq">FAQ</a>
 </p>
 
@@ -23,11 +24,11 @@
 
 ## What is AOS?
 
-AOS (Agent Operating System) is a **stack-agnostic framework** that transforms any AI coding assistant into a **governed engineering team**. It solves one fundamental problem:
+AOS (Agent Operating System) is a **fully stack-agnostic framework** that transforms any AI coding assistant into a **governed engineering team**. It solves one fundamental problem:
 
 > *AI models know good practice but never apply it consistently.*
 
-AOS enforces mandatory resource injection, cumulative memory across sessions, and deterministic governance — so every task follows the same professional workflow, regardless of which AI tool you use.
+AOS enforces mandatory resource injection, cumulative memory across sessions, and deterministic governance — so every task follows the same professional workflow, regardless of which AI tool or programming language you use.
 
 ---
 
@@ -403,6 +404,37 @@ The central DI container maps capabilities to dependencies:
   5. Cite in code: // [REF-DB-N1], // [CONST-SEC-3]
 ```
 
+### Knowledge Bundles
+
+AOS groups ALL related resources into **bundles** for each capability. When a capability is active, load the **entire bundle** (constitution + rules + templates + prompts + book references):
+
+```
+  ┌──────────────────────────┬──────────────────────────────────────────┐
+  │ Bundle                   │ Contains                                 │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ DB Performance           │ perf-constitution + database-perf.md     │
+  │                          │ + backend-prompts + entity-patterns      │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ Security                 │ security-constitution + security-        │
+  │                          │ checklist + github-security-gate + PR    │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ Architecture & DDD       │ arch-constitution + ddd-constitution     │
+  │                          │ + architecture-rules + coding-standards  │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ Resilience               │ resilience-constitution + testing §3     │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ API & Integration        │ integration-constitution + network-api   │
+  │                          │ + backend-prompts                        │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ Testing & Quality        │ security-audit + perf-audit +            │
+  │                          │ testing-rules + qa-strategy + runner     │
+  ├──────────────────────────┼──────────────────────────────────────────┤
+  │ Production Readiness     │ resilience-constitution + PRR + devops   │
+  └──────────────────────────┴──────────────────────────────────────────┘
+
+  See: 01-core/wiring-registry.md → Knowledge Bundles section
+```
+
 ---
 
 ## Token Budget
@@ -624,8 +656,8 @@ For full project delivery, 9 stages with decision gates:
   ├──────────────────┼──────────────────────────────────────────────┤
   │ DevOps Reference │ 2195 lines, 18 [OPS-*] anchors             │
   ├──────────────────┼──────────────────────────────────────────────┤
-   │ Stack Templates  │ entity-patterns, coding-standards, pre-commit  │
-   │                  │ PR template, GitHub security gate              │
+  │ Templates        │ entity-patterns, coding-standards,           │
+  │                  │ pre-commit, PR template, CI/CD gate         │
   └──────────────────┴──────────────────────────────────────────────┘
 ```
 
@@ -771,7 +803,7 @@ Then print this boot report:
   Memory — learned-mistakes: [N] active, latest: "[quote or 'none']"
   Memory — active-tasks: [N] pending, top: "[quote or 'none']"
   VERSION: [in sync ✅ / needs sync ⚠️]
-  Ready — what is our next task?
+Ready — what is our next task?
 
 TASK ROUTING:
 - Path A (new feature) → SDD: Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
@@ -801,94 +833,116 @@ FORBIDDEN: writing to main AOS source · loading two rule files at once · full-
 
 ---
 
-## Repository Structure
+## Project Structure
 
 ```
-  .agent/
-  ├── AGENTS.md                  # Master directive contract
-  ├── INDEX.md                   # Smart index — reach any file
-  ├── VERSION                    # Version + sync info
-  │
-  ├── 01-core/                   # Core (mandatory at session start)
-  │   ├── operating-contract.md  #   Operational contract (6 sections)
-  │   ├── session-prompt.md      #   Unified session prompt (199 lines)
-  │   ├── task-classification.md #   🟢/🟡/🔴 indicators + decision matrix
-  │   ├── token-budget.md        #   ≤400 lines/session policy
-  │   ├── collaboration-rules.md #   Pair programming protocol
-  │   └── wiring-registry.md     #   Central DI container
-  │
-  ├── 02-rules/                  # Specialized rules (ONE at a time)
-  │   ├── architecture-and-design.md   # Clean Arch + DDD + SOLID
-  │   ├── database-performance.md      # SARGability, N+1, pagination
-  │   ├── security-checklist.md        # JWT, IDOR, XSS, injection
-  │   ├── testing-and-quality.md       # Testing, observability, resilience
-  │   ├── network-and-api.md           # API design, payload optimization
-  │   └── vertical-slice-governance.md # 7 layers mandatory
-  │
-  ├── 03-workflows/              # Workflows (Markdown-driven)
-  │   ├── master-pipeline/       #   Stages 0–8 (coordinator + 9 files)
-  │   ├── security-gate/         #   Security gate (coordinator + 7 steps)
-  │   ├── mobile-qa/             #   Mobile QA (coordinator + 4 steps)
-  │   ├── init-project.md        #   Project initialization
-  │   ├── start-session.md       #   Session start protocol
-  │   ├── end-session.md         #   Session end protocol
-  │   ├── requirements-analysis.md # SDD spec drafting
-  │   ├── create-backend-module.md # Full backend module guide
-  │   ├── create-frontend-module.md # Frontend component guide
-  │   ├── improve-user-experience.md # UI/UX improvement
-  │   ├── debug-common-errors.md #   Bug fixing workflow
-  │   ├── knowledge-bootstrapping.md # Existing project setup
-  │   ├── qa-strategy.md         #   QA strategy + test pyramid
-  │   └── production-readiness.md #  PRR scorecard (10 dimensions)
-  │
-  ├── 04-memory/                 # Cumulative contextual memory
-  │   ├── project-context.md     #   Last project state
-  │   ├── active-tasks.md        #   Active tasks with SDD states
-  │   ├── decisions.md           #   ADR log (5 decisions)
-  │   ├── learned-mistakes.md    #   Mistake learning (Type A/B/C)
-  │   ├── project-knowledge.md   #   Discovered patterns (on demand)
-  │   ├── codebase-map.md        #   File structure map (on demand)
-  │   └── mistakes-archive.md    #   Historical mistakes (archive)
-  │
-  ├── 05-references/             # References (grep-only)
-  │   ├── engineering-rules-catalog-REF.md  # 34 REF directives
-  │   ├── books/
-  │   │   ├── 00-master-index.md #   Resource Injection Matrix
-  │   │   ├── 00-index.md        #   Books reference index
-  │   │   ├── constitutions/     #   6 constitutions (79 rules)
-  │   │   │   ├── arch-constitution.md      # 15 rules
-  │   │   │   ├── ddd-constitution.md       # 11 rules
-  │   │   │   ├── security-constitution.md  # 17 rules
-  │   │   │   ├── perf-constitution.md      # 11 rules
-  │   │   │   ├── resilience-constitution.md # 15 rules
-  │   │   │   └── integration-constitution.md # 10 rules
-  │   │   └── engineering-books-16-distilled.txt # 2337 lines
-  │   ├── prompts/
-  │   │   ├── backend-prompts.md  #   Ready-to-use backend prompts
-  │   │   ├── frontend-prompts.md #   Ready-to-use frontend prompts
-  │   │   └── debugging-prompts.md #  Ready-to-use debugging prompts
-  │   ├── qa-testing/
-  │   │   ├── 00-overview.md      #   QA overview + 11 anchors
-  │   │   └── qa-testing-strategy-and-automation.md # 1775 lines
-  │   └── devops-ops/
-  │       ├── 00-overview.md      #   DevOps overview + 18 anchors
-  │       └── devops-enterprise-and-production-readiness.md # 2195 lines
-  │
-  ├── 06-templates/              # Stack-agnostic templates
-  │   ├── entity-patterns.md     #   Universal entity/model patterns
-  │   ├── coding-standards.md    #   SOLID, DDD, encapsulation rules
-  │   ├── pre-commit-template.yaml # Pre-commit hooks template
-  │   ├── github-security-gate.yml # CI/CD security template
-  │   └── pull_request_template.md # PR template with security gate
-  │
-  ├── governance/                # Deterministic enforcement
-  │   ├── runner.py              #   Governance runner (10 checks)
-  │   ├── test_memory.py         #   GOV-T03, T04, T05
-  │   ├── test_rules.py          #   GOV-T06, T07, T08, T10
-  │   └── test_state.py          #   GOV-T01, T02, T09
-  │
-  └── adr/                       # Architecture Decision Records
-      └── adr-template.md        #   ADR template with guard
+.agent/
+├── AGENTS.md                      # Master directive contract
+├── INDEX.md                       # Smart index — reach any file
+├── VERSION                        # Version + sync info
+│
+├── 01-core/                       # Core (mandatory at session start)
+│   ├── operating-contract.md      #   Operational contract (6 sections)
+│   ├── session-prompt.md          #   Unified session prompt
+│   ├── task-classification.md     #   🟢/🟡/🔴 indicators + decision matrix
+│   ├── token-budget.md            #   ≤400 lines/session policy
+│   ├── collaboration-rules.md     #   Pair programming protocol
+│   └── wiring-registry.md         #   Central DI container + Knowledge Bundles
+│
+├── 02-rules/                      # Specialized rules (ONE at a time)
+│   ├── architecture-and-design.md #   Clean Arch + DDD + SOLID
+│   ├── database-performance.md    #   SARGability, N+1, pagination
+│   ├── security-checklist.md      #   JWT, IDOR, XSS, injection
+│   ├── testing-and-quality.md     #   Testing, observability, resilience
+│   ├── network-and-api.md         #   API design, payload optimization
+│   └── vertical-slice-governance.md # 7 layers mandatory
+│
+├── 03-workflows/                  # Workflows (Markdown-driven)
+│   ├── master-pipeline/           #   Stages 0–8 (coordinator + 9 files)
+│   │   ├── 00-coordinator.md
+│   │   ├── stage-0-intake.md
+│   │   ├── stage-1-requirements.md
+│   │   ├── stage-2-architecture.md
+│   │   ├── stage-3-threat-model.md
+│   │   ├── stage-4-implementation.md
+│   │   ├── stage-5-testing.md
+│   │   ├── stage-6-production-readiness.md
+│   │   ├── stage-7-deployment.md
+│   │   └── stage-8-post-launch.md
+│   ├── security-gate/             #   Security gate (coordinator + 7 steps)
+│   │   ├── 00-coordinator.md
+│   │   ├── step-1-threat-model.md
+│   │   ├── step-2-dependency-check.md
+│   │   ├── step-3-secret-scan.md
+│   │   ├── step-4-access-review.md
+│   │   ├── step-5-code-review.md
+│   │   ├── step-6-test-verification.md
+│   │   └── step-7-gate-report.md
+│   ├── mobile-qa/                 #   Mobile QA (coordinator + 4 steps)
+│   │   ├── 00-coordinator.md
+│   │   ├── step-1-environment-discovery.md
+│   │   ├── step-2-build-verification.md
+│   │   ├── step-3-scenario-execution.md
+│   │   └── step-7-evidence-report.md
+│   ├── init-project.md            #   Project initialization
+│   ├── start-session.md           #   Session start protocol
+│   ├── end-session.md             #   Session end protocol
+│   ├── requirements-analysis.md   #   SDD spec drafting
+│   ├── create-backend-module.md   #   Full backend module guide
+│   ├── create-frontend-module.md  #   Frontend component guide
+│   ├── improve-user-experience.md #   UI/UX improvement
+│   ├── debug-common-errors.md     #   Bug fixing workflow
+│   ├── knowledge-bootstrapping.md #   Existing project setup
+│   ├── qa-strategy.md             #   QA strategy + test pyramid
+│   └── production-readiness.md    #   PRR scorecard (10 dimensions)
+│
+├── 04-memory/                     # Cumulative contextual memory
+│   ├── project-context.md         #   Last project state
+│   ├── active-tasks.md            #   Active tasks with SDD states
+│   ├── decisions.md               #   ADR log
+│   ├── learned-mistakes.md        #   Mistake learning (Type A/B/C)
+│   ├── project-knowledge.md       #   Discovered patterns (on demand)
+│   ├── codebase-map.md            #   File structure map (on demand)
+│   └── mistakes-archive.md        #   Historical mistakes (archive)
+│
+├── 05-references/                 # References (grep-only)
+│   ├── engineering-rules-catalog-REF.md  # 34 REF directives
+│   ├── books/
+│   │   ├── 00-master-index.md     #   Resource Injection Matrix
+│   │   ├── constitutions/         #   6 constitutions (79 rules)
+│   │   │   ├── arch-constitution.md
+│   │   │   ├── ddd-constitution.md
+│   │   │   ├── security-constitution.md
+│   │   │   ├── perf-constitution.md
+│   │   │   ├── resilience-constitution.md
+│   │   │   └── integration-constitution.md
+│   │   └── engineering-books-16-distilled.txt  # 2337 lines
+│   ├── prompts/
+│   │   ├── backend-prompts.md
+│   │   ├── frontend-prompts.md
+│   │   └── debugging-prompts.md
+│   ├── qa-testing/
+│   │   └── qa-testing-strategy-and-automation.md  # 1775 lines
+│   └── devops-ops/
+│       └── devops-enterprise-and-production-readiness.md  # 2195 lines
+│
+├── 06-templates/                  # Stack-agnostic templates
+│   ├── README.md                  #   Template entry point
+│   ├── entity-patterns.md         #   Universal entity/model patterns
+│   ├── coding-standards.md        #   SOLID, DDD, encapsulation rules
+│   ├── pre-commit-template.yaml   #   Pre-commit hooks template
+│   ├── github-security-gate.yml   #   CI/CD security template
+│   ├── pull_request_template.md   #   PR template with security gate
+│   └── claude-skills/             #   Claude-specific skills (optional)
+│
+├── governance/                    # Deterministic enforcement
+│   ├── runner.py                  #   Governance runner (10 checks)
+│   ├── test_memory.py             #   GOV-T03, T04, T05
+│   ├── test_rules.py              #   GOV-T06, T07, T08, T10
+│   └── test_state.py              #   GOV-T01, T02, T09
+│
+└── adr/                           # Architecture Decision Records
+    └── adr-template.md            #   ADR template with guard
 ```
 
 ---

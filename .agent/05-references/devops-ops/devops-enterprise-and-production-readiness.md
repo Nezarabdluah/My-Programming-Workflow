@@ -1981,7 +1981,7 @@ ORDER BY ips.avg_fragmentation_in_percent DESC;
 # ============================================================
 # 🏗️ Unified DevOps Stack — Professional Monitoring & Testing
 # ============================================================
-# Works across ALL projects: ABP/.NET, Angular, React Native, Python
+# Works across ALL projects: .NET, Angular, React Native, Python
 # Located at: D:\devops-stack\docker-compose.yml
 # ============================================================
 

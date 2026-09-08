@@ -1,5 +1,7 @@
 # 🔄 Start Session — Session Start Protocol (AOS v7.0)
 
+> **⚠️ LEGACY FILE**: This file is superseded by `01-core/session-prompt.md` which contains the full boot protocol inline. Kept for backward compatibility only. Do not load directly — use session-prompt.md instead.
+
 > **Contract**: executed mandatorily at the start of every work session to guarantee context continuity and safe version sync.
 
 ---
