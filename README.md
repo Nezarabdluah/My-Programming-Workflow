@@ -1,104 +1,211 @@
-# My Programming Workflow — Agent Operating System (AOS) v7.0
+<p align="center">
+  <img src="https://img.shields.io/badge/AOS-v7.0.0-blue?style=for-the-badge&labelColor=1a1a2e" alt="AOS Version"/>
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge&labelColor=1a1a2e" alt="License"/>
+  <img src="https://img.shields.io/badge/works%20with-Claude%20%7C%20Cursor%20%7C%20Copilot%20%7C%20Windsurf-orange?style=for-the-badge&labelColor=1a1a2e" alt="AI Tools"/>
+</p>
 
-[![Version](https://img.shields.io/badge/version-7.0.0%20Wired%20Pipeline-blue)](https://github.com/Nezarabdluah/My-Programming-Workflow)
-[![English](https://img.shields.io/badge/English-100%25-green)](https://github.com/Nezarabdluah/My-Programming-Workflow)
-[![Tools](https://img.shields.io/badge/works_with-Claude%20%7C%20Cursor%20%7C%20Copilot%20%7C%20Windsurf-orange)](https://github.com/Nezarabdluah/My-Programming-Workflow)
-[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/Nezarabdluah/My-Programming-Workflow)
+<h1 align="center">🧠 AOS — Agent Operating System</h1>
 
-> **A stack-agnostic operating system that turns any AI coding assistant into a governed engineering team** — every task classified, every stage injected with the right knowledge, every delivery verified. Copy one folder, paste one prompt, ship with proof.
+<p align="center">
+  <strong>Turn any AI coding assistant into a governed engineering team.</strong><br/>
+  <em>Knowledge-first. Memory-first. Every task classified. Every delivery verified.</em>
+</p>
 
-## ✨ Why AOS?
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-reference-library">References</a> •
+  <a href="#-faq">FAQ</a>
+</p>
 
-| Free-form prompting ❌ | AOS ✅ |
+---
+
+## 💡 What is AOS?
+
+AOS (Agent Operating System) is a **stack-agnostic framework** that transforms any AI coding assistant into a **governed engineering team**. It solves the fundamental problem: *AI models know good practice but never apply it consistently.*
+
+| The Problem | AOS Solution |
 |---|---|
-| The model *knows* good practice but never applies it | **Mandatory injection** — every workflow starts `MUST, gate blocked`; no stage closes without a Resource Utilization Summary |
-| Knowledge scattered across chats | **Wiring Registry** — one DI container mapping each capability → rule file → REF contracts → constitution |
-| 16 books of wisdom, zero enforcement | **6 constitutions (79 rules)** + **34-directive REF catalog** + **114-lesson archive**, all cited by ID in code |
-| Context dies between sessions/tools | **Cumulative memory** + handoff protocol — the next tool resumes mid-sentence |
-| "Done" = "it compiles" | **Vertical-slice governance** — 7 layers covered or justified in writing |
-| Contradicting guidance everywhere | **Layer priority L0→L5** — Security > Memory > Correctness > Simplicity > Performance > Conventions |
+| Knowledge scattered across chats | **Wiring Registry** — one DI container mapping capabilities → rules → references |
+| 16 books of wisdom, zero enforcement | **6 constitutions (79 rules)** + **34 REF directives** + **114-lesson archive** |
+| Context dies between sessions | **Cumulative memory** — resume mid-sentence in any tool |
+| "Done" = "it compiles" | **Vertical-slice governance** — 7 layers covered or justified |
+| Contradicting guidance | **Layer priority L0→L5** — Security > Memory > Correctness |
 
-## 🚀 Quick Start (3 steps)
+---
+
+## 🚀 Quick Start
 
 ```bash
 # 1. Clone the master (read-only source)
 git clone https://github.com/Nezarabdluah/My-Programming-Workflow.git
-# 2. Copy .agent/ into YOUR project, init memory per .agent/03-workflows/init-project.md
-# 3. Paste the session prompt (Section: Session Prompt ⬇) as your first AI message
+
+# 2. Copy .agent/ into YOUR project
+cp -r My-Programming-Workflow/.agent/ your-project/.agent/
+
+# 3. Paste the session prompt as your first AI message
+# (see: The Session Prompt section below)
 ```
 
-> ✅ Done — the agent prints a **boot report** (proof it read memory) and asks for the first task.
+> ✅ The agent prints a **boot report** (proof it read memory) and asks for the first task.
 
-## 🗺️ Table of Contents
+---
 
-- [How a Task Flows](#-how-a-task-flows)
-- [Architecture](#architecture)
-- [Step-by-Step Daily Workflow](#-step-by-step-daily-workflow)
-- [The Session Prompt (copy-paste)](#-the-session-prompt-copy-paste)
-- [Core Concepts](#-core-concepts)
-- [Repository Map](#repository-map)
-- [Reference Library](#-reference-library)
-- [Governance Gate](#-governance-gate)
-- [Switching AI Tools](#-switching-ai-tools-mid-project)
-- [Keeping Projects in Sync](#-keeping-projects-in-sync)
-- [FAQ](#-faq)
-- [Contributing](#-contributing)
+## 🔄 How It Works
 
-## 🔄 How a Task Flows
+### Task Classification
 
-**One session, seven moves — same rhythm every time:**
+Every task is automatically triaged:
 
-1. **Boot** — you paste the session prompt; the agent reads memory and prints a proof report (project, stack, last task, pending items, version sync).
-2. **Classify** — every task is triaged: 🟢 Simple (do it now), 🟡 Medium (spec + tests), 🔴 Sensitive (ADR + security gates + human approval).
-3. **Route** — the task takes exactly one path:
+| Mode | Signals | Process |
+|------|---------|---------|
+| 🟢 **Simple** | typo, color, comment (≤2 files) | Execute immediately + summary |
+| 🟡 **Medium** | business logic, multi-file | SDD spec → approval → tests green |
+| 🔴 **Sensitive** | DB, auth, architecture (>5 files) | ADR + OWASP + human gate |
 
-| Path | When | What happens |
-|---|---|---|
-| **A** — Feature | new functionality, big change | SDD spec → your approval → plan → implement |
-| **B** — Known type | backend, frontend, bug, UX, QA, security… | follow the matching workflow file step by step |
-| **C** — Trivial | typo, color, comment | done immediately + one-line summary |
-| **D** — Full delivery | production-grade work | pipeline stages 0–8 with decision gates |
+### The 7-Step Flow
 
-4. **Inject (MUST)** — before any code: injection matrix → wiring registry → constitution(s) → one rule file → prompt pack. Cited in code as `// [REF-XX-N]` and `// [CONST-XX-N]`.
-5. **Implement** — code is written against the approved plan only.
-6. **Govern** — `governance/runner.py` runs deterministic checks. Fail → back to implement. Pass → continue.
-7. **Close** — delivery report (slice coverage + decisions + review flags) and memory saved for the next session.
+```
+Boot → Classify → Route → Inject Resources → Implement → Govern → Close
+```
 
-**The SDD backbone for 🟡/🔴 tasks** (Path A and D):
+1. **Boot** — Agent reads memory, prints proof report
+2. **Classify** — Task triaged as 🟢/🟡/🔴
+3. **Route** — Takes exactly one path (A/B/C/D)
+4. **Inject** — Load rules, constitutions, references (mandatory)
+5. **Implement** — Code written against approved plan only
+6. **Govern** — `runner.py` runs deterministic checks
+7. **Close** — Delivery report + memory saved
 
-`Draft → Clarify → Approved ⏸ → Planning → Ready → Executing → Validating → Done`
+### Task Paths
 
-The ⏸ is sacred: **no code is written before you approve the spec and plan.**
+| Path | When | What Happens |
+|------|------|--------------|
+| **A** — Feature | new functionality | SDD spec → approval → plan → implement |
+| **B** — Known type | backend, frontend, bug, security | Follow matching workflow |
+| **C** — Trivial | typo, color, comment | Done immediately |
+| **D** — Full delivery | production-grade | Pipeline stages 0–8 |
+
+---
 
 ## 🏗️ Architecture
 
-Six layers, one direction, zero ambiguity about what wins:
+Six layers, one direction, zero ambiguity:
 
-| # | Layer | Contains | Authority |
-|---|---|---|---|
-| L0 | Constitution | `AGENTS.md` + operating contract | ⬆️ highest — wins every conflict |
-| L5 | Governance | `runner.py` — executable truth | overrides any model claim |
-| L1 | Memory Core | `04-memory/` — cumulative context | single source of truth |
-| L2 | Pipeline | `03-workflows/` — stages 0–8 | consumable, loaded per task |
-| L3 | Rules | `02-rules/` — 6 files | one file at a time, never two |
-| L4 | References | `05-references/` — books, REF, QA, DevOps | ⬇️ grep-only, never full-read |
+```mermaid
+graph TB
+    L0["L0: Constitution<br/>AGENTS.md + operating-contract"]
+    L5["L5: Governance<br/>runner.py — executable truth"]
+    L1["L1: Memory Core<br/>04-memory/ — cumulative context"]
+    L2["L2: Pipeline<br/>03-workflows/ — stages 0–8"]
+    L3["L3: Rules<br/>02-rules/ — 6 specialized files"]
+    L4["L4: References<br/>05-references/ — grep-only"]
 
-**Dependency flow is strictly one-way** (Workflows → Memory → References → Rules). Workflows never embed quality rules; rules never know their consumers. The injection matrix maps **20/20 resources** to every stage (`MUST` = gate blocked, `SHOULD`, `IF`).
+    L0 --> L5
+    L5 --> L1
+    L1 --> L2
+    L2 --> L3
+    L3 --> L4
+```
 
-## 👣 Step-by-Step Daily Workflow
+| Layer | Contains | Authority |
+|-------|----------|-----------|
+| **L0** Constitution | `AGENTS.md` + operating contract | ⬆️ Highest — wins every conflict |
+| **L5** Governance | `runner.py` — executable checks | Overrides any model claim |
+| **L1** Memory | `04-memory/` — cumulative context | Single source of truth |
+| **L2** Pipeline | `03-workflows/` — stages 0–8 | Consumable, loaded per task |
+| **L3** Rules | `02-rules/` — 6 files | One file at a time, never two |
+| **L4** References | `05-references/` — books, REF, QA | ⬇️ Grep-only, never full-read |
 
-1. **Open a session** — paste the prompt ⬇, confirm the boot report (project, stack, memory quotes, VERSION sync).
-2. **State the task** — e.g. *"Add order refunds to the billing module."*
-3. **Confirm classification** — agent proposes 🟢/🟡/🔴; correct it if wrong (corrections are learned as Type A/B/C).
-4. **Review spec & plan** (🟡/🔴) — user stories with `Given/When/Then` or EARS acceptance, then MVP increments. **Approve explicitly — zero code before this.**
-5. **Watch injection** — matrix row → wiring row → constitution(s) → one rule file → prompt packs, all cited (`// [REF-DB-N1]`, `// [CONST-SEC-3]`).
-6. **Review the slice report** — coverage table (`[Layer] ← [done / n/a because…]` + `file:line`), decisions (choice ← rejected alternative ← principle), judgment calls, human-review flags.
-7. **Validate** — project tests green + `governance/runner.py`, declaring `[Enforcement: CI ✅ / hooks ⚠️ / runner.py 🔶 / manual 🔶]` (`[claim ❌]` is rejected).
-8. **Close or hand off** — *"end session"* or *"switch tool"*; memory saved, summary printed.
+> Dependency flow is **strictly one-way**: Workflows → Memory → References → Rules.
 
-## 📋 The Session Prompt (copy-paste)
+---
 
-> Replace `[YOUR-LOCAL-AOS-PATH]` with your clone's `.agent` folder (e.g. `C:\AOS\My-Programming-Workflow\.agent`). Set the chat language in line 2 as you like.
+## 📁 Repository Structure
+
+```
+.agent/
+├── AGENTS.md                  # Master directive contract
+├── INDEX.md                   # Smart index — reach any file
+├── VERSION                    # Version + sync info
+├── 01-core/                   # Core (mandatory at session start)
+│   ├── operating-contract.md  #   Operational contract
+│   ├── session-prompt.md      #   Unified session prompt
+│   ├── task-classification.md #   🟢/🟡/🔴 indicators
+│   ├── token-budget.md        #   ≤400 lines/session policy
+│   └── wiring-registry.md     #   ⭐ Central DI container
+├── 02-rules/                  # Specialized rules (ONE at a time)
+│   ├── architecture-and-design.md
+│   ├── database-performance.md
+│   ├── security-checklist.md
+│   ├── testing-and-quality.md
+│   ├── network-and-api.md
+│   └── vertical-slice-governance.md
+├── 03-workflows/              # Workflows (Markdown-driven)
+│   ├── master-pipeline/       #   ⭐ Stages 0–8
+│   ├── security-gate/         #   Security gate (7 steps)
+│   └── mobile-qa/             #   Mobile QA
+├── 04-memory/                 # Cumulative contextual memory
+│   ├── project-context.md
+│   ├── active-tasks.md
+│   ├── decisions.md
+│   └── learned-mistakes.md
+├── 05-references/             # References (grep-only)
+│   ├── engineering-rules-catalog-REF.md
+│   ├── books/
+│   │   ├── 00-master-index.md #   ⭐ Resource Injection Matrix
+│   │   └── constitutions/     #   6 constitutions (79 rules)
+│   └── prompts/
+├── 06-templates/              # Project templates
+│   └── dotnet-abp/            #   ABP/.NET specific
+├── governance/                # Deterministic enforcement
+│   ├── runner.py
+│   └── test_*.py
+└── adr/                       # Architecture Decision Records
+```
+
+---
+
+## 📚 Reference Library
+
+| Resource | Description |
+|----------|-------------|
+| **REF Catalog** | 34 directives: ARCH×7, DB×7, SEC×5, NET×5, TEST×2, OBS×2, RES×1, AI×1 |
+| **Constitutions** | 79 actionable rules from 16 engineering books |
+| **Books Archive** | 114 lessons — grep `Lesson N` for deep rationale |
+| **Prompt Packs** | backend / frontend / debugging |
+| **QA / DevOps** | 11 `[QA-*]` anchors · 18 `[OPS-*]` anchors |
+
+---
+
+## 🛡️ Governance Gate
+
+```bash
+python .agent/governance/runner.py
+```
+
+**10 deterministic checks** — executable ground truth, not model claims.
+
+| Enforcement Level | Tag | Confidence |
+|-------------------|-----|------------|
+| CI pipeline ran | `[Enforcement: CI ✅]` | Highest |
+| Git hooks fired | `[Enforcement: hooks ⚠️]` | Good |
+| runner.py executed | `[Enforcement: runner.py 🔶]` | Acceptable |
+| Manual checklist | `[Enforcement: manual 🔶]` | Lowest acceptable |
+| Model claim only | `[Enforcement: claim ❌]` | **REJECTED** |
+
+---
+
+## 🔀 Switching AI Tools
+
+1. Say **"switch tool"** — memory updates, handoff summary prints
+2. In the new tool, paste the session prompt + handoff summary
+3. Work resumes at the exact stopping point
+
+---
+
+## 📋 Session Prompt
 
 <details>
 <summary><b>Click to expand the full session prompt</b></summary>
@@ -111,9 +218,9 @@ Main AOS source (READ-ONLY): [YOUR-LOCAL-AOS-PATH]
 SOURCE PROTECTION: never modify or write to the Main AOS Path. All writes happen in the current project's local .agent/04-memory/ only.
 
 STEP 0 — BOOT & MATCH (silent, then report):
-1. If the current project has no .agent/ folder → initialize it by fully executing [YOUR-LOCAL-AOS-PATH]/03-workflows/init-project.md (copy system + init 04-memory/ + stamp VERSION with source_path [YOUR-LOCAL-AOS-PATH]).
-2. If .agent/ exists → diff 01-core/, 02-rules/, 03-workflows/, 04-memory/, 05-references/, governance/ against the main source; copy any missing file so the structure is 100% complete.
-3. If the project already contains code → also execute .agent/03-workflows/knowledge-bootstrapping.md.
+1. If the current project has no .agent/ folder → initialize it by fully executing [YOUR-LOCAL-AOS-PATH]/03-workflows/init-project.md
+2. If .agent/ exists → diff 01-core/, 02-rules/, 03-workflows/, 04-memory/, 05-references/, governance/ against the main source; copy any missing file
+3. If the project already contains code → also execute .agent/03-workflows/knowledge-bootstrapping.md
 
 SESSION MODE (budget ≤ 400 lines). Read in order:
 1. .agent/INDEX.md  2. .agent/01-core/operating-contract.md  3. .agent/04-memory/project-context.md
@@ -121,7 +228,7 @@ SESSION MODE (budget ≤ 400 lines). Read in order:
 
 Then print this boot report:
   Session started | System: AOS v7.0 (Knowledge & Memory-first)
-  Project: [name] | Stack: [detected: package.json / requirements.txt / csproj|sln / General]
+  Project: [name] | Stack: [detected]
   Memory — project-context: "[last task verbatim or 'new project']"
   Memory — learned-mistakes: [N] active, latest: "[quote or 'none']"
   Memory — active-tasks: [N] pending, top: "[quote or 'none']"
@@ -129,93 +236,53 @@ Then print this boot report:
   Ready — what is our next task?
 
 TASK ROUTING:
-- Path A (new feature / big change: "add", "rebuild", "create system", "change architecture") → classify 🟢/🟡/🔴, apply the Policy Engine (🔴 = ADR + OWASP/SARGable + human gate; 🟡 = Clean Code + local tests green), then SDD: Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done. STOP at the Approval Gate before writing code.
-- Path B (matches .agent/03-workflows/: backend module, frontend module, bug, UX, mobile-qa, security-gate, requirements, QA, production-readiness) → read that file and follow it exactly, including its MUST injection block.
-- Path C (trivial: text, color, comment) → 🟢 do it, summarize.
-- Path D (full delivery) → run 03-workflows/master-pipeline/ stages 0–8 with decision gates (DoD: 🟢 mini / 🟡 stages 1,4,5 / 🔴 all 0–8).
+- Path A (new feature) → SDD: Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+- Path B (known type) → follow matching workflow file
+- Path C (trivial) → do it, summarize
+- Path D (full delivery) → master-pipeline stages 0–8
 
-SMART WIRING (before code): resolve via .agent/01-core/wiring-registry.md + .agent/05-references/books/00-master-index.md (20/20 resources mapped); load the ONE matching 02-rules/ file; grep (never full-read) 05-references/ including the 114-lesson books archive by lesson number/keyword when deep rationale is needed; ABP project → also inject 06-templates/dotnet-abp/prompts.md alongside backend-prompts; cite as // [REF-XX-N] and // [CONST-XX-N]; end each stage with a Resource Utilization Summary.
+SMART WIRING (before code): resolve via wiring-registry.md + 00-master-index.md; load ONE 02-rules/ file; grep 05-references/; cite // [REF-XX-N] and // [CONST-XX-N]
 
-HANDOFF (on "switch tool" / "save session"): update active-tasks.md + project-context.md + decisions.md, then print a handoff summary (project, current feature, exact stopping point, next step).
-CLOSEOUT (on "end session"): execute .agent/03-workflows/end-session.md, update all memory files, print the session summary.
+HANDOFF: update memory files, print handoff summary
+CLOSEOUT: execute end-session.md, update all memory, print summary
 
-FORBIDDEN: writing to the main AOS source · loading two rule files at once · full-reading 05-references/ · skipping classification · coding 🟡/🔴 without approved spec+plan · ending a 🟡/🔴 reply without updating memory · accepting assumptions — test-tool success is the only proof of code quality.
+FORBIDDEN: writing to main AOS source · loading two rule files at once · full-reading 05-references/ · skipping classification · coding 🟡/🔴 without approved spec+plan · ending without updating memory
 ```
 
 </details>
 
-## 🧠 Core Concepts
-
-| Class | Signals | Process |
-|---|---|---|
-| 🟢 Simple | typo, color, comment (≤2 files) | YAGNI — execute, summarize |
-| 🟡 Medium | business logic, multi-file | Clean Code + SDD + tests green |
-| 🔴 Sensitive | DB, auth, architecture (>5 files) | ADR + OWASP/SARGable + human gate |
-
-Zero-Trust: in doubt, escalate. Never downgrade 🟡/🔴. Budgets: ≤400 lines/session · one rule file at a time · mistakes capped at 20 (3rd repeat → permanent rule).
-
-## 🗂️ Repository Map
-
-```
-.agent/
-├── AGENTS.md · INDEX.md · VERSION
-├── 01-core/        contract · session-prompt · classification · budget · collaboration · ⭐wiring-registry
-├── 02-rules/        architecture · database · security · testing · network · vertical-slice
-├── 03-workflows/   init/start/end · requirements · backend/frontend · debug · UX
-│                   bootstrapping · qa-strategy · production-readiness
-│                   ⭐master-pipeline/ (stages 0–8) · mobile-qa/ · security-gate/ (7 steps)
-├── 04-memory/      context · active-tasks · decisions · learned-mistakes (+knowledge/map/archive)
-├── 05-references/  REF catalog (34) · ⭐injection matrix (20/20) · 6 constitutions (79 rules)
-│                   114-lesson archive (EN, grep Lesson N) · prompts · QA[11]/OPS[18] anchors
-├── 06-templates/   dotnet-abp/ (entity, standards, persona, prompts, PR, hooks, CI gate)
-│                   claude-skills/ (official clone, reference-only → submodule, see FAQ)
-└── governance/     runner.py + 3 test files · 10 checks · EN (GOV-T01…T11) + adr/ template
-AGENTS.md · .gitignore · .cursorrules · .windsurfrules (IDE shims → .agent/)
-```
-
-## 📚 Reference Library
-
-| Resource | What the agent pulls |
-|---|---|
-| REF catalog | 34 directives: ARCH·DB·SEC·NET·TEST·OBS·RES·AI |
-| Constitutions | 79 actionable rules: arch, DDD, security, perf, resilience, integration |
-| Books archive | 114 English lessons — grep `Lesson N`, stages 2+4 `IF deep-design` |
-| Prompt packs | backend / frontend / debugging (+ ABP snippets) |
-| QA / DevOps | 11 `[QA-*]` anchors (Playwright·Newman·k6) · 18 `[OPS-*]` anchors (CI·SLO·rollback) |
-| ABP templates | entity pattern (`private set` law), standards, persona, PR template, pre-commit, CI gate |
-
-## 🛡️ Governance Gate
-
-```bash
-python .agent/governance/runner.py
-```
-
-Executable ground truth — 10 checks over memory, rules, and state. `end-session.md` enforces it **before Done** (GOV-T11: exit codes and tool output count; model claims don't).
-
-## 🔀 Switching AI Tools Mid-Project
-
-1. Say **"switch tool"** — memory files update, handoff summary prints.
-2. In the new tool, paste the [session prompt](#-the-session-prompt-copy-paste) **plus** the handoff summary.
-3. Work resumes at the exact stopping point. No re-explaining.
-
-## 🔄 Keeping Projects in Sync
-
-`VERSION` records `aos_version` + `last_sync` + `source_path`. Upgrade = pull repo → re-run Step-0 diff → copy deltas → bump `last_sync`. Project learning stays in project memory; universal improvements graduate to `02-rules/` by review.
+---
 
 ## ❓ FAQ
 
-**Which AI tools work?** Any assistant reading local files: Claude, Cursor, Windsurf, Copilot, Antigravity… shims point them at `.agent/`; root `AGENTS.md` is auto-discovered by ~30 tools.
+**Which AI tools work?**
+Any assistant reading local files: Claude, Cursor, Windsurf, Copilot, and more. Shims (`.cursorrules`, `.windsurfrules`) point them at `.agent/`; root `AGENTS.md` is auto-discovered by ~30 tools.
 
-**Which stack?** None forced. Only `06-templates/` is .NET/ABP-specific and loads conditionally.
+**Which stack?**
+None forced. Only `06-templates/` is .NET/ABP-specific and loads conditionally.
 
-**Really 100% English?** Audited zero-Arabic repo-wide. Chat language is yours — change line 2 of the prompt freely.
+**Really 100% English?**
+Audited zero-Arabic repo-wide. Chat language is yours — change line 2 of the prompt.
 
-**Cost per task?** Boot ≤400 lines; one rule file at a time; references are grepped, never dumped.
+**Cost per task?**
+Boot ≤400 lines; one rule file at a time; references are grepped, never dumped.
 
-**Secrets/paths?** Never in repo. `[YOUR-LOCAL-AOS-PATH]` lives in your chat only.
+**How do constitutions work?**
+6 constitution files (79 rules) are extracted from 16 engineering books. They're loaded at pipeline stages via the Resource Injection Matrix (`00-master-index.md`) and cited as `// [CONST-XXX-N]`.
 
-**The bundled Claude skills?** Pristine `anthropics/skills` clone (17 skills), reference-only, never indexed. Track as submodule: `git submodule add https://github.com/anthropics/skills.git .agent/06-templates/claude-skills`, then drop the ignore line; clone with `--recurse-submodules`.
+**What is the Vertical Slice Governance?**
+Every feature must cover 7 layers: Database, Domain, Application, API, Frontend, UI/UX, Tests. A report without coverage = rejected.
+
+---
 
 ## 🤝 Contributing
 
-Issues and PRs welcome at [Nezarabdluah/My-Programming-Workflow](https://github.com/Nezarabdluah/My-Programming-Workflow). `01-core/` and `02-rules/` need extra-careful review — every project inherits them. Shorter files get followed more reliably: prune ruthlessly.
+Issues and PRs welcome at [Nezarabdluah/My-Programming-Workflow](https://github.com/Nezarabdluah/My-Programming-Workflow).
+
+`01-core/` and `02-rules/` need extra-careful review — every project inherits them. Shorter files get followed more reliably: prune ruthlessly.
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
