@@ -8,7 +8,7 @@
 2. Load `05-references/books/constitutions/security-constitution.md` — 17 rules (Zero Trust, XSS, BOLA, TOCTOU, Memory Safety)
 3. Load `02-rules/security-checklist.md` → cite REF-SEC-* contracts as `// [REF-SEC-X]`
 4. Grep `05-references/devops-ops/devops-enterprise-and-production-readiness.md` for `[OPS-SECTEST]`, `[OPS-OWASP10]`
-5. IF GitHub → apply `06-templates/{stack}/github-security-gate.yml` (if stack plugin provides one)
+5. IF GitHub → apply `06-templates/github-security-gate.yml` (customize for your stack)
 6. Cite constitutions as `// [CONST-SEC-N]` and produce a 1-line Resource Utilization Summary before Done
 
 1. `step-1-threat-model.md` — threat modeling (human / manual)

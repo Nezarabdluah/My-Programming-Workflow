@@ -27,7 +27,7 @@ L2 (03-workflows/ + master-pipeline/) — Pipeline stages 0-8
     ↓ Each stage loads from:
 L3 (02-rules/) — 6 specialized rule files
 L4 (05-references/) — Constitutions + REF catalog + DevOps + QA + Books + Prompts
-    + 06-templates/ — stack-specific plugins (dotnet-abp is optional)
+    + 06-templates/ — universal stack-agnostic templates (entity-patterns, coding-standards, pre-commit, CI gate, PR template)
 ```
 
 ## Critical Alerts

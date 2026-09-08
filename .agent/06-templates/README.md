@@ -1,102 +1,52 @@
-# 06-templates/ — Stack-Specific Plugin System
+# 06-templates/ — Universal Templates (Stack-Agnostic)
 
-> **AOS is stack-agnostic**. This folder contains optional, stack-specific plugins that load conditionally.
-> The AOS core (`01-core/`, `02-rules/`, `03-workflows/`, `04-memory/`, `05-references/`) works with ANY tech stack.
-
----
-
-## How It Works
-
-```
-  AOS Core (stack-agnostic)
-  ├── 01-core/          ← universal workflow rules
-  ├── 02-rules/         ← language-agnostic engineering rules
-  ├── 03-workflows/     ← stack-agnostic pipelines
-  ├── 04-memory/        ← universal memory system
-  ├── 05-references/    ← generic references and constitutions
-  └── 06-templates/     ← OPTIONAL stack-specific plugins
-      ├── dotnet-abp/   ← .NET/ABP plugin (optional)
-      ├── lang-python/  ← Python plugin (community-contributed)
-      ├── lang-node/    ← Node.js plugin (community-contributed)
-      └── lang-go/      ← Go plugin (community-contributed)
-```
+> **AOS is fully stack-agnostic**. All templates here work with ANY programming language or framework.
+> Customize the pre-commit and CI/CD templates for your specific stack.
 
 ---
 
-## Available Plugins
+## Available Templates
 
-| Plugin | Stack | Status | Description |
-|--------|-------|--------|-------------|
-| `dotnet-abp/` | .NET 8 + ABP Framework | ✅ Available | Entity patterns, standards, persona, prompts, PR template, pre-commit, CI gate |
-| `lang-python/` | Python | 🔜 Coming Soon | — |
-| `lang-node/` | Node.js / TypeScript | 🔜 Coming Soon | — |
-| `lang-go/` | Go | 🔜 Coming Soon | — |
-
----
-
-## How Plugins Are Loaded
-
-The AOS agent uses **conditional injection** via the wiring-registry and master-index:
-
-```
-  IF stack-specific plugin installed in 06-templates/{stack}/
-  THEN:
-    1. Load the plugin's prompts alongside generic prompts (no conflict)
-    2. Follow the plugin's entity patterns and standards
-    3. Apply the plugin's PR template and pre-commit config
-  ELSE:
-    - Use only generic prompts from 05-references/prompts/
-    - Follow universal engineering rules from 02-rules/
-```
+| File | Purpose | Customization Needed? |
+|------|---------|----------------------|
+| `entity-patterns.md` | Universal entity/model patterns, layered architecture, frontend components | No — works as-is |
+| `coding-standards.md` | SOLID, DDD, encapsulation, async, caching, error handling, testing | No — works as-is |
+| `pre-commit-template.yaml` | Secret scan + hygiene checks + formatting hooks | Yes — uncomment your stack's formatter |
+| `github-security-gate.yml` | CI/CD security workflow (secret scan, deps, format, build, test) | Yes — customize build/test commands |
+| `pull_request_template.md` | PR template with security gate attestation | No — works as-is |
 
 ---
 
-## Create Your Own Stack Plugin
+## How to Customize for Your Stack
 
-### Step 1: Copy the template
-```bash
-cp -r 06-templates/dotnet-abp/ 06-templates/lang-your-stack/
-```
+### Pre-commit (pre-commit-template.yaml)
+Uncomment the formatting hook for your stack:
+- **Python**: `black` or `ruff`
+- **JavaScript/TypeScript**: `prettier` + `eslint`
+- **Go**: `gofmt` + `golangci-lint`
+- **Rust**: `cargo fmt` + `cargo clippy`
+- **.NET**: `dotnet format`
 
-### Step 2: Replace content
-Keep the same file structure but replace with your stack's patterns:
-
-| File | What to put in it |
-|------|-------------------|
-| `entity-pattern.md` | Your stack's entity/model patterns |
-| `standards.md` | Your stack's coding standards and conventions |
-| `persona.md` | System persona for code generation in your stack |
-| `prompts.md` | Ready-to-use prompts for your stack |
-| `pull_request_template.md` | PR template for your stack |
-| `pre-commit-config.yaml` | Git hooks for your stack (linters, formatters) |
-| `github-security-gate.yml` | CI/CD security workflow for your stack |
-
-### Step 3: Register your plugin
-Add your plugin to the table in this file so others can discover it.
+### CI/CD (github-security-gate.yml)
+Replace the placeholder steps with your stack's commands:
+- **Dependency check**: `pip-audit`, `npm audit`, `govulncheck`, `cargo audit`
+- **Formatting**: `ruff check`, `prettier --check`, `gofmt -l`, `cargo fmt --check`
+- **Build**: `npm run build`, `go build ./...`, `cargo build --release`
+- **Test**: `pytest --cov`, `npm test -- --coverage`, `go test -coverprofile=coverage.out ./...`
 
 ---
 
-## Why Stack-Agnostic?
+## Philosophy
 
-AOS is a **workflow framework**, not a tech stack. It defines:
-- **How** you work (phases, gates, verification, review)
-- **What** quality standards apply (SOLID, DDD, security, testing)
-- **When** to load resources (conditional injection)
-
-The **what** you build (React, Django, Rails, Go) is YOUR choice. AOS adapts to your stack via plugins.
+AOS defines **how** you work (phases, gates, verification). The **what** you build (Python, Go, Rust, etc.) is YOUR choice. These templates provide the universal scaffolding — you fill in the stack-specific details.
 
 ---
 
-## FAQ
+## Creating Stack-Specific Extensions
 
-**Q: Do I need a plugin to use AOS?**
-A: No. AOS works out of the box with any stack. Plugins are optional enhancements.
+If you need stack-specific templates (e.g., for a particular framework):
 
-**Q: Can I use multiple plugins?**
-A: Yes. Each plugin loads independently. You can have `dotnet-abp/` and `lang-python/` in the same project.
-
-**Q: Will plugins conflict with each other?**
-A: No. Plugins are isolated. Each plugin's files are loaded only when its stack is detected.
-
-**Q: How do I know which plugin is active?**
-A: The agent's boot report shows which stack is detected and which plugins are loaded.
+1. Create a new file in `06-templates/` named after your stack (e.g., `django-patterns.md`)
+2. Follow the same structure as the existing templates
+3. Keep it stack-agnostic where possible — only include patterns specific to your framework
+4. Update this README to list your new template

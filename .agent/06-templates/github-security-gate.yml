@@ -1,0 +1,104 @@
+# .github/workflows/security-gate.yml — Stack-Agnostic Template
+# 🔴 Automated Security Gate (AOS v7.0)
+# No PR merges until every automatable step passes
+#
+# Customize the build/test/format steps for your stack:
+#   Python:     pytest / ruff / black
+#   JavaScript: npm test / eslint / prettier
+#   Go:         go test / gofmt / golangci-lint
+#   Rust:       cargo test / cargo fmt / cargo clippy
+#   .NET:       dotnet test / dotnet format
+
+name: Security Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+env:
+  MIN_COVERAGE: 70
+
+jobs:
+  gate:
+    name: "🔒 Security Gate"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Checkout code (full history)"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Step 3: Secret Scan ──
+      - name: "🔴 Step 3: Secret scan (gitleaks)"
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Step 2: Dependency Check ──
+      # CUSTOMIZE for your stack:
+      # Python:     pip-audit / safety check
+      # JavaScript: npm audit
+      # Go:         govulncheck ./...
+      # Rust:       cargo audit
+      # .NET:       dotnet list package --vulnerable
+      - name: "🔴 Step 2: Check dependencies for vulnerabilities"
+        run: |
+          echo "⚠️ Customize this step for your stack"
+          echo "Python:     pip-audit"
+          echo "JavaScript: npm audit"
+          echo "Go:         govulncheck ./..."
+          echo "Rust:       cargo audit"
+          echo ".NET:       dotnet list package --vulnerable"
+          # Example for npm:
+          # npm audit --audit-level=high
+
+      # ── Step 5: Code Review (formatting + linting) ──
+      # CUSTOMIZE for your stack:
+      # Python:     ruff check / black --check
+      # JavaScript: eslint / prettier --check
+      # Go:         gofmt -l / golangci-lint run
+      # Rust:       cargo fmt --check / cargo clippy
+      # .NET:       dotnet format --verify-no-changes
+      - name: "🟡 Step 5: Format & lint verification"
+        run: |
+          echo "⚠️ Customize this step for your stack"
+
+      # ── Build ──
+      # CUSTOMIZE for your stack:
+      # Python:     (no build step)
+      # JavaScript: npm run build
+      # Go:         go build ./...
+      # Rust:       cargo build --release
+      # .NET:       dotnet build --configuration Release
+      - name: "🔨 Build"
+        run: |
+          echo "⚠️ Customize this step for your stack"
+
+      # ── Step 6: Test Verification + Coverage ──
+      # CUSTOMIZE for your stack:
+      # Python:     pytest --cov
+      # JavaScript: npm test -- --coverage
+      # Go:         go test -coverprofile=coverage.out ./...
+      # Rust:       cargo tarpaulin
+      # .NET:       dotnet test --collect:"XPlat Code Coverage"
+      - name: "🔴 Step 6: Tests + coverage"
+        run: |
+          echo "⚠️ Customize this step for your stack"
+
+      # ── Step 7: Gate Report ──
+      - name: "📋 Step 7: Gate report"
+        if: always()
+        run: |
+          echo "Security gate completed. Review results above."
+
+  # ── Mandatory human gates ──
+  human-review:
+    name: "👤 Human review (steps 1 + 4)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Manual steps reminder"
+        run: |
+          echo "Step 1 (threat modeling) and step 4 (access review)"
+          echo "are documented in the PR template and require a human reviewer's approval."

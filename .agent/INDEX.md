@@ -72,11 +72,14 @@
 | `qa-testing/qa-testing-strategy-and-automation.md` | QA strategy + automation (11 `[QA-*]` anchors) |
 | `devops-ops/devops-enterprise-and-production-readiness.md` | DevOps + security + performance + monitoring (18 `[OPS-*]` anchors) |
 
-## 📦 06-templates/ — Project Templates (loaded only during project init)
-| Directory | Description |
-|-----------|-------------|
-| `dotnet-abp/` | Optional .NET/ABP plugin: entity-pattern, standards, persona, prompts, PR template, pre-commit config, GitHub security gate |
-| `claude-skills/` | Full git copy of a skills library — **reference only; never load, never index its internals** |
+## 📦 06-templates/ — Universal Templates (Stack-Agnostic)
+| File | Description |
+|------|-------------|
+| `entity-patterns.md` | Universal entity/model patterns, layered architecture flow, frontend component patterns |
+| `coding-standards.md` | SOLID, DDD, encapsulation, async, caching, error handling, testing standards |
+| `pre-commit-template.yaml` | Pre-commit hooks template: gitleaks + hygiene + stack-specific formatting |
+| `github-security-gate.yml` | GitHub Actions CI/CD security workflow template |
+| `pull_request_template.md` | PR template with security gate attestation |
 
 ## 🏛️ adr/ — Architecture Decision Records
 | File | Description |

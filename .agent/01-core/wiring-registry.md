@@ -40,7 +40,7 @@ requires: []
 
 > **Constitution path prefix**: `05-references/books/constitutions/`
 > **Prompts**: `backend-prompts.md`, `frontend-prompts.md`, `debugging-prompts.md` in `05-references/prompts/`
-> **Templates**: `06-templates/{stack}/` (entity-pattern, standards, pr-template, pre-commit-config) — stack-specific plugins
+> **Templates**: `06-templates/` (entity-patterns, coding-standards, pre-commit-template, github-security-gate, pull_request_template) — universal, stack-agnostic
 
 ## Resource Injection Matrix (Master Index)
 For the **full stage-by-stage mandatory resource map** (what to load at each pipeline stage), see:

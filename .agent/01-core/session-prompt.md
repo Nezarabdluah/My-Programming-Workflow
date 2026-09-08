@@ -129,9 +129,10 @@ Load the applicable constitutions from `05-references/books/constitutions/`:
 * Backend code → inject `05-references/prompts/backend-prompts.md`
 * Frontend code → inject `05-references/prompts/frontend-prompts.md`
 * Debugging/errors → inject `05-references/prompts/debugging-prompts.md`
-* IF stack-specific plugin installed (e.g., `06-templates/dotnet-abp/`) → also inject the plugin's prompts and follow its patterns (load alongside generic prompts — no conflict, load both)
-* Entity creation → follow the stack's entity pattern from `06-templates/{stack}/entity-pattern.md` if available
-* Project standards → follow the stack's standards from `06-templates/{stack}/standards.md` if available
+* Entity creation → follow `06-templates/entity-patterns.md`
+* Coding standards → follow `06-templates/coding-standards.md`
+* Pre-commit setup → use `06-templates/pre-commit-template.yaml`
+* CI/CD setup → use `06-templates/github-security-gate.yml`
 
 ### Step 5 — Citation (mandatory)
 * Cite rules: `// [REF-DB-N1]: prevent N+1 query`

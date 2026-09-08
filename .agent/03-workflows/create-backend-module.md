@@ -17,7 +17,7 @@
    - `perf-constitution.md` — SARGable queries, N+1 prevention
    - `security-constitution.md` — Mass Assignment, Validation layering
 3. Load rules: `02-rules/architecture-and-design.md` → cite `REF-ARCH-*` contracts in code as `// [REF-ARCH-X]`
-4. IF stack-specific plugin installed (e.g., `06-templates/dotnet-abp/`) → inject `05-references/prompts/backend-prompts.md` (generic backend generation) + `06-templates/{stack}/prompts.md` (stack-specific snippets) + follow `06-templates/{stack}/entity-pattern.md`
+4. Load templates: `06-templates/entity-patterns.md` (entity design) + `06-templates/coding-standards.md` (coding standards)
 5. Cite constitutions in code as `// [CONST-XXX-N]` and produce a 1-line Resource Utilization Summary before Done
 
 ---

@@ -24,7 +24,7 @@ gate:
     - 02-rules/database-performance.md (if DB task)
     - 02-rules/network-and-api.md (if API task)
     - prompts: backend-prompts.md (if backend) | frontend-prompts.md (if frontend)
-    - templates: entity-pattern.md + standards.md (if stack plugin installed)
+    - templates: entity-patterns.md + coding-standards.md
     - wiring-registry → relevant REF contracts
   decision: proceed
 ```

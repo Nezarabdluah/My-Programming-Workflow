@@ -624,32 +624,28 @@ For full project delivery, 9 stages with decision gates:
   ├──────────────────┼──────────────────────────────────────────────┤
   │ DevOps Reference │ 2195 lines, 18 [OPS-*] anchors             │
   ├──────────────────┼──────────────────────────────────────────────┤
-   │ Stack Templates  │ entity-pattern, standards, persona, prompts │
-   │                  │ PR template, pre-commit, GitHub security    │
+   │ Stack Templates  │ entity-patterns, coding-standards, pre-commit  │
+   │                  │ PR template, GitHub security gate              │
   └──────────────────┴──────────────────────────────────────────────┘
 ```
 
 ---
 
-## Stack-Specific Plugins (Optional)
+## Stack-Specific Templates (Optional)
 
 ```
   ┌─────────────────────────────┬─────────────────────────────────────┐
-  │ Plugin                      │ Purpose                             │
+  │ Template                    │ Purpose                             │
   ├─────────────────────────────┼─────────────────────────────────────┤
-  │ dotnet-abp/                 │ .NET/ABP: entity patterns,          │
-  │                             │ standards, persona, prompts,        │
-  │                             │ PR template, pre-commit, CI gate   │
-  ├─────────────────────────────┼─────────────────────────────────────┤
-  │ lang-python/                │ Python (community-contributed)      │
-  ├─────────────────────────────┼─────────────────────────────────────┤
-  │ lang-node/                  │ Node.js (community-contributed)     │
-  ├─────────────────────────────┼─────────────────────────────────────┤
-  │ lang-go/                    │ Go (community-contributed)          │
+  │ entity-patterns.md          │ Universal entity/model patterns     │
+  │ coding-standards.md         │ SOLID, DDD, encapsulation, async    │
+  │ pre-commit-template.yaml    │ Secret scan + hygiene + formatting  │
+  │ github-security-gate.yml    │ CI/CD security workflow template    │
+  │ pull_request_template.md    │ PR template with security gate      │
   └─────────────────────────────┴─────────────────────────────────────┘
 
-  AOS is STACK-AGNOSTIC. Plugins are optional.
-  See 06-templates/README.md for how to create your own.
+  All templates are STACK-AGNOSTIC.
+  Customize pre-commit and CI/CD for your specific stack.
 ```
 
 ---
@@ -878,16 +874,12 @@ FORBIDDEN: writing to main AOS source · loading two rule files at once · full-
   │       ├── 00-overview.md      #   DevOps overview + 18 anchors
   │       └── devops-enterprise-and-production-readiness.md # 2195 lines
   │
-  ├── 06-templates/              # Stack-specific plugins (optional)
-  │   ├── dotnet-abp/            #   .NET/ABP plugin (optional)
-  │   │   ├── entity-pattern.md  #   Entity patterns
-  │   │   ├── standards.md       #   Coding standards
-  │   │   ├── persona.md         #   System prompt
-  │   │   ├── prompts.md         #   Ready-to-use prompts
-  │   │   ├── pull_request_template.md # PR template
-  │   │   ├── pre-commit-config.yaml   # Pre-commit hooks
-  │   │   └── github-security-gate.yml # CI/CD security
-  │   └── claude-skills/         #   Reference only (git submodule)
+  ├── 06-templates/              # Stack-agnostic templates
+  │   ├── entity-patterns.md     #   Universal entity/model patterns
+  │   ├── coding-standards.md    #   SOLID, DDD, encapsulation rules
+  │   ├── pre-commit-template.yaml # Pre-commit hooks template
+  │   ├── github-security-gate.yml # CI/CD security template
+  │   └── pull_request_template.md # PR template with security gate
   │
   ├── governance/                # Deterministic enforcement
   │   ├── runner.py              #   Governance runner (10 checks)
@@ -925,7 +917,7 @@ AOS works with any AI coding assistant that can read local files.
 Any assistant reading local files: Claude, Cursor, Windsurf, Copilot, and more. Shims point them at `.agent/`; root `AGENTS.md` is auto-discovered by ~30 tools.
 
 **Which stack?**
-None forced. AOS is stack-agnostic. `06-templates/` contains optional plugins that load conditionally. Works with any language or framework.
+None forced. AOS is fully stack-agnostic. All templates in `06-templates/` are universal and customizable for any language or framework.
 
 **Cost per task?**
 Boot ≤400 lines; one rule file at a time; references are grepped, never dumped.
