@@ -996,23 +996,696 @@ AOS works with any AI coding assistant that can read local files.
 
 ## FAQ
 
-**Which AI tools work?**
+<details>
+<summary><b>Which AI tools work?</b></summary>
+
 Any assistant reading local files: Claude, Cursor, Windsurf, Copilot, and more. Shims point them at `.agent/`; root `AGENTS.md` is auto-discovered by ~30 tools.
+</details>
 
-**Which stack?**
+<details>
+<summary><b>Which stack?</b></summary>
+
 None forced. AOS is fully stack-agnostic. All templates in `06-templates/` are universal and customizable for any language or framework.
+</details>
 
-**Cost per task?**
+<details>
+<summary><b>Cost per task?</b></summary>
+
 Boot ≤400 lines; one rule file at a time; references are grepped, never dumped.
+</details>
 
-**How do constitutions work?**
+<details>
+<summary><b>How do constitutions work?</b></summary>
+
 6 constitution files (79 rules) extracted from 16 engineering books. Loaded at pipeline stages via the Resource Injection Matrix and cited as `// [CONST-XXX-N]`.
+</details>
 
-**What is the Vertical Slice Governance?**
+<details>
+<summary><b>What is the Vertical Slice Governance?</b></summary>
+
 Every feature must cover 7 layers: Database, Domain, Application, API, Frontend, UI/UX, Tests. A report without coverage = rejected.
+</details>
 
-**What if I just want to use it without understanding the internals?**
+<details>
+<summary><b>What if I just want to use it without understanding the internals?</b></summary>
+
 Copy `.agent/`, paste the session prompt, give it tasks. The system handles routing and governance automatically. Everything else is optional.
+</details>
+
+<details>
+<summary><b>How does the memory system work across sessions?</b></summary>
+
+AOS saves context to `04-memory/` files at the end of every session. The next session reads these files first, so the AI remembers what happened before — including mistakes, decisions, and task progress.
+</details>
+
+<details>
+<summary><b>What happens if I ignore a governance check?</b></summary>
+
+The task cannot be marked Done. `runner.py` returns FAIL with the specific test that failed. You must fix the issue before proceeding.
+</details>
+
+<details>
+<summary><b>Can I use AOS without Python?</b></summary>
+
+Yes. Python is only needed for `runner.py` governance checks. You can run the workflow manually and skip governance if needed (not recommended for production).
+</details>
+
+<details>
+<summary><b>How do I add my own rules?</b></summary>
+
+Create a new file in `02-rules/` following the existing format. Add REF directives to `engineering-rules-catalog-REF.md`. Update `wiring-registry.md` with the new capability row.
+</details>
+
+---
+
+## Deep Dive: Boot Sequence
+
+When you paste the session prompt, AOS reads **8 files in order**. Here's what each one does:
+
+```
+  ┌──────┬─────────────────────────────────────────────────────────────────┐
+  │ Step │ File                         │ What it provides                │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  1   │ INDEX.md                     │ Smart index — reach any file    │
+  │      │                              │ without knowing the structure   │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  2   │ operating-contract.md        │ The 6-section contract that     │
+  │      │                              │ governs ALL agent behavior      │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  3   │ project-context.md           │ Last known project state —      │
+  │      │                              │ what was being worked on        │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  4   │ learned-mistakes.md          │ Mistakes the AI made before —   │
+  │      │                              │ never repeat the same error     │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  5   │ active-tasks.md              │ Tasks in progress with SDD      │
+  │      │                              │ state (DRAFT/CLARIFY/APPROVED)  │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  6   │ VERSION                      │ Version number + last sync date │
+  │      │                              │ — detects if .agent/ is stale   │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  7   │ token-budget.md              │ ≤400 lines/session policy —     │
+  │      │                              │ prevents context overflow       │
+  ├──────┼──────────────────────────────┼─────────────────────────────────┤
+  │  8   │ collaboration-rules.md       │ Pair programming protocol —     │
+  │      │                              │ who decides what, when to stop  │
+  └──────┴──────────────────────────────┴─────────────────────────────────┘
+```
+
+**Why this order matters:**
+- INDEX.md first = the AI can navigate to any file
+- operating-contract.md second = rules are loaded before any action
+- Memory files = the AI knows what happened before
+- VERSION = the AI can detect if .agent/ needs updating
+- Token budget + collaboration rules = constraints are loaded last
+
+**What the boot report tells you:**
+```
+  Session started | System: AOS v7.0 (Knowledge & Memory-first)
+  Project: my-app | Stack: detected: TypeScript/React
+  Memory — project-context: "fixed wallet sorting bug, 12 tests passing"
+  Memory — learned-mistakes: 3 active, latest: "don't use SELECT * in queries"
+  Memory — active-tasks: 1 pending, top: "add email notifications"
+  VERSION: in sync ✅
+```
+
+---
+
+## Deep Dive: Task Classification
+
+AOS classifies every task into one of three modes. Here's how it decides:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  🟢 SIMPLE                                                              │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  Signals:                                                               │
+  │    • Typo fix, color change, comment update                            │
+  │    • Affects ≤ 2 files                                                 │
+  │    • No business logic, no security, no database                       │
+  │                                                                         │
+  │  Process:                                                               │
+  │    • Execute immediately                                               │
+  │    • Summarize what was done                                           │
+  │    • No approval needed                                                │
+  │    • No governance check required                                      │
+  │                                                                         │
+  │  Examples:                                                              │
+  │    "Fix the typo in README.md"                                         │
+  │    "Change button color from blue to green"                            │
+  │    "Update the copyright year"                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  🟡 MEDIUM                                                              │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  Signals:                                                               │
+  │    • New business logic or API endpoint                                │
+  │    • Affects 3–5 files                                                │
+  │    • No security/auth changes                                         │
+  │    • No database schema changes                                        │
+  │                                                                         │
+  │  Process:                                                               │
+  │    • Follow SDD: Draft → Clarify → Approved → Planning → Executing     │
+  │    • ⏸️ STOP for approval before writing code                          │
+  │    • Load relevant Knowledge Bundle                                    │
+  │    • Run governance check                                              │
+  │                                                                         │
+  │  Examples:                                                              │
+  │    "Add pagination to the products API"                                │
+  │    "Create a new user profile page"                                    │
+  │    "Implement search functionality"                                    │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  🔴 SENSITIVE                                                           │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  Signals:                                                               │
+  │    • Security, auth, or permission changes                             │
+  │    • Database schema modifications                                     │
+  │    • Architecture changes (new module, microservice)                   │
+  │    • Affects > 5 files                                                │
+  │    • Financial, health, or safety-critical data                        │
+  │                                                                         │
+  │  Process:                                                               │
+  │    • Full SDD + ADR in decisions.md is MANDATORY                       │
+  │    • OWASP security policy activated                                   │
+  │    • ⏸️ STOP for approval before writing code                          │
+  │    • Load ALL relevant Knowledge Bundles                               │
+  │    • Run full governance + security gate                               │
+  │                                                                         │
+  │  Examples:                                                              │
+  │    "Add JWT authentication to the API"                                 │
+  │    "Migrate user table to new schema"                                  │
+  │    "Refactor into microservices"                                       │
+  │    "Add role-based access control"                                     │
+  └─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Decision flow:**
+```
+  Does it touch security/auth/permissions?
+    → YES = 🔴 Sensitive
+    → NO ↓
+
+  Does it modify database schema?
+    → YES = 🔴 Sensitive
+    → NO ↓
+
+  Does it affect > 5 files?
+    → YES = 🔴 Sensitive
+    → NO ↓
+
+  Does it add new business logic or API?
+    → YES = 🟡 Medium
+    → NO ↓
+
+  Is it purely visual or documentation?
+    → YES = 🟢 Simple
+    → NO = 🟡 Medium (default)
+```
+
+---
+
+## Deep Dive: Spec-Driven Development (SDD)
+
+For 🟡 and 🔴 tasks, AOS follows a strict state machine. Here's what happens at each state:
+
+```
+  ┌───────┐
+  │ DRAFT │  The AI writes a specification document:
+  └───────┘  • User stories with Given/When/Then
+              • Acceptance criteria
+              • Affected files list
+              • Risk assessment
+                │
+                ▼
+  ┌─────────┐
+  │ CLARIFY │  The AI asks you questions:
+  └─────────┘  • "Should this support batch operations?"
+                • "What's the expected response time?"
+                • "Should we keep backward compatibility?"
+                │
+                ▼
+  ┌──────────┐
+  │ APPROVED │  You review and approve the spec:
+  └──────────┘  • ✅ Approved → proceed to planning
+                • ❌ Rejected → back to DRAFT
+                • 🔄 Revise → back to CLARIFY
+                │
+                ▼
+  ┌─────────┐
+  │PLANNING │  The AI creates a technical plan:
+  └─────────┘  • File-by-file implementation plan
+                • Test strategy
+                • Migration steps
+                • Rollback plan
+                │
+                ▼
+  ┌───────┐
+  │ READY │  Plan is approved. Ready to implement.
+  └───────┘  ⏸️ Final checkpoint before code.
+                │
+                ▼
+  ┌───────────┐
+  │ EXECUTING │  The AI writes code:
+  └───────────┘  • Implements file by file
+                  • Cites // [REF-XXX-N] for every rule
+                  • Runs tests after each change
+                  • Stops if any test fails
+                  │
+                  ▼
+  ┌────────────┐
+  │ VALIDATING │  Verification:
+  └────────────┘  • All tests pass
+                  • Governance checks pass
+                  • Security scan clean
+                  • Vertical slice coverage complete
+                  │
+                  ▼
+  ┌──────┐
+  │ DONE │  Memory saved. Handoff summary printed.
+  └──────┘  Ready for next task.
+```
+
+**The ⏸️ is sacred:**
+- No code is written before APPROVED state
+- No implementation before READY state
+- This prevents wasted effort on wrong solutions
+
+---
+
+## Deep Dive: Security Gate
+
+The Security Gate runs 7 checks before any 🔴 Sensitive task can be marked Done:
+
+```
+  ┌──────┬──────────────────────────────────────────────────────────────────┐
+  │ Step │ What it checks                    │ How it works                │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  1   │ Threat Model (STRIDE)              │ Identifies Spoofing,       │
+  │      │                                   │ Tampering, Repudiation,    │
+  │      │                                   │ Info Disclosure, DoS,      │
+  │      │                                   │ Elevation of Privilege     │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  2   │ Dependency Check                   │ Runs npm audit / dotnet    │
+  │      │                                   │ list vuln / pip audit      │
+  │      │                                   │ — no known CVEs allowed    │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  3   │ Secret Scan                        │ Scans for API keys,        │
+  │      │                                   │ passwords, tokens in code  │
+  │      │                                   │ — blocks commit if found   │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  4   │ Access Review                      │ Checks IDOR, default-deny, │
+  │      │                                   │ session context validation │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  5   │ Code Review                        │ Checks for injection,      │
+  │      │                                   │ XSS, error handling gaps   │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  6   │ Test Verification                  │ Confirms auth tests exist, │
+  │      │                                   │ validation tests pass      │
+  ├──────┼───────────────────────────────────┼─────────────────────────────┤
+  │  7   │ Gate Report                        │ PASS/FAIL with severity    │
+  │      │                                   │ table + remediation steps  │
+  └──────┴───────────────────────────────────┴─────────────────────────────┘
+```
+
+**Severity levels:**
+```
+  P0 (Critical) → blocks deployment, must fix now
+  P1 (High)     → must fix before merge
+  P2 (Medium)   → should fix in this sprint
+  P3 (Low)      → track for future
+```
+
+---
+
+## Deep Dive: Mobile QA
+
+Mobile QA has 3 modes for different scenarios:
+
+```
+  ┌──────────┬─────────────────────────────────────────────────────────────┐
+  │ Mode     │ When to use                                                 │
+  ├──────────┼─────────────────────────────────────────────────────────────┤
+  │ quick    │ Daily dev — fast smoke test (5 min)                        │
+  │          │ Checks: build success, basic UI loads, no crashes          │
+  ├──────────┼─────────────────────────────────────────────────────────────┤
+  │ risk     │ Pre-PR — thorough check (15 min)                           │
+  │          │ Checks: all scenarios, edge cases, memory leaks            │
+  ├──────────┼─────────────────────────────────────────────────────────────┤
+  │ release  │ Pre-production — full regression (30+ min)                 │
+  │          │ Checks: everything + performance + accessibility           │
+  └──────────┴─────────────────────────────────────────────────────────────┘
+```
+
+**Issue classification:**
+```
+  PRODUCT_DEFECT      → bug in your code (fix it)
+  ENVIRONMENT_DEFECT  → issue with dev tools/emulator (not your code)
+  CONFIG_DEFECT       → wrong configuration (fix config)
+  PLATFORM_DEFECT     → OS/browser bug (document, can't fix)
+```
+
+---
+
+## Deep Dive: Governance System
+
+The governance runner (`runner.py`) runs **10 deterministic checks**. Here's what each one does:
+
+```
+  ┌──────────┬─────────────────────────────────────────────────────────────┐
+  │ Test     │ What it checks                          │ Why it matters   │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T01  │ Feature state matches approved state    │ Prevents skipping│
+  │          │ machine (no DRAFT → DONE jumps)         │ approval gates  │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T02  │ Given/When/Then acceptance criteria     │ Specs must be   │
+  │          │ exist for 🟡/🔴 tasks                   │ testable        │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T03  │ ADR structure in decisions.md           │ Decisions must  │
+  │          │ (status, context, decision,后果)        │ be documented   │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T04  │ 20-mistake cap on active mistakes       │ Prevents bloat  │
+  │          │                                         │ in memory       │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T05  │ All 4 mandatory memory files exist      │ Memory must be  │
+  │          │ (project-context, active-tasks,         │ persistent      │
+  │          │  learned-mistakes, decisions)           │                 │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T06  │ Session prompt links to rules/ loading  │ Rules must be   │
+  │          │                                         │ accessible      │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T07  │ [REF-xxx] citations match reference     │ No fake rules   │
+  │          │ catalog                                 │ — cite real ones│
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T08  │ No stale/corrupt reference codes        │ Old/broken refs │
+  │          │                                         │ must be cleaned │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T09  │ No illegal state jumps                  │ SDD states must │
+  │          │ (e.g., DRAFT → DONE directly)           │ be followed     │
+  ├──────────┼─────────────────────────────────────────┼──────────────────┤
+  │ GOV-T10  │ ADR accompanies engineering-rule        │ Rule changes    │
+  │          │ changes                                 │ need approval   │
+  └──────────┴─────────────────────────────────────────┴──────────────────┘
+```
+
+**Enforcement levels:**
+```
+  [Enforcement: CI ✅]    → ran in CI pipeline (highest confidence)
+  [Enforcement: hooks ⚠️] → git hooks fired (good confidence)
+  [Enforcement: 🔶]       → runner.py executed (acceptable)
+  [Enforcement: ❌]       → model claim only (REJECTED)
+```
+
+---
+
+## Deep Dive: Memory System
+
+AOS remembers everything across sessions through 7 memory files:
+
+```
+  ┌──────────────────────┬───────────────────────────────────────────────┐
+  │ File                 │ What it stores                                │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ project-context.md   │ Last task, modified files, completion notes  │
+  │                      │ "Fixed wallet sorting, OrderService.cs:47"   │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ active-tasks.md      │ Tasks in progress with SDD state             │
+  │                      │ "Add email notifications — state: APPROVED"  │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ learned-mistakes.md  │ Mistakes the AI made (max 20)               │
+  │                      │ "Don't use SELECT * — use projections"       │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ decisions.md         │ Architecture Decision Records                │
+  │                      │ "Chose PostgreSQL over MongoDB because..."   │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ project-knowledge.md │ Discovered patterns (on demand)             │
+  │                      │ "Codebase uses Repository pattern"           │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ codebase-map.md      │ File structure map (on demand)              │
+  │                      │ "src/services/OrderService.cs — 200 lines"  │
+  ├──────────────────────┼───────────────────────────────────────────────┤
+  │ mistakes-archive.md  │ Historical mistakes (archive only)          │
+  │                      │ Old mistakes moved here after 20 cap        │
+  └──────────────────────┴───────────────────────────────────────────────┘
+```
+
+**How learning works:**
+```
+  Session 1: AI makes mistake → "used SELECT * in query"
+             → Recorded in learned-mistakes.md
+
+  Session 2: AI reads learned-mistakes.md
+             → Sees "don't use SELECT *"
+             → Applies projection instead
+
+  Session 3: Same mistake happens again
+             → Count increments (2/3)
+             → Still in learned-mistakes.md
+
+  Session 4: Same mistake happens 3rd time
+             → ESCALATES to fixed rule in 02-rules/
+             → Removed from learned-mistakes.md
+             → Permanent rule everyone follows
+```
+
+---
+
+## Deep Dive: Reference System
+
+AOS has a layered reference system. Here's how it works:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Layer 4 (Lowest): References                                          │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │                                                                         │
+  │  Files in 05-references/ are NEVER read in full.                       │
+  │  They are GREPped for specific anchors:                                │
+  │                                                                         │
+  │  grep "REF-DB-N1" engineering-rules-catalog-REF.md                    │
+  │  grep "QA-PYRAMID" qa-testing-strategy-and-automation.md              │
+  │  grep "OPS-DEPLOY" devops-enterprise-and-production-readiness.md      │
+  │  grep "Lesson 5" engineering-books-16-distilled.txt                   │
+  │                                                                         │
+  │  This keeps context usage minimal while accessing deep knowledge.     │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Layer 3: Rules                                                         │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │                                                                         │
+  │  Only ONE rule file loaded at a time. Never two.                      │
+  │  Each rule file contains REF directives:                               │
+  │                                                                         │
+  │  REF-DB-N1: Prevent N+1 queries — use Include/ThenInclude             │
+  │  REF-DB-PAG: Use cursor-based pagination, not OFFSET                  │
+  │  REF-SEC-3: Mass Assignment Protection — explicit DTO binding         │
+  │                                                                         │
+  │  You cite these in code: // [REF-DB-N1]: applied                      │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Layer 4-C: Constitutions                                               │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │                                                                         │
+  │  79 actionable rules extracted from 16 engineering books.             │
+  │  Each constitution is a focused domain:                                │
+  │                                                                         │
+  │  arch-constitution.md     → 15 rules (Dependency Rule, SDP/SAP)       │
+  │  ddd-constitution.md      → 11 rules (Aggregates, Value Objects)      │
+  │  security-constitution.md → 17 rules (Zero Trust, TOCTOU)             │
+  │  perf-constitution.md     → 11 rules (SARGable, No Lazy Loading)      │
+  │  resilience-constitution.md → 15 rules (Outbox, Deadlock Prevention)  │
+  │  integration-constitution.md → 10 rules (ACL, BFF, Async by Default) │
+  │                                                                         │
+  │  You cite these: // [CONST-SEC-3]: Mass Assignment Protection         │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Citation rules:**
+```
+  ✅ // [REF-DB-N1]: prevent N+1 query
+  ✅ // [CONST-SEC-3]: Mass Assignment Protection
+  ✅ // [PROMPT-BE]: backend prompt applied
+  ❌ // TODO: fix this later
+  ❌ // hardcoded for now
+```
+
+---
+
+## Deep Dive: Conflict Resolution
+
+When rules conflict, AOS resolves by priority:
+
+```
+  Example 1: Security vs Performance
+  ─────────────────────────────────────
+  Security says: "Encrypt all database fields"
+  Performance says: "Minimize encryption overhead"
+
+  Resolution: Security wins (Rank 1 > Rank 5)
+  → Encrypt, but use hardware-accelerated encryption
+
+  Example 2: Simplicity vs Correctness
+  ─────────────────────────────────────
+  Simplicity says: "Use a simple array"
+  Correctness says: "Use a thread-safe collection"
+
+  Resolution: Correctness wins (Rank 3 > Rank 4)
+  → Use thread-safe collection, even if more complex
+
+  Example 3: Performance vs Conventions
+  ─────────────────────────────────────
+  Performance says: "Use raw SQL for this query"
+  Conventions says: "Use ORM for all queries"
+
+  Resolution: Performance wins (Rank 5 > Rank 6)
+  → Use raw SQL, but document why
+
+  Example 4: Unknown conflict
+  ─────────────────────────────────────
+  Two rules conflict and neither is clearly higher rank.
+
+  Resolution: STOP and ask the developer.
+  → Never guess on ambiguous conflicts
+```
+
+---
+
+## Deep Dive: Vertical Slice Governance
+
+Every feature must cover 7 layers. Here's what each layer means:
+
+```
+  ┌──────┬──────────────────────────────────────────────────────────────────┐
+  │  #   │ Layer                   │ What to deliver                       │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  1   │ Database                │ Schema migration, index changes,     │
+  │      │                         │ seed data if needed                  │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  2   │ Domain Layer            │ Aggregate root, entities, value      │
+  │      │                         │ objects, domain events               │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  3   │ Application Layer       │ Service class, DTOs, validation,     │
+  │      │                         │ business rules                       │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  4   │ API Contract            │ Endpoint, request/response DTOs,     │
+  │      │                         │ authorization, error responses       │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  5   │ Frontend                │ Component, state management, API     │
+  │      │                         │ integration, error handling          │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  6   │ UI/UX & Animation       │ Design-system consistency,           │
+  │      │                         │ loading states, transitions          │
+  ├──────┼──────────────────────────┼──────────────────────────────────────┤
+  │  7   │ Tests                   │ Unit tests per layer, integration    │
+  │      │                         │ tests, edge case coverage            │
+  └──────┴──────────────────────────┴──────────────────────────────────────┘
+```
+
+**Mandatory report format:**
+```
+  Slice Coverage:
+  ┌──────┬──────────────────────────────────────────────────────────┐
+  │  1   │ Database       ✅ migration added                        │
+  │  2   │ Domain         ✅ OrderAggregate + OrderItem entity      │
+  │  3   │ Application    ✅ OrderService + CreateOrderDTO          │
+  │  4   │ API Contract   ✅ POST /api/orders                       │
+  │  5   │ Frontend       ✅ OrderForm component                    │
+  │  6   │ UI/UX          ✅ loading spinner + success toast        │
+  │  7   │ Tests          ✅ 8 unit + 2 integration                 │
+  └──────┴──────────────────────────────────────────────────────────┘
+
+  Architectural decisions:
+  • Used Repository pattern (rejected: direct DbContext access)
+
+  Judgment calls:
+  • Skipped animation (not applicable for API-only feature)
+
+  Needs human review:
+  • OrderItem value object design — please confirm
+```
+
+---
+
+## Deep Dive: How to Extend AOS
+
+### Add a new rule
+
+```
+  1. Create 02-rules/my-new-rule.md
+  2. Add REF directives to 05-references/engineering-rules-catalog-REF.md
+  3. Update wiring-registry.md with new capability row
+  4. Update 05-references/books/00-master-index.md with new stage mapping
+```
+
+### Add a new workflow
+
+```
+  1. Create 03-workflows/my-workflow.md
+  2. Follow existing format (headers, steps, output format)
+  3. Reference applicable rules and constitutions
+  4. Update INDEX.md with new workflow entry
+```
+
+### Add a new knowledge bundle
+
+```
+  1. Edit 01-core/wiring-registry.md
+  2. Add new bundle section under "Knowledge Bundles"
+  3. List ALL files in the bundle (constitution + rules + templates + refs)
+  4. Update 05-references/books/00-master-index.md with bundle reference
+```
+
+### Add a new template
+
+```
+  1. Create 06-templates/my-template.md
+  2. Follow existing format (stack-agnostic)
+  3. Update 06-templates/README.md with new template entry
+  4. Reference it in relevant Knowledge Bundles
+```
+
+---
+
+## Deep Dive: Troubleshooting
+
+### Common issues and solutions
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ Problem                        │ Solution                               │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ AI doesn't load rules          │ Check session prompt is correct       │
+  │                                │ Verify .agent/02-rules/ exists        │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ AI ignores memory              │ Check 04-memory/ files exist          │
+  │                                │ Verify boot reads all 8 files        │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ Governance check fails         │ Read the specific GOV-T## test       │
+  │                                │ Fix the issue it reports             │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ AI writes code for 🟡/🔴      │ Approval gate was skipped            │
+  │ without approval               │ Re-read session-prompt.md Step 3     │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ Two rule files loaded at once  │ Violates "ONE at a time" rule        │
+  │                                │ Unload one, keep only the relevant   │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ Context overflow (>400 lines)  │ Too many files loaded                │
+  │                                │ Unload non-essential files           │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ VERSION out of sync            │ Copy fresh .agent/ from source       │
+  │                                │ Or run init-project.md workflow      │
+  ├─────────────────────────────────┼───────────────────────────────────────┤
+  │ REF citation not found         │ Check engineering-rules-catalog-REF  │
+  │                                │ Verify the REF-XXX-N code exists     │
+  └─────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
