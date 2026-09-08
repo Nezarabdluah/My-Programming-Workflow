@@ -15,7 +15,7 @@
   <a href="#-you-dont-need-to-understand-aos-to-use-it">Quick Start</a> •
   <a href="#-see-it-in-action">See It in Action</a> •
   <a href="#-architecture">Architecture</a> •
-  <a href="#-compatibility">Compatibility</a> •
+  <a href="#-workflows">Workflows</a> •
   <a href="#-faq">FAQ</a>
 </p>
 
@@ -494,7 +494,29 @@ Every feature must cover 7 layers:
 
 ---
 
-## Master Pipeline (Path D)
+## Workflows
+
+### Available Workflows
+
+```
+  ┌─────────────────────────────────┬──────────────────────────────────┐
+  │ Workflow                        │ Purpose                          │
+  ├─────────────────────────────────┼──────────────────────────────────┤
+  │ init-project.md                 │ One-time project setup           │
+  │ start-session.md                │ Session start protocol           │
+  │ end-session.md                  │ Session end + memory save        │
+  │ requirements-analysis.md        │ SDD spec drafting                │
+  │ create-backend-module.md        │ Full backend module guide        │
+  │ create-frontend-module.md       │ Frontend component guide         │
+  │ improve-user-experience.md      │ UI/UX improvement workflow       │
+  │ debug-common-errors.md          │ Bug fixing workflow              │
+  │ knowledge-bootstrapping.md      │ Existing project setup           │
+  │ qa-strategy.md                  │ QA strategy + test pyramid       │
+  │ production-readiness.md         │ PRR scorecard (10 dimensions)    │
+  └─────────────────────────────────┴──────────────────────────────────┘
+```
+
+### Master Pipeline (Path D)
 
 For full project delivery, 9 stages with decision gates:
 
@@ -518,48 +540,67 @@ For full project delivery, 9 stages with decision gates:
   🔴 Sensitive = ALL stages 0–8 (full pipeline)
 ```
 
+### Security Gate (7 Steps)
+
+```
+  ┌──────┬─────────────────────────────────────────────────────────┐
+  │ Step │ Name                                                    │
+  ├──────┼─────────────────────────────────────────────────────────┤
+  │  1   │ Threat Model (STRIDE)                                   │
+  │  2   │ Dependency Check (npm audit, dotnet list)               │
+  │  3   │ Secret Scan (gitleaks, API keys, passwords)             │
+  │  4   │ Access Review (IDOR, default-deny, session context)     │
+  │  5   │ Code Review (injection, XSS, error handling)            │
+  │  6   │ Test Verification (auth tests, validation tests)        │
+  │  7   │ Gate Report (PASS/FAIL with severity table)             │
+  └──────┴─────────────────────────────────────────────────────────┘
+```
+
+### Mobile QA (4 Steps)
+
+```
+  ┌──────┬─────────────────────────────────────────────────────────┐
+  │ Step │ Name                                                    │
+  ├──────┼─────────────────────────────────────────────────────────┤
+  │  1   │ Environment Discovery (framework, tools, emulators)     │
+  │  2   │ Build Verification (install, build, run)                │
+  │  3   │ Scenario Execution (static + runtime + triggers)        │
+  │  7   │ Evidence Report (issues, coverage, health score)        │
+  └──────┴─────────────────────────────────────────────────────────┘
+
+  Modes: quick / risk / release
+  Classifications: PRODUCT_DEFECT, ENVIRONMENT_DEFECT, etc.
+  Severity: P0 (critical) → P3 (low)
+```
+
 ---
 
-## QA Strategy
+## Constitutions
+
+6 constitution files with 79 actionable rules extracted from 16 engineering books:
 
 ```
-  ┌─────────────────────────────────┬───────┬──────┬──────────┐
-  │ Testing Activity                │  🟢   │  🟡  │    🔴    │
-  ├─────────────────────────────────┼───────┼──────┼──────────┤
-  │ Unit tests (critical paths)     │  ✅   │  ✅  │   ✅     │
-  │ Unit tests (comprehensive)      │  —    │  ✅  │   ✅     │
-  │ Integration tests               │  —    │  ✅  │   ✅     │
-  │ E2E / smoke tests               │  —    │  —   │   ✅     │
-  │ Performance / load tests        │  —    │  —   │   ✅     │
-  │ Security / penetration tests    │  —    │  —   │   ✅     │
-  └─────────────────────────────────┴───────┴──────┴──────────┘
-```
-
----
-
-## Production Readiness (PRR)
-
-10-dimension scorecard before deployment:
-
-```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │  PRR SCORECARD                                                 │
-  ├──────────────────────────────┬──────────────────────────────────┤
-  │ 1. Reliability               │ Error handling, circuit breaker  │
-  │ 2. Scalability               │ Load tested, pagination          │
-  │ 3. Observability             │ Logging, tracing, metrics        │
-  │ 4. Security                  │ Auth, IDOR, validation, secrets  │
-  │ 5. Disaster Recovery         │ Backup, rollback, RTO/RPO        │
-  │ 6. Documentation             │ API docs, ADRs, README           │
-  │ 7. Operational Runbook       │ Incident response, escalation    │
-  │ 8. Dependency Health         │ CVEs, licenses, SLAs             │
-  │ 9. Data Management           │ Migrations, retention, PII       │
-  │10. Compliance                │ Regulatory, audit trail          │
-  └──────────────────────────────┴──────────────────────────────────┘
-
-  All 🟢 → ✅ PRR PASSED
-  Any 🟡 (none 🔴) → ✅ PRR PASSED with conditions
-  Any 🔴 → ⛔ PRR FAILED
+  ┌─────────────────────────────┬──────┬─────────────────────────────┐
+  │ Constitution                │ Rules │ Focus                       │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ arch-constitution.md        │  15  │ Dependency Rule, SDP/SAP,   │
+  │                             │      │ Fan-out, Complexity         │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ ddd-constitution.md         │  11  │ Ubiquitous Language,        │
+  │                             │      │ Aggregates, Value Objects   │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ security-constitution.md    │  17  │ Zero Trust, Mass Assignment,│
+  │                             │      │ TOCTOU, Validation          │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ perf-constitution.md        │  11  │ SARGable, No Lazy Loading,  │
+  │                             │      │ Projection, NoTracking      │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ resilience-constitution.md  │  15  │ Optimistic Concurrency,     │
+  │                             │      │ Outbox, Deadlock Prevention │
+  ├─────────────────────────────┼──────┼─────────────────────────────┤
+  │ integration-constitution.md │  10  │ ACL, BFF, Event Isolation,  │
+  │                             │      │ Async by Default            │
+  └─────────────────────────────┴──────┴─────────────────────────────┘
 ```
 
 ---
@@ -571,11 +612,39 @@ For full project delivery, 9 stages with decision gates:
   │ Resource         │ Description                                  │
   ├──────────────────┼──────────────────────────────────────────────┤
   │ REF Catalog      │ 34 directives: ARCH×7 DB×7 SEC×5 NET×5     │
+  │                  │ TEST×2 OBS×2 RES×1 AI×1                     │
+  ├──────────────────┼──────────────────────────────────────────────┤
   │ Constitutions    │ 79 rules from 16 engineering books           │
-  │ Books Archive    │ 114 lessons — grep "Lesson N"               │
+  ├──────────────────┼──────────────────────────────────────────────┤
+  │ Books Archive    │ 2337 lines, 114 lessons — grep "Lesson N"  │
+  ├──────────────────┼──────────────────────────────────────────────┤
   │ Prompt Packs     │ backend / frontend / debugging               │
-  │ QA / DevOps      │ 11 [QA-*] anchors · 18 [OPS-*] anchors     │
+  ├──────────────────┼──────────────────────────────────────────────┤
+  │ QA Reference     │ 1775 lines, 11 [QA-*] anchors              │
+  ├──────────────────┼──────────────────────────────────────────────┤
+  │ DevOps Reference │ 2195 lines, 18 [OPS-*] anchors             │
+  ├──────────────────┼──────────────────────────────────────────────┤
+  │ ABP Templates    │ entity-pattern, standards, persona, prompts │
+  │                  │ PR template, pre-commit, GitHub security    │
   └──────────────────┴──────────────────────────────────────────────┘
+```
+
+---
+
+## Templates (.NET/ABP)
+
+```
+  ┌─────────────────────────────┬─────────────────────────────────────┐
+  │ Template                    │ Purpose                             │
+  ├─────────────────────────────┼─────────────────────────────────────┤
+  │ entity-pattern.md           │ Ready-to-copy entity patterns       │
+  │ standards.md                │ .NET/ABP coding standards           │
+  │ persona.md                  │ System prompt for .NET AI coding    │
+  │ prompts.md                  │ Ready-to-use .NET prompts           │
+  │ pull_request_template.md    │ PR template with security gate      │
+  │ pre-commit-config.yaml      │ gitleaks + dotnet format hooks      │
+  │ github-security-gate.yml    │ CI/CD security workflow             │
+  └─────────────────────────────┴─────────────────────────────────────┘
 ```
 
 ---
@@ -598,6 +667,25 @@ python .agent/governance/runner.py
   │ Manual checklist        │ [Enforcement: 🔶]      │ Lowest       │
   │ Model claim only        │ [Enforcement: ❌]      │ REJECTED     │
   └─────────────────────────┴────────────────────────┴──────────────┘
+```
+
+### Governance Tests
+
+```
+  ┌──────────┬─────────────────────────────────────────────────────┐
+  │ Test     │ What it checks                                      │
+  ├──────────┼─────────────────────────────────────────────────────┤
+  │ GOV-T01  │ Feature state matches approved state machine        │
+  │ GOV-T02  │ Given/When/Then acceptance criteria exist           │
+  │ GOV-T03  │ ADR structure in decisions.md                       │
+  │ GOV-T04  │ 20-mistake cap on active mistakes                   │
+  │ GOV-T05  │ All 4 mandatory memory files exist                  │
+  │ GOV-T06  │ Session prompt links to rules/ loading              │
+  │ GOV-T07  │ [REF-xxx] citations match reference catalog        │
+  │ GOV-T08  │ No stale/corrupt reference codes                    │
+  │ GOV-T09  │ No illegal state jumps                              │
+  │ GOV-T10  │ ADR accompanies engineering-rule changes            │
+  └──────────┴─────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -629,6 +717,27 @@ Pair programming protocol:
   ❌ "I expect this to work"           → FORBIDDEN
   ❌ Quoted terminal output (hallucinated) → FORBIDDEN
   ✅ Actual tool run with real output     → REQUIRED
+```
+
+---
+
+## ADR Template
+
+Architecture Decision Records with over-engineering guard:
+
+```
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  ADR SECTIONS                                                  │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  1. Status / Date / Author                                     │
+  │  2. Context & Problem Statement                                │
+  │  3. Decision Driver Rules (REF citations)                      │
+  │  4. Alternatives Considered (pros/cons)                         │
+  │  5. Chosen Decision                                            │
+  │  6. Consequences & Implications                                │
+  └─────────────────────────────────────────────────────────────────┘
+
+  Over-engineering guard: ADRs reserved for HIGH-IMPACT decisions only.
 ```
 
 ---
@@ -700,69 +809,107 @@ FORBIDDEN: writing to main AOS source · loading two rule files at once · full-
   ├── VERSION                    # Version + sync info
   │
   ├── 01-core/                   # Core (mandatory at session start)
-  │   ├── operating-contract.md  #   Operational contract
-  │   ├── session-prompt.md      #   Unified session prompt
-  │   ├── task-classification.md #   🟢/🟡/🔴 indicators
+  │   ├── operating-contract.md  #   Operational contract (6 sections)
+  │   ├── session-prompt.md      #   Unified session prompt (199 lines)
+  │   ├── task-classification.md #   🟢/🟡/🔴 indicators + decision matrix
   │   ├── token-budget.md        #   ≤400 lines/session policy
   │   ├── collaboration-rules.md #   Pair programming protocol
   │   └── wiring-registry.md     #   Central DI container
   │
   ├── 02-rules/                  # Specialized rules (ONE at a time)
-  │   ├── architecture-and-design.md
-  │   ├── database-performance.md
-  │   ├── security-checklist.md
-  │   ├── testing-and-quality.md
-  │   ├── network-and-api.md
-  │   └── vertical-slice-governance.md
+  │   ├── architecture-and-design.md   # Clean Arch + DDD + SOLID
+  │   ├── database-performance.md      # SARGability, N+1, pagination
+  │   ├── security-checklist.md        # JWT, IDOR, XSS, injection
+  │   ├── testing-and-quality.md       # Testing, observability, resilience
+  │   ├── network-and-api.md           # API design, payload optimization
+  │   └── vertical-slice-governance.md # 7 layers mandatory
   │
   ├── 03-workflows/              # Workflows (Markdown-driven)
-  │   ├── master-pipeline/       #   Stages 0–8
-  │   ├── security-gate/         #   Security gate (7 steps)
-  │   ├── mobile-qa/             #   Mobile QA
+  │   ├── master-pipeline/       #   Stages 0–8 (coordinator + 9 files)
+  │   ├── security-gate/         #   Security gate (coordinator + 7 steps)
+  │   ├── mobile-qa/             #   Mobile QA (coordinator + 4 steps)
   │   ├── init-project.md        #   Project initialization
   │   ├── start-session.md       #   Session start protocol
   │   ├── end-session.md         #   Session end protocol
   │   ├── requirements-analysis.md # SDD spec drafting
+  │   ├── create-backend-module.md # Full backend module guide
+  │   ├── create-frontend-module.md # Frontend component guide
+  │   ├── improve-user-experience.md # UI/UX improvement
   │   ├── debug-common-errors.md #   Bug fixing workflow
   │   ├── knowledge-bootstrapping.md # Existing project setup
-  │   ├── qa-strategy.md         #   QA strategy
-  │   ├── production-readiness.md #  PRR scorecard
-  │   ├── create-backend-module.md
-  │   ├── create-frontend-module.md
-  │   └── improve-user-experience.md
+  │   ├── qa-strategy.md         #   QA strategy + test pyramid
+  │   └── production-readiness.md #  PRR scorecard (10 dimensions)
   │
   ├── 04-memory/                 # Cumulative contextual memory
-  │   ├── project-context.md
-  │   ├── active-tasks.md
+  │   ├── project-context.md     #   Last project state
+  │   ├── active-tasks.md        #   Active tasks with SDD states
   │   ├── decisions.md           #   ADR log (5 decisions)
   │   ├── learned-mistakes.md    #   Mistake learning (Type A/B/C)
-  │   ├── project-knowledge.md
-  │   ├── codebase-map.md
-  │   └── mistakes-archive.md
+  │   ├── project-knowledge.md   #   Discovered patterns (on demand)
+  │   ├── codebase-map.md        #   File structure map (on demand)
+  │   └── mistakes-archive.md    #   Historical mistakes (archive)
   │
   ├── 05-references/             # References (grep-only)
-  │   ├── engineering-rules-catalog-REF.md
+  │   ├── engineering-rules-catalog-REF.md  # 34 REF directives
   │   ├── books/
   │   │   ├── 00-master-index.md #   Resource Injection Matrix
-  │   │   ├── 00-index.md
+  │   │   ├── 00-index.md        #   Books reference index
   │   │   ├── constitutions/     #   6 constitutions (79 rules)
-  │   │   └── engineering-books-16-distilled.txt
+  │   │   │   ├── arch-constitution.md      # 15 rules
+  │   │   │   ├── ddd-constitution.md       # 11 rules
+  │   │   │   ├── security-constitution.md  # 17 rules
+  │   │   │   ├── perf-constitution.md      # 11 rules
+  │   │   │   ├── resilience-constitution.md # 15 rules
+  │   │   │   └── integration-constitution.md # 10 rules
+  │   │   └── engineering-books-16-distilled.txt # 2337 lines
   │   ├── prompts/
+  │   │   ├── backend-prompts.md  #   Ready-to-use backend prompts
+  │   │   ├── frontend-prompts.md #   Ready-to-use frontend prompts
+  │   │   └── debugging-prompts.md #  Ready-to-use debugging prompts
   │   ├── qa-testing/
+  │   │   ├── 00-overview.md      #   QA overview + 11 anchors
+  │   │   └── qa-testing-strategy-and-automation.md # 1775 lines
   │   └── devops-ops/
+  │       ├── 00-overview.md      #   DevOps overview + 18 anchors
+  │       └── devops-enterprise-and-production-readiness.md # 2195 lines
   │
   ├── 06-templates/              # Project templates
   │   ├── dotnet-abp/            #   ABP/.NET specific
-  │   └── claude-skills/         #   Reference only
+  │   │   ├── entity-pattern.md  #   Entity patterns
+  │   │   ├── standards.md       #   Coding standards
+  │   │   ├── persona.md         #   System prompt
+  │   │   ├── prompts.md         #   Ready-to-use prompts
+  │   │   ├── pull_request_template.md # PR template
+  │   │   ├── pre-commit-config.yaml   # Pre-commit hooks
+  │   │   └── github-security-gate.yml # CI/CD security
+  │   └── claude-skills/         #   Reference only (git submodule)
   │
   ├── governance/                # Deterministic enforcement
-  │   ├── runner.py
-  │   ├── test_memory.py
-  │   ├── test_rules.py
-  │   └── test_state.py
+  │   ├── runner.py              #   Governance runner (10 checks)
+  │   ├── test_memory.py         #   GOV-T03, T04, T05
+  │   ├── test_rules.py          #   GOV-T06, T07, T08, T10
+  │   └── test_state.py          #   GOV-T01, T02, T09
   │
   └── adr/                       # Architecture Decision Records
-      └── adr-template.md
+      └── adr-template.md        #   ADR template with guard
+```
+
+---
+
+## Compatibility
+
+AOS works with any AI coding assistant that can read local files.
+
+```
+  ┌──────────────────┬──────────────┬────────────────┬──────────────────┐
+  │ Tool             │ Auto-discover│ Session Prompt │ Notes            │
+  ├──────────────────┼──────────────┼────────────────┼──────────────────┤
+  │ Claude Code      │ ✅ AGENTS.md │ ✅ paste       │ Best support     │
+  │ Cursor           │ ✅ .cursorrules│ ✅ paste     │ Shims → .agent/  │
+  │ Windsurf         │ ✅ .windsurfrules│ ✅ paste   │ Shims → .agent/  │
+  │ GitHub Copilot   │ ⚠️ partial   │ ✅ paste       │ Custom instruct. │
+  │ Any file-reading │ ✅ AGENTS.md │ ✅ paste       │ ~30 tools        │
+  └──────────────────┴──────────────┴────────────────┴──────────────────┘
 ```
 
 ---
