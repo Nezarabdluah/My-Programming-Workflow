@@ -50,20 +50,45 @@ It's not just rules — it's a **complete knowledge system** built from 16 engin
 
 ---
 
-## ⚡ Quick Start (3 Steps)
+## ⚡ Quick Start
 
-### Step 1: Copy `.agent/` to your project
+### Method 1: Automatic (just open your project)
+If you use any of these tools, AOS loads automatically — **no setup needed**:
+
+| Tool | Auto-reads | Status |
+|------|-----------|--------|
+| **Cursor** | `.cursorrules` | ✅ Works automatically |
+| **Claude Code** | `CLAUDE.md` | ✅ Works automatically |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | ✅ Works automatically |
+| **Antigravity** | `AGENTS.md` | ✅ Works automatically |
+| **Any other AI** | See Method 2 below | 📋 One command |
+
+### Method 2: One command (any AI tool)
+```bash
+python .agent/start.py --copy
+```
+This copies the full boot prompt to your clipboard. Paste it into any AI chat — done.
+
+### Method 3: Manual
+Just tell your AI:
+> Read `AGENTS.md` at the project root and follow its instructions.
+
+### Setup (first time only)
 ```bash
 git clone https://github.com/Nezarabdluah/My-Programming-Workflow.git
 cp -r My-Programming-Workflow/.agent  /path/to/your/project/
+cp My-Programming-Workflow/AGENTS.md  /path/to/your/project/
+cp My-Programming-Workflow/CLAUDE.md  /path/to/your/project/
+cp My-Programming-Workflow/.cursorrules /path/to/your/project/
+cp -r My-Programming-Workflow/.github /path/to/your/project/
 ```
 
-### Step 2: Point your AI agent to AGENTS.md
-In your AI tool (Cursor, Antigravity, Claude Code, etc.):
-> Read `AGENTS.md` at the project root and follow its instructions.
-
-### Step 3: Start working!
-The agent reads the boot manifest, loads memory, and asks: **"What is our next task?"**
+### Useful Commands
+```bash
+python .agent/start.py          # Print boot prompt to screen
+python .agent/start.py --copy   # Copy boot prompt to clipboard
+python .agent/start.py --check  # Run governance checks
+```
 
 ---
 
