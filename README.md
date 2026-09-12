@@ -1,8 +1,8 @@
 <p align="center">
   <h1 align="center">🤖 AOS — Agent Operating System</h1>
   <p align="center">
-    <strong>v8.0-dev</strong> · نظام حوكمة وتشغيل وكلاء البرمجة<br>
-    مستقل عن اللغة · مستقل عن الإطار · مستقل عن المحرر
+    <strong>v8.0-dev</strong> · Governance & Operating System for AI Coding Agents<br>
+    Language-Agnostic · Framework-Agnostic · Editor-Agnostic
   </p>
 </p>
 
@@ -17,45 +17,35 @@
 
 ---
 
-## ⚡ ابدأ في 30 ثانية (نقطة الدخول السريعة)
+## ⚡ Start in 30 Seconds (Instant Entry Point)
 
-كل ما تحتاجه للبدء مع أي أداة ذكاء اصطناعي هو خطوتان:
+Everything you need to run with any AI tool in two simple steps:
 
-### 1️⃣ الخطوة الأولى: ضع المجلد في مشروعك
-انسخ مجلد `.agent` إلى جذر مشروعك (أو استنسخ المستودع):
+### 1️⃣ Step 1: Copy `.agent` to your project
+Copy the `.agent` folder into the root of your project:
 ```bash
 cp -r My-Programming-Workflow/.agent  /path/to/your/project/
 ```
 
 ---
 
-### 2️⃣ الخطوة الثانية: أعطِ النموذج هذا البرومبت المباشر 💬
-انسخ هذا السطر والصقه في محادثة الذكاء الاصطناعي (Cursor, Claude, Copilot, ChatGPT, Antigravity):
+### 2️⃣ Step 2: Give your AI this direct prompt 💬
+Copy and paste this single line into your AI chat (Cursor, Claude, Copilot, ChatGPT, Antigravity):
 
-```text
-اقرأ ملف .agent/01-core/boot-manifest.md واتبعه كعقد تشغيلي صارم لهذا المشروع، ثم ابدأ بتنفيذ بروتوكول الإقلاع.
-```
-*(أو بالإنجليزية):*
 ```text
 Read .agent/01-core/boot-manifest.md and follow it as your operating contract for this project, then run the boot sequence.
 ```
 
-🚀 **أو بنقرة زر واحدة عبر سطر الأوامر:**
-```bash
-python .agent/start.py --copy
-```
-*(يقوم بنسخ سياق الإقلاع الكامل إلى الحافظة تلقائياً — فقط قم بلصقه في المحادثة!)*
-
 ---
 
-### 🛠️ الدعم التلقائي للأدوات (بدون نسخ):
-| الأداة | حالة الدعم | كيف يعمل؟ |
-|--------|------------|-----------|
-| **Cursor** | ✅ تلقائي بالكامل | يقرأ `.cursorrules` فور فتح المشروع |
-| **Claude Code** | ✅ تلقائي بالكامل | يقرأ `CLAUDE.md` تلقائياً |
-| **GitHub Copilot** | ✅ تلقائي بالكامل | يقرأ `.github/copilot-instructions.md` |
-| **Antigravity** | ✅ تلقائي بالكامل | يقرأ `AGENTS.md` تلقائياً |
-| **أي محرر / أداة أخرى** | 📋 أمر واحد | `python .agent/start.py --copy` والصق |
+### 🛠️ Automatic Tool Support (Zero-Copy):
+| Tool | Support | How it works |
+|------|---------|--------------|
+| **Cursor** | ✅ Fully Automatic | Auto-reads `.cursorrules` on project open |
+| **Claude Code** | ✅ Fully Automatic | Auto-reads `CLAUDE.md` on project open |
+| **GitHub Copilot** | ✅ Fully Automatic | Auto-reads `.github/copilot-instructions.md` |
+| **Antigravity** | ✅ Fully Automatic | Auto-reads `AGENTS.md` on project open |
+| **Any other AI chat** | 💬 Direct Prompt | Paste the prompt from Step 2 |
 
 ---
 
