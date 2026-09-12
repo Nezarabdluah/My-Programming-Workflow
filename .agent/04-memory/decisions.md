@@ -74,6 +74,44 @@
 
 ---
 
+## 🏛️ ADR-006: Vertical Slice Governance moves from Core to optional Technology Profile
+* **Date**: 2026-09-12
+* **Status**: Approved
+* **Context & problem**:
+  ADR-001 adopted a 7-layer Vertical Slice charter as a "fixed Project-Agnostic rule" baked into `operating-contract.md § 5`. However, the seven layers (Database, Domain, Application, API, Frontend, UI/UX, Tests) assume a full-stack web application architecture. This does not apply to CLI tools, data pipelines, embedded systems, libraries, mobile-only apps, or infrastructure modules. Embedding these layers in Core violates the v8 principle: "The core must not contain assumptions about project structure."
+* **Approved decision**:
+  Remove the Vertical Slice 7-layer mandate from `01-core/operating-contract.md`. The concept of "verify all affected layers" remains as a general Core principle (without naming specific layers). The 7-layer checklist moves to an optional Technology Profile (`profiles/full-stack-web.yaml` or similar) that projects can opt into. The mandatory report rule (coverage table + decisions + deviations + human-review) stays in Core as a general evidence requirement, but uses project-defined layers from the Project Manifest instead of a hardcoded list.
+* **Rejected alternatives and why**:
+  1. Keep the 7 layers but add "not applicable" for each ← rejected: still forces every project through a web-app mental model; adds noise for non-web projects
+  2. Remove all layer-checking ← rejected: layer coverage is valuable; only the hardcoded list is the problem
+* **Technical consequences**:
+  * **Performance**: reduces Boot Context by ~20 lines; eliminates irrelevant checklist items for non-web projects
+  * **Maintainability**: Core becomes truly project-agnostic; layer definitions live where they belong (project or profile)
+  * **Security**: no impact; security verification remains a Core concern independent of layer structure
+
+---
+
+## 🏛️ ADR-007: 05-references become optional indexed resources outside Boot Context
+* **Date**: 2026-09-12
+* **Status**: Approved
+* **Context & problem**:
+  The `05-references/` directory contains 14 files totaling 6,062 lines, including 6 constitutions (79 rules from 16 engineering books), a 34-rule REF catalog, QA/DevOps references, and prompt templates. Currently, `session-prompt.md` mandates loading constitutions and rule files before writing any code (Steps 2-4), which inflates Task Expansion Context significantly. Some content is technology-neutral (general engineering principles) while other content is technology-specific (SARGable queries, EF Core patterns).
+* **Approved decision**:
+  (1) Technology-neutral references (general engineering principles, security fundamentals, testing strategy) remain as optional indexed resources loadable on demand via Context Broker.
+  (2) Technology-specific references (database-specific query patterns, framework-specific conventions) move to Technology Profiles.
+  (3) No reference file is loaded during Boot — all references are loaded only during Task Expansion, triggered by Context Broker based on task relevance.
+  (4) The mandatory 5-step resource injection protocol in `session-prompt.md` is replaced by demand-driven loading: Context Broker determines what to load based on task classification and Project Profile.
+  (5) Citation format (`// [REF-xxx]`, `// [CONST-xxx]`) becomes optional — evidence of rule compliance goes in Evidence Bundle, not in production code.
+* **Rejected alternatives and why**:
+  1. Delete all references ← rejected: the engineering knowledge is valuable; only the loading strategy is wrong
+  2. Keep mandatory injection but reduce file sizes ← rejected: the problem is unconditional loading, not file size alone
+* **Technical consequences**:
+  * **Performance**: eliminates ~2,000-6,000 tokens of mandatory pre-code loading; Task Expansion loads only relevant resources
+  * **Maintainability**: references evolve independently of Core; adding a new reference doesn't change Core behavior
+  * **Security**: security references remain available but loaded by policy trigger, not by hardcoded prompt instruction
+
+---
+
 ## 🏛️ ADR-002: [Architectural Decision Title]
 * **Date**: [Date]
 * **Status**: [Draft / Proposed / Approved / Rejected / Deprecated]
