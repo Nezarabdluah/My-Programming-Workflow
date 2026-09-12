@@ -17,6 +17,48 @@
 
 ---
 
+## ⚡ ابدأ في 30 ثانية (نقطة الدخول السريعة)
+
+كل ما تحتاجه للبدء مع أي أداة ذكاء اصطناعي هو خطوتان:
+
+### 1️⃣ الخطوة الأولى: ضع المجلد في مشروعك
+انسخ مجلد `.agent` إلى جذر مشروعك (أو استنسخ المستودع):
+```bash
+cp -r My-Programming-Workflow/.agent  /path/to/your/project/
+```
+
+---
+
+### 2️⃣ الخطوة الثانية: أعطِ النموذج هذا البرومبت المباشر 💬
+انسخ هذا السطر والصقه في محادثة الذكاء الاصطناعي (Cursor, Claude, Copilot, ChatGPT, Antigravity):
+
+```text
+اقرأ ملف .agent/01-core/boot-manifest.md واتبعه كعقد تشغيلي صارم لهذا المشروع، ثم ابدأ بتنفيذ بروتوكول الإقلاع.
+```
+*(أو بالإنجليزية):*
+```text
+Read .agent/01-core/boot-manifest.md and follow it as your operating contract for this project, then run the boot sequence.
+```
+
+🚀 **أو بنقرة زر واحدة عبر سطر الأوامر:**
+```bash
+python .agent/start.py --copy
+```
+*(يقوم بنسخ سياق الإقلاع الكامل إلى الحافظة تلقائياً — فقط قم بلصقه في المحادثة!)*
+
+---
+
+### 🛠️ الدعم التلقائي للأدوات (بدون نسخ):
+| الأداة | حالة الدعم | كيف يعمل؟ |
+|--------|------------|-----------|
+| **Cursor** | ✅ تلقائي بالكامل | يقرأ `.cursorrules` فور فتح المشروع |
+| **Claude Code** | ✅ تلقائي بالكامل | يقرأ `CLAUDE.md` تلقائياً |
+| **GitHub Copilot** | ✅ تلقائي بالكامل | يقرأ `.github/copilot-instructions.md` |
+| **Antigravity** | ✅ تلقائي بالكامل | يقرأ `AGENTS.md` تلقائياً |
+| **أي محرر / أداة أخرى** | 📋 أمر واحد | `python .agent/start.py --copy` والصق |
+
+---
+
 ## 🎯 What is AOS?
 
 AOS turns any AI coding agent into a **governed, memory-aware, knowledge-powered** engineering partner.
@@ -46,48 +88,6 @@ It's not just rules — it's a **complete knowledge system** built from 16 engin
   │                    💾 Memory                                 │
   │               (persists across sessions)                     │
   └──────────────────────────────────────────────────────────────┘
-```
-
----
-
-## ⚡ Quick Start
-
-### Method 1: Automatic (just open your project)
-If you use any of these tools, AOS loads automatically — **no setup needed**:
-
-| Tool | Auto-reads | Status |
-|------|-----------|--------|
-| **Cursor** | `.cursorrules` | ✅ Works automatically |
-| **Claude Code** | `CLAUDE.md` | ✅ Works automatically |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | ✅ Works automatically |
-| **Antigravity** | `AGENTS.md` | ✅ Works automatically |
-| **Any other AI** | See Method 2 below | 📋 One command |
-
-### Method 2: One command (any AI tool)
-```bash
-python .agent/start.py --copy
-```
-This copies the full boot prompt to your clipboard. Paste it into any AI chat — done.
-
-### Method 3: Manual
-Just tell your AI:
-> Read `AGENTS.md` at the project root and follow its instructions.
-
-### Setup (first time only)
-```bash
-git clone https://github.com/Nezarabdluah/My-Programming-Workflow.git
-cp -r My-Programming-Workflow/.agent  /path/to/your/project/
-cp My-Programming-Workflow/AGENTS.md  /path/to/your/project/
-cp My-Programming-Workflow/CLAUDE.md  /path/to/your/project/
-cp My-Programming-Workflow/.cursorrules /path/to/your/project/
-cp -r My-Programming-Workflow/.github /path/to/your/project/
-```
-
-### Useful Commands
-```bash
-python .agent/start.py          # Print boot prompt to screen
-python .agent/start.py --copy   # Copy boot prompt to clipboard
-python .agent/start.py --check  # Run governance checks
 ```
 
 ---
