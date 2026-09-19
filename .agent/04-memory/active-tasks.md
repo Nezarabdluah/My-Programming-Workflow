@@ -1,11 +1,11 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T028 — Merge-Safe Durable Memory 🔴
-- **State:** Executing
+- **State:** Validating
 - **Approval:** explicit Navigator approval for the architecture change.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
 - Boot Memory excludes volatile branch/PR/mergeability/queued-CI state.
@@ -24,9 +24,12 @@ Draft → Clarify → Approved → Planning → Ready → Executing
 - [x] README updated to 37 checks / 24 mutations.
 - [x] T028 Task Contract added.
 - [x] Boot Memory rewritten without volatile VCS state.
-- [ ] Run full CI and fix failures.
+- [x] Executing-state verification: 37/37 + 24/24.
 - [ ] Validating-state verification.
 - [ ] Done-state verification.
 
+### Evidence
+Completed verification run `35439761791`: 37 PASS, 24/24 mutations, Evidence Bundle PASS.
+
 ### Next
-Validate merge-safe memory semantics and governance evidence.
+Validate the merge-safe memory lifecycle and completion state.
