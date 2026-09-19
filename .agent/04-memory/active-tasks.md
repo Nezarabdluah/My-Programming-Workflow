@@ -1,32 +1,31 @@
 # Active Tasks — AOS v8.0-dev
 
-## T026 — Risk & Affected-Area Context Routing 🔴
-- **State:** Done
-- **Branch:** `aos-v8-sprint2-risk-routing`
-- **Approval:** Navigator approved Sprint 2 continuation.
+## T027 — Stabilization & Public Contract Sync 🟡
+- **State:** Executing
+- **Branch:** `aos-v8-sprint2-stabilization`
+- **Approval:** verified pattern `pattern-existing-local-refactor`.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+Draft → Clarify → Approved → Planning → Ready → Executing
 
 ### Acceptance Criteria
-- True risk flags deterministically add required capabilities.
-- Project affected-area rules add project-specific capabilities.
-- Explicit capabilities are preserved; derived duplicates are de-duplicated.
-- Broker reports declared/effective capabilities and provenance sources.
-- Risk/area mappings may reference only executable capabilities.
-- Current T026 derives Testing although it declares only Architecture.
-- Mutations prove missing/invalid derivation mappings are detected.
+- README describes current Execution Gate, Context Broker, approvals, evidence, and risk routing.
+- Public metrics match current governance/mutation baseline.
+- VERSION sync metadata is current.
+- Memory reflects merged PR #5 rather than pre-merge state.
+- GOV-T36 blocks stale public-contract text.
+- Mutation proves GOV-T36 can fail.
+- Execution Gate resolves T027 to AUTO_EXECUTE.
 - No merge before final green CI.
 
 ### Progress
-- [x] ADR-011 approved.
-- [x] Core risk→capability map added.
-- [x] Project area→capability rules added.
-- [x] Broker derives and explains effective capabilities.
-- [x] Task Contract validates affected areas.
-- [x] GOV-T31–T35 + routing mutations added.
-- [x] CI green: 35/35 governance + 22/22 mutations.
-- [x] Done-state CI passed; GOV-T09 verified full history.
+- [x] README rewritten to current v8 runtime.
+- [x] GOV-T36 added.
+- [x] README drift mutation added.
+- [x] VERSION sync date updated.
+- [ ] Sync current memory from merged PR #5.
+- [ ] Run CI and fix failures.
+- [ ] Validating + Done-state CI.
 
 ### Next
-Run final head CI; squash-merge PR #5 only if all gates stay green.
+Sync memory, open PR, and run full verification.
