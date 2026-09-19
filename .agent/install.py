@@ -146,6 +146,27 @@ def _copy_file(source: Path, target: Path) -> None:
     shutil.copy2(source, target)
 
 
+def _backup_managed_adapters(target_root: Path) -> list[str]:
+    backup_root = target_root / ".agent" / "backups" / "last-upgrade"
+    backed_up = []
+
+    candidates = [
+        *(target_root / name for name in ROOT_ADAPTERS),
+        target_root / ".github" / "copilot-instructions.md",
+    ]
+
+    for path in candidates:
+        if not path.exists() or not _is_aos_adapter(path):
+            continue
+        relative = path.relative_to(target_root)
+        destination = backup_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, destination)
+        backed_up.append(str(relative).replace("\\", "/"))
+
+    return backed_up
+
+
 def _install_runtime(target_root: Path) -> None:
     target_agent = target_root / ".agent"
     target_agent.mkdir(parents=True, exist_ok=True)
@@ -193,12 +214,18 @@ def install(target_root: Path) -> dict:
         )
 
     target_root.mkdir(parents=True, exist_ok=True)
+    backed_up_adapters = (
+        _backup_managed_adapters(target_root)
+        if report["mode"] == "upgrade"
+        else []
+    )
     _install_runtime(target_root)
 
     return {
         **report,
         "runtime_installed": True,
         "runtime_upgraded": report["mode"] == "upgrade",
+        "backed_up_adapters": backed_up_adapters,
         "next": (
             "Initialize target-specific AOS state."
             if report["mode"] == "fresh"
@@ -238,6 +265,10 @@ def main() -> int:
     print("Preserved project state:")
     for item in result["preserved_state"]:
         print(f"  - {item}")
+    if result["backed_up_adapters"]:
+        print("Backed up managed adapters:")
+        for item in result["backed_up_adapters"]:
+            print(f"  - {item}")
     print(result["next"])
     return 0
 
