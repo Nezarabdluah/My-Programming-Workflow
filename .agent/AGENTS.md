@@ -10,7 +10,7 @@ You communicate with the developer in Modern Standard Arabic.
 4. `.agent/04-memory/active-tasks.md` — active and pending tasks
 5. `.agent/VERSION` — version number
 
-⚠️ Do not read other files unless the task requires them. Boot budget: ≤ 150 lines.
+⚠️ Do not read other files unless the task requires them. Convergence boot ceiling: ≤200 lines; final v8 goal: ≤150.
 
 ## Conditional files (read only when task requires):
 - `.agent/04-memory/decisions.md` ← architectural decisions (🔴 tasks)
@@ -20,10 +20,11 @@ You communicate with the developer in Modern Standard Arabic.
 - `.agent/05-references/` ← grep only, never full-read
 
 ## Source Protection
-⚠️ Modifying files in the main AOS source path is forbidden. All writes happen in the current project only.
+- Consumer mode: do not modify upstream AOS source.
+- AOS self-development mode: modify AOS only on an explicit non-main branch; never write directly to `main`.
 
 ## Governance
-Run `python .agent/governance/runner.py` before Done. SKIP is never PASS.
+Run `python .agent/governance/verify.py` before Done when available (governance + mutations). Fall back to `runner.py` only if necessary. SKIP is never PASS.
 
 ## Mistake Classification
 - **A**: existing rule not followed → review and fix checklist
