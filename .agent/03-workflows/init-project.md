@@ -15,21 +15,27 @@ Do not force a predefined architecture.
 
 ## 2. Install the AOS runtime
 
-Copy the current AOS runtime structure into the project's `.agent/` directory, including:
-- `01-core/`
-- `02-rules/`
-- `03-workflows/`
-- `05-references/`
-- `06-templates/`
-- `governance/`
-- `profiles/`
-- `task-contracts/`
-- `evidence/README.md`
-- `adr/`
-- `INDEX.md`
-- `AGENTS.md`
-- `VERSION`
+Preferred path: run the source repository's sanitized installer:
 
+```bash
+python .agent/install.py /path/to/target-project
+```
+
+The install phase copies reusable runtime assets only:
+- `01-core/`, `02-rules/`, `03-workflows/`
+- `05-references/`, `06-templates/`, `governance/`, `adr/`
+- `profiles/technology/`
+- `evidence/README.md`
+- `INDEX.md`, `AGENTS.md`, `VERSION`, and supported root adapters
+
+The install phase must **not** copy source-project state:
+- `04-memory/`
+- `profiles/project.json`
+- `task-contracts/current.json`
+- `evidence/current.json`
+- `evidence/history/`
+
+If installing manually, reproduce the same inclusion/exclusion contract exactly.
 Do not treat legacy compatibility files as canonical runtime policy.
 
 ## 3. Initialize project memory
