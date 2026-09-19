@@ -29,10 +29,10 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] CI green: 30/30 governance + 19/19 mutations.
 - [x] Evidence Bundle/History + artifact flow verified.
 - [x] Final Validating-state CI passed.
-- [ ] Done-state CI for T09.
+- [x] Done-state CI passed; GOV-T09 verified full history.
 
 ### Evidence
-Run `35438345897`: 30/30 + 19/19 + Evidence History PASS.
+Run `35438378213`: Done-state PASS + 19/19 + Evidence History.
 
 ### Next
-Run Done-state CI; merge only if GOV-T09 and all gates stay green.
+Run final head CI, then squash-merge PR #4 only if green.
