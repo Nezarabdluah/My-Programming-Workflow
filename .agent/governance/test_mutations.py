@@ -635,7 +635,8 @@ def mut_t40_restore_dev_version_marker():
     def setup():
         original = path.read_text(encoding="utf-8")
         first_line, rest = original.split("\n", 1)
-        mutated = "# AGENTS.md — Agent Entry Point (AOS v8.0-dev)\n" + rest
+        stale = "v8.0-" + "dev"
+        mutated = f"# AGENTS.md — Agent Entry Point (AOS {stale})\n" + rest
         backup = _backup_and_write(path, mutated)
         return [(path, backup)]
 
