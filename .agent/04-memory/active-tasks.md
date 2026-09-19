@@ -3,13 +3,13 @@
 > Current work only. History is archived under `04-memory/archive/`.
 
 ## T023 — Sprint 2 Context Broker Foundation 🔴
-- **State:** Executing
+- **State:** Validating
 - **Branch:** `aos-v8-sprint2-context`
 - **Purpose:** replace manual selective-loading fallback with deterministic Context Broker + Project/Technology Profiles.
 - **Approval:** Navigator explicitly asked to continue Sprint 2 after v8 convergence merged.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
 - Context selection after capability declaration is deterministic and machine-testable.
@@ -28,9 +28,14 @@ Draft → Clarify → Approved → Planning → Ready → Executing
 - [x] Added structured `task-contracts/current.json`.
 - [x] Added GOV-T12/T13/T14 context tests and runner integration.
 - [x] Boot/init/INDEX/wiring linked to executable broker.
-- [ ] Add broker mutation tests.
-- [ ] Run full CI on Draft PR.
-- [ ] Review diff and move to Validating only if green.
+- [x] Added broker/profile/context-map mutation coverage.
+- [x] Full CI green on PR #2.
+- [x] Diff reviewed; no blocking drift found.
+- [ ] Final Validating-state CI.
+- [ ] Mark Done only if final CI remains green.
+
+### Evidence
+GitHub Actions run `35437322891`: full verification success.
 
 ### Next Step
-Add mutation coverage for broker failure modes, then open Draft PR for GitHub Actions verification.
+Run CI in Validating state, then close T023 only if green.
