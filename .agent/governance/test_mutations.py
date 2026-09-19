@@ -579,6 +579,27 @@ def mut_t37_add_volatile_branch_state():
     )
 
 
+def mut_t38_restore_stale_start_check():
+    """Mutate start.py so --check falls back to runner.py again."""
+    from test_rules import test_gov_t38_release_contract_entrypoints
+    path = Path(".agent/start.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'str(agent_dir / "governance" / "verify.py")',
+            'str(agent_dir / "governance" / "runner.py")',
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T38-RESTORE-STALE-START-CHECK",
+        setup,
+        test_gov_t38_release_contract_entrypoints,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -623,6 +644,7 @@ if __name__ == "__main__":
         mut_t35_unknown_derived_capability,
         mut_t36_restore_stale_readme_contract,
         mut_t37_add_volatile_branch_state,
+        mut_t38_restore_stale_start_check,
         mut_t11_boot_too_large,
     ]
 
