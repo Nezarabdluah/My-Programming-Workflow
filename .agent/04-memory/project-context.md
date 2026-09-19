@@ -2,7 +2,7 @@
 
 ## Current State
 - **Phase:** v8 Convergence Sprint
-- **Task:** T022 — Validating
+- **Task:** T022 — Done
 - **Branch:** `aos-v8-convergence`
 - **Main:** unchanged
 - **PR:** #1 draft, unmerged
@@ -13,8 +13,8 @@
 
 ## Current Result
 - Core, workflows, rules, INDEX, memory, governance, and CI aligned to v8.
-- Governance previously reached 11/11 PASS and mutations 8/8.
-- Latest validation exposed only boot-budget regression from duplicated memory evidence.
+- GitHub Actions run `35436797418` passed full verification after memory compaction.
+- T022 is closed pending one final Done-state CI check so GOV-T09 validates the full state history.
 
 ## Next
-Compact boot memory below 200 lines, rerun GitHub Actions, and mark T022 Done only if fully green.
+If Done-state CI remains green, prepare the draft PR for merge review/squash strategy.
