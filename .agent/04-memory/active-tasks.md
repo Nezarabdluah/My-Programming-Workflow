@@ -1,35 +1,27 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T028 — Merge-Safe Durable Memory 🔴
-- **State:** Validating
-- **Approval:** explicit Navigator approval for the architecture change.
+- **State:** Done
+- **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - Boot Memory excludes volatile branch/PR/mergeability/queued-CI state.
 - Immutable completed evidence remains allowed.
-- End-session and boot handoff rules define durable vs volatile state.
-- GOV-T37 detects volatile VCS state in Boot Memory.
-- Mutation proves GOV-T37 can fail.
-- README/public metrics reflect T37 and mutation coverage.
-- Execution Gate approves T028 under explicit human provenance.
-- Final verification remains green before completion.
+- Boot/end-session define durable vs volatile state.
+- GOV-T37 + mutation enforce merge-safe memory.
+- Public metrics include T37 and mutation coverage.
+- Execution Gate and final verification remain green.
 
-### Progress
-- [x] ADR-012 approved.
-- [x] Boot + end-session memory rules updated.
-- [x] GOV-T37 + mutation added.
-- [x] README updated to 37 checks / 24 mutations.
-- [x] T028 Task Contract added.
-- [x] Boot Memory rewritten without volatile VCS state.
-- [x] Executing-state verification: 37/37 + 24/24.
-- [ ] Validating-state verification.
-- [ ] Done-state verification.
+### Result
+- [x] ADR-012, Boot/end-session policy, GOV-T37, mutation, README, and T028 contract completed.
+- [x] Executing and Validating verification passed.
+- [x] T028 closed; final Done-state verification pending as completion evidence.
 
 ### Evidence
-Completed verification run `35439761791`: 37 PASS, 24/24 mutations, Evidence Bundle PASS.
+Completed verification `35439819747`: 37 PASS, 24/24 mutations, Evidence Bundle PASS.
 
 ### Next
-Validate the merge-safe memory lifecycle and completion state.
+Verify the completed task state; subsequent work should use merge-safe memory semantics.
