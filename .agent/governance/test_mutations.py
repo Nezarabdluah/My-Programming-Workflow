@@ -255,6 +255,30 @@ def mut_t13_profile_gate_removed():
     )
 
 
+def mut_t15_missing_context_resource():
+    """Mutate context map to reference a missing resource path."""
+    import json
+    from test_context import test_gov_t15_context_map_integrity
+    path = Path(".agent/01-core/context-map.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["capabilities"]["security"]["resources"][0]["path"] = (
+            ".agent/02-rules/definitely-missing.md"
+        )
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T15-MISSING-CONTEXT-RESOURCE",
+        setup,
+        test_gov_t15_context_map_integrity,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -285,6 +309,7 @@ if __name__ == "__main__":
         mut_t03_bad_adr_format,
         mut_t13_profile_gate_removed,
         mut_t14_unknown_capability,
+        mut_t15_missing_context_resource,
         mut_t11_boot_too_large,
     ]
 
