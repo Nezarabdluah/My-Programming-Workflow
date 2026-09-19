@@ -1,7 +1,7 @@
 # Project Context — AOS v8.0-dev
 
 - **Phase:** Sprint 2 — Risk-Aware Context Routing
-- **Task:** T026 — Validating
+- **Task:** T026 — Done
 - **Branch:** `aos-v8-sprint2-risk-routing`
 - **Main:** autonomous execution merged via PR #4 / `af9481fb278c7dd2c61c061c260d4504880c251c`
 
@@ -14,4 +14,4 @@
 Risk/area routing is green: 35/35 governance, 22/22 mutations, T026 derives Testing.
 
 ## Next
-Run Validating-state CI, then close T026 only if green.
+Run Done-state CI, then prepare PR #5 for squash merge if green.
