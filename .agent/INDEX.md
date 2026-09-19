@@ -1,22 +1,22 @@
-# 📇 INDEX.md — Smart Index for AOS v7.0
+# INDEX.md — AOS v8.0-dev Resource Catalog
 
-> Search here first. Every file is listed with its description — complete structural coverage.
+> Descriptive catalog only. Runtime authority is `01-core/boot-manifest.md`. Do not load this file at boot unless navigation requires it.
 
 ## 🔑 Entry Point & Sync
 | File | Description |
 |------|-------------|
-| `AGENTS.md` | Master directive contract: session boot, SDD workflow, REF rules, handoff protocol |
+| `01-core/boot-manifest.md` | Canonical runtime contract: boot, routing, budget, governance, handoff |
 | `VERSION` | Version number, last sync date, and source path |
 
-## 🏛️ 01-core/ — Core (mandatory at session start)
+## 01-core/ — Core (boot manifest canonical; others on demand)
 | File | Description |
 |------|-------------|
-| `operating-contract.md` | Operational contract: conflict priority, dependency rules, policy engine, SDD, vertical-slice charter, mistake learning |
-| `session-prompt.md` | Unified session prompt: boot & matching, proof-of-read, task routing (Paths A/B/C), REF wiring, handoff, closeout |
+| `operating-contract.md` | Supplemental v8 policy: architecture neutrality, selective context, evidence, proportionality |
+| `session-prompt.md` | Deprecated compatibility shim that redirects older integrations to boot-manifest |
 | `task-classification.md` | 🟢/🟡/🔴 classification indicators, keywords, scope, and the Zero-Trust escalation rule |
-| `token-budget.md` | Token budget and selective loading policy (≤ 400 lines/session) |
+| `token-budget.md` | Supplemental selective-loading guidance; boot limits are defined by boot-manifest/governance |
 | `collaboration-rules.md` | Pair-programming protocol: Driver/Navigator roles, step & proof, stop gates, response structure |
-| `wiring-registry.md` | ⭐ Central DI container: capability → rule file → REF contracts → grep-only reference anchors |
+| `wiring-registry.md` | Capability/resource discovery registry used by selective context expansion |
 
 ## 📐 02-rules/ — Specialized Rules (conditionally loaded, ONE at a time)
 | File | Description |
@@ -26,7 +26,7 @@
 | `security-checklist.md` | JWT/session security, IDOR defense, injection & XSS prevention, boundary validation |
 | `testing-and-quality.md` | Test strategy (behavior over implementation), structured logging, tracing, resilience, pre-delivery checklist |
 | `network-and-api.md` | Payload optimization, chunky-vs-chatty, evidence-based diagnosis, API design best practices |
-| `vertical-slice-governance.md` | **Full-Stack Vertical Slice Charter — 7 layers + mandatory coverage report (fixed, Project-Agnostic)** |
+| `vertical-slice-governance.md` | Optional full-stack-web coverage guidance; activate only by project/profile |
 
 ## 🔄 03-workflows/ — Workflows (Markdown-driven)
 | File | Description |
@@ -65,7 +65,7 @@
 | File/Directory | Description |
 |----------------|-------------|
 | `engineering-rules-catalog-REF.md` | The 34 `[REF-*]` directives in 8 categories (ARCH×7, DB×7, SEC×5, NET×5, TEST×2, OBS×2, RES×1, AI×1) |
-| `books/00-master-index.md` | **⭐ Resource Injection Matrix** — maps ALL AOS resources to ALL pipeline stages with MUST/SHOULD/IF injection modes |
+| `books/00-master-index.md` | Lifecycle resource index; candidate resources by stage, selectively loaded under ADR-007 |
 | `books/constitutions/` | **6 actionable constitution files** extracted from 16 engineering books (arch, ddd, security, perf, resilience, integration) |
 | `books/engineering-books-16-distilled.txt` | 16 distilled books (archive — educational content, grep by lesson number or keyword) |
 | `prompts/` | Ready-made optimized prompts: `backend-prompts.md`, `frontend-prompts.md`, `debugging-prompts.md` |
@@ -89,5 +89,7 @@
 ## ⚙️ governance/ — Deterministic Enforcement (Python)
 | File | Description |
 |------|-------------|
-| `runner.py` | Governance runner — the ground-truth executable check |
+| `runner.py` | Core governance runner |
+| `verify.py` | Full verification entry point: governance + mutation checks |
 | `test_memory.py`, `test_rules.py`, `test_state.py` | Governance test suite |
+| `test_mutations.py` | Mutation suite proving governance checks can fail |
