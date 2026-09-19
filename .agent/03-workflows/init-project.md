@@ -1,4 +1,4 @@
-# Init Project — AOS v8.0-dev
+# Init Project — AOS v8.0.0-rc.1
 
 > One-time workflow for linking a software project to AOS.
 > Runtime authority after initialization: `.agent/01-core/boot-manifest.md`.
@@ -81,7 +81,7 @@ For a representative non-trivial task:
 Use the current source version:
 
 ```yaml
-aos_version: 8.0.0-dev
+aos_version: 8.0.0-rc.1
 last_sync: [today]
 source_path: [YOUR-LOCAL-AOS-PATH]
 ```
