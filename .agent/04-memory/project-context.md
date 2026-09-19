@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
-- **Phase:** RC Documentation & Discoverability
-- **Task:** T033 — Done
+- **Phase:** One-Command Consumer Onboarding
+- **Task:** T034 — Executing
 
 ## Current
-README starts with a governed three-step Quick Start and clearly explains that AOS is copied into each project as a local `.agent` runtime rather than installed as a background service.
+AOS now has write-free collision preflight, safe upgrades, portable runtime ADRs/governance, and a one-command bootstrap that initializes and verifies consumer projects.
 
 ## Next
-Maintain the simple install → initialize → work flow through GOV-T41.
+Align remaining onboarding docs/index and validate source + consumer CI paths.
