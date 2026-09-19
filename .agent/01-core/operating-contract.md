@@ -1,4 +1,4 @@
-# Operating Contract — Supplemental Policy (AOS v8.0-dev)
+# Operating Contract — Supplemental Policy (AOS v8.0.0-rc.1)
 
 > **Runtime authority:** `01-core/boot-manifest.md`
 > This file is a supplemental policy reference. It is not loaded at boot unless the active task needs it.

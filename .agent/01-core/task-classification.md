@@ -1,4 +1,4 @@
-# Task Classification — AOS v8.0-dev
+# Task Classification — AOS v8.0.0-rc.1
 
 Classify every task before implementation:
 `[Mode: 🟢 Simple | 🟡 Medium | 🔴 Sensitive]`

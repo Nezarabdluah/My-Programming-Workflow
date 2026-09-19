@@ -1,6 +1,6 @@
-# Active Tasks — AOS v8.0-dev
+# Active Tasks — AOS v8.0.0-rc.1
 
-## T029 — v8 Release Readiness & Sanitized Installation 🔴
+## T030 — v8.0.0-rc.1 Release Candidate Cut 🔴
 - **State:** Done
 - **Approval:** explicit Navigator approval.
 
@@ -8,20 +8,20 @@
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- Entrypoints/CI must match Execution Gate + executable evidence.
-- Consumer install must exclude source project state.
-- GOV-T38/T39 + mutations must enforce release/onboarding contracts.
-- Boot must remain ≤150 lines before RC.
+- VERSION/runtime/public markers must match v8.0.0-rc.1.
+- GOV-T40 + mutation must enforce version consistency.
+- Public baseline must be 40 checks / 27 mutations.
+- Boot must remain ≤150 lines.
+- RC must pass Execution Gate, Evidence Bundle/History, governance, and mutations.
+- No tag/release before main push verification is green.
 
 ### Result
-- [x] Entrypoints, start/init flow, CI triggers, README, and INDEX aligned.
-- [x] ADR-013 + sanitized installer behaviorally verified.
-- [x] GOV-T38/T39 with 26/26 mutation coverage.
-- [x] Boot hard gate set to 150 and validated below ceiling.
-- [x] T029 completed; final Done-state verification is the completion evidence.
+- [x] RC1 markers and GOV-T40 synchronized.
+- [x] Executing + Validating verification passed.
+- [x] T030 closed; completed-state verification remains as release evidence.
 
 ### Evidence
-Completed validation `35440422576`: 39 PASS, 26/26 mutations, Boot 146/150, Evidence Bundle/History PASS.
+Run `35441304411`: 40 PASS, 27/27 mutations, Boot 145/150, Evidence Bundle/History PASS.
 
 ### Next
-Use this baseline for the v8 release-candidate cut after completed-state verification.
+Verify completed state, merge RC cut, verify main push, then create the RC tag/release.

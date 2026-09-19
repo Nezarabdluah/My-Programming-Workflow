@@ -1,4 +1,4 @@
-# Architectural & Design Decision Log — AOS v8.0-dev
+# Architectural & Design Decision Log — AOS v8.0.0-rc.1
 
 > **Contract**: updated whenever a critical architectural decision is made or amended. Records decisions, alternatives, and consequences.
 

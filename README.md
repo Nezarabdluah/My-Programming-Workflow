@@ -1,15 +1,15 @@
 <p align="center">
   <h1 align="center">🤖 AOS — Agent Operating System</h1>
   <p align="center">
-    <strong>v8.0-dev</strong> · Governed execution for AI coding agents<br>
+    <strong>v8.0.0-rc.1</strong> · Governed execution for AI coding agents<br>
     Language-Agnostic · Framework-Agnostic · Editor-Agnostic
   </p>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-8.0--dev-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-39%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-26%2F26%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/version-8.0.0--rc.1-blue" alt="version">
+  <img src="https://img.shields.io/badge/governance-40%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-27%2F27%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
@@ -313,7 +313,7 @@ Run full verification with:
 python .agent/governance/verify.py
 ```
 
-Current governance covers T01–T39, including:
+Current governance covers T01–T40, including:
 
 - task state and acceptance criteria,
 - ADR/memory integrity,
@@ -329,14 +329,15 @@ Current governance covers T01–T39, including:
 - public README/runtime contract synchronization,
 - merge-safe durable Boot Memory,
 - release entrypoint/runtime contract alignment,
-- sanitized consumer installation that excludes source-project state.
+- sanitized consumer installation that excludes source-project state,
+- release version consistency across active runtime/public markers.
 
 Mutation tests deliberately corrupt the system and verify governance catches the violation.
 
 Current release-readiness baseline:
 
-- **39 governance checks** (Done state may include expected skips),
-- **26/26 mutation violations detected**,
+- **40 governance checks** (Done state may include expected skips),
+- **27/27 mutation violations detected**,
 - **Boot Context 144/150 lines** under the v8 release hard gate,
 - Evidence Bundle and Evidence History verified in CI,
 - sanitized consumer installation verified behaviorally.
@@ -452,5 +453,5 @@ MIT License — see [LICENSE](LICENSE).
 ---
 
 <p align="center">
-  <strong>AOS v8.0-dev</strong> · Deterministic context · Verified approvals · Executable evidence · Mutation-tested governance
+  <strong>AOS v8.0.0-rc.1</strong> · Deterministic context · Verified approvals · Executable evidence · Mutation-tested governance
 </p>

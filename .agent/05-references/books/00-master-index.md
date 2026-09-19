@@ -1,4 +1,4 @@
-# AOS Lifecycle Resource Index — v8.0-dev
+# AOS Lifecycle Resource Index — v8.0.0-rc.1
 <!-- Maps available AOS resources to lifecycle stages. -->
 <!-- ADR-007: this is an index, not an unconditional loader. -->
 <!-- Legacy MUST/SHOULD/IF labels are migration metadata until Context Broker replaces them. -->

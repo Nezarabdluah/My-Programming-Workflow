@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "task_id": "T029",
-  "title": "v8 release readiness contract and sanitized installation",
+  "task_id": "T030",
+  "title": "v8.0.0-rc.1 release candidate cut",
   "classification": "sensitive",
   "capabilities": [
     "architecture",
@@ -12,28 +12,28 @@
     "README.md",
     "AGENTS.md",
     ".agent/AGENTS.md",
-    ".agent/start.py",
-    ".agent/install.py",
-    ".agent/03-workflows/init-project.md",
+    ".agent/VERSION",
+    ".agent/01-core",
+    ".agent/03-workflows",
+    ".agent/04-memory",
+    ".agent/05-references/books/00-master-index.md",
     ".agent/governance",
-    ".agent/profiles",
-    ".github/workflows",
     ".agent/INDEX.md",
-    ".agent/04-memory"
+    ".agent/task-contracts"
   ],
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": true,
+    "new_architecture": false,
     "security_boundary": false,
-    "production_change": false,
+    "production_change": true,
     "breaking_external_contract": false,
     "data_migration": false
   },
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator approved Sprint 2 closeout and v8 release-readiness work."
+    "reference": "Navigator approved continuing to the v8 release-candidate cut after green release-readiness."
   },
   "verification": [
     "governance_compile",

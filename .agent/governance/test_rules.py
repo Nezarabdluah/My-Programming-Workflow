@@ -1,4 +1,4 @@
-"""AOS Governance — Rule Tests (v8.0-dev)
+"""AOS Governance — Rule Tests (v8.0.0-rc.1)
 
 GOV-T06: Canonical boot contract links to task rules
 GOV-T07: REF citation validity (project-agnostic source discovery)
@@ -237,8 +237,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "39 governance checks",
-        "26/26 mutation",
+        "40 governance checks",
+        "27/27 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -340,3 +340,83 @@ def test_gov_t38_release_contract_entrypoints():
         return FAIL, "GOV-T38: release contract drift: " + "; ".join(problems)
 
     return PASS, "GOV-T38: release entrypoints match the current v8 execution runtime."
+
+
+def test_gov_t40_version_consistency():
+    """GOV-T40: Active runtime/public version markers match .agent/VERSION."""
+    version_path = Path(".agent/VERSION")
+    if not version_path.exists():
+        return FAIL, "GOV-T40: .agent/VERSION missing."
+
+    version_text = version_path.read_text(encoding="utf-8")
+    match = re.search(r"^aos_version:\s*([^\s]+)\s*$", version_text, re.MULTILINE)
+    if not match:
+        return FAIL, "GOV-T40: aos_version missing from .agent/VERSION."
+
+    version = match.group(1)
+    label = f"v{version}"
+
+    required = {
+        "README.md": label,
+        "AGENTS.md": label,
+        ".agent/AGENTS.md": label,
+        ".agent/INDEX.md": label,
+        ".agent/01-core/boot-manifest.md": label,
+        ".agent/03-workflows/init-project.md": label,
+        ".agent/03-workflows/end-session.md": label,
+        ".agent/03-workflows/start-session.md": label,
+        ".agent/05-references/books/00-master-index.md": label,
+        ".agent/governance/runner.py": label,
+        ".agent/04-memory/project-context.md": label,
+        ".agent/04-memory/active-tasks.md": label,
+        ".agent/04-memory/learned-mistakes.md": label,
+    }
+
+    problems = []
+    for rel, marker in required.items():
+        path = Path(rel)
+        if not path.exists():
+            problems.append(f"{rel}: missing")
+            continue
+        content = path.read_text(encoding="utf-8")
+        if marker not in content:
+            problems.append(f"{rel}: missing {marker}")
+
+    init = Path(".agent/03-workflows/init-project.md")
+    if init.exists():
+        content = init.read_text(encoding="utf-8")
+        if f"aos_version: {version}" not in content:
+            problems.append("init-project: VERSION example mismatch")
+
+    if not version.endswith("-dev"):
+        stale_markers = (
+            "v8.0-" + "dev",
+            "8.0.0-" + "dev",
+            "version-8.0--" + "dev",
+        )
+        scan_files = set(required) | {
+            ".agent/01-core/operating-contract.md",
+            ".agent/01-core/session-prompt.md",
+            ".agent/01-core/task-classification.md",
+            ".agent/01-core/token-budget.md",
+            ".agent/01-core/wiring-registry.md",
+            ".agent/governance/test_memory.py",
+            ".agent/governance/test_mutations.py",
+            ".agent/governance/test_rules.py",
+            ".agent/governance/test_state.py",
+            ".agent/04-memory/decisions.md",
+        }
+        for rel in sorted(scan_files):
+            path = Path(rel)
+            if not path.exists():
+                continue
+            content = path.read_text(encoding="utf-8")
+            for stale in stale_markers:
+                if stale in content:
+                    problems.append(f"{rel}: stale marker {stale}")
+                    break
+
+    if problems:
+        return FAIL, "GOV-T40: version drift: " + "; ".join(problems)
+
+    return PASS, f"GOV-T40: active runtime/public markers match {label}."

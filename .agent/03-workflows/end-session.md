@@ -1,4 +1,4 @@
-# End Session — Memory & Evidence Closeout (AOS v8.0-dev)
+# End Session — Memory & Evidence Closeout (AOS v8.0.0-rc.1)
 
 > Use when ending work or handing the project to another agent/tool.
 > Runtime authority remains `01-core/boot-manifest.md`.

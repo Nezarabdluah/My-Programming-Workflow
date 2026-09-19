@@ -1,4 +1,4 @@
-# Agent Operating System (AOS v8.0-dev)
+# Agent Operating System (AOS v8.0.0-rc.1)
 
 Read `.agent/01-core/boot-manifest.md` first. It is the canonical runtime contract.
 
