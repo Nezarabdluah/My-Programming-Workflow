@@ -93,7 +93,11 @@ def test_gov_t14_current_contract_resolves():
     project = _json(".agent/profiles/project.json")
     context_map = _json(".agent/01-core/context-map.json")
 
-    result = broker.resolve_context(task, project, context_map)
+    try:
+        result = broker.resolve_context(task, project, context_map)
+    except Exception as exc:
+        return FAIL, f"GOV-T14: current task contract failed to resolve: {exc}"
+
     if not result["resources"]:
         return FAIL, "GOV-T14: current task resolved to empty context."
 
