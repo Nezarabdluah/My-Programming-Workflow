@@ -1,12 +1,12 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T024 — Evidence Bundle & Approval Policy 🔴
-- **State:** Validating
+- **State:** Done
 - **Branch:** `aos-v8-sprint2-evidence-approval`
 - **Approval:** Navigator approved Sprint 2 continuation.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - Hard-stop risk cannot bypass explicit human approval.
@@ -25,11 +25,11 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] GOV-T17–T22 + mutations.
 - [x] CI records compile + full verification evidence.
 - [x] Evidence commands hardened to shell-free execution.
-- [ ] Final Validating-state CI.
-- [ ] Done-state CI for T09.
+- [x] Final Validating-state CI passed.
+- [x] T024 closed; awaiting Done-state CI for T09.
 
 ### Evidence
-Run `35437681233`: 22/22 PASS, 14/14 mutations, Evidence Bundle PASS.
+Run `35437710721`: full Validating-state verification success.
 
 ### Next
-Run Validating-state CI, then close T024 only if green.
+Run Done-state CI; if green, prepare PR #3 for squash merge.
