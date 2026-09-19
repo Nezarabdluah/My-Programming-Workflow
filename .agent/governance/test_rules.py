@@ -389,7 +389,11 @@ def test_gov_t40_version_consistency():
             problems.append("init-project: VERSION example mismatch")
 
     if version != "8.0.0-dev":
-        stale_markers = ("v8.0-dev", "8.0.0-dev", "version-8.0--dev")
+        stale_markers = (
+            "v8.0-" + "dev",
+            "8.0.0-" + "dev",
+            "version-8.0--" + "dev",
+        )
         scan_files = set(required) | {
             ".agent/01-core/operating-contract.md",
             ".agent/01-core/session-prompt.md",
