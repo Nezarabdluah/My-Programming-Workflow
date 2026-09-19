@@ -140,111 +140,71 @@ def test_gov_t08_dead_references():
 
 
 def test_gov_t10_decision_consistency():
-    """GOV-T10: Verify ADR accompanies architecture/security rule changes.
+    """GOV-T10: Verify runtime policy references real approved ADRs.
 
-    THIS IS NOT A RUBBER STAMP. It actually checks:
-    1. If decisions.md exists and contains ADRs
-    2. If any rule file was recently changed (newer than decisions.md),
-       there should be a corresponding ADR
-    3. If operating-contract.md references architecture/security patterns,
-       an ADR should exist documenting the decision
+    Deterministic checks:
+    1. decisions.md exists and real ADR entries are structurally complete.
+    2. ADR IDs referenced by active Core/rule policy files exist in decisions.md.
+    3. v8 migration policy cannot cite a missing ADR.
 
-    If no rule files exist or no changes detected, this is SKIP_EXPECTED.
+    This check intentionally does not infer file chronology from filesystem
+    modification timestamps because checkout/copy operations make that signal
+    unreliable.
     """
     decisions_path = Path(".agent/04-memory/decisions.md")
     if not decisions_path.exists():
-        # No decisions file at all — check if any rules exist
-        rules_dir = Path(".agent/02-rules")
-        if rules_dir.exists() and any(rules_dir.iterdir()):
-            return FAIL, (
-                "GOV-T10: Rules exist but decisions.md is missing — "
-                "architecture decisions must be documented."
-            )
-        return SKIP_EXPECTED, "GOV-T10: No rules or decisions files — nothing to verify."
+        return FAIL, "GOV-T10: decisions.md is missing."
 
     decisions_content = decisions_path.read_text(encoding="utf-8")
+    adr_ids = set(re.findall(r"## .*?(ADR-\d+)", decisions_content))
+    if not adr_ids:
+        return FAIL, "GOV-T10: decisions.md contains no ADR entries."
 
-    # Extract ADR IDs
-    adrs = re.findall(r"## .*?(ADR-\d+)", decisions_content)
-    if not adrs:
-        # decisions.md exists but has no ADRs
-        rules_dir = Path(".agent/02-rules")
-        contract_path = Path(".agent/01-core/operating-contract.md")
-        if rules_dir.exists() and any(rules_dir.iterdir()):
-            return FAIL, (
-                "GOV-T10: Rules directory has files but decisions.md "
-                "contains no ADR entries."
-            )
-        return SKIP_EXPECTED, "GOV-T10: No ADRs and no rules — nothing to verify."
-
-    # Verify each ADR has required sections
-    incomplete_adrs = []
-
-    for adr_id in adrs:
-        # Find the heading line containing this ADR
-        adr_pattern = re.compile(r"## .*?" + re.escape(adr_id) + r".*", re.MULTILINE)
-        match = adr_pattern.search(decisions_content)
+    incomplete = []
+    for adr_id in sorted(adr_ids):
+        match = re.search(
+            r"## .*?" + re.escape(adr_id) + r".*?(?=\n## |\Z)",
+            decisions_content,
+            flags=re.MULTILINE | re.DOTALL,
+        )
         if not match:
             continue
-
-        start_pos = match.start()
-
-        # Find the next ## heading (next ADR) or end of file
-        next_heading = re.search(r"\n## ", decisions_content[match.end():])
-        if next_heading:
-            end_pos = match.end() + next_heading.start()
-        else:
-            end_pos = len(decisions_content)
-
-        section = decisions_content[start_pos:end_pos]
-
-        # Skip template entries
+        section = match.group(0)
         if "[Architectural Decision Title]" in section:
             continue
+        required_labels = ("Context", "decision", "consequences")
+        lowered = section.lower()
+        missing = [label for label in required_labels if label.lower() not in lowered]
+        if missing:
+            incomplete.append(f"{adr_id} (missing: {', '.join(missing)})")
 
-        has_context = "Context" in section
-        has_decision = "Decision" in section or "decision" in section
-        has_consequences = "Consequences" in section or "consequences" in section
+    if incomplete:
+        return FAIL, "GOV-T10: Incomplete ADR(s): " + "; ".join(incomplete)
 
-        if not (has_context and has_decision and has_consequences):
-            missing = []
-            if not has_context:
-                missing.append("Context")
-            if not has_decision:
-                missing.append("Decision")
-            if not has_consequences:
-                missing.append("Consequences")
-            incomplete_adrs.append(f"{adr_id} (missing: {', '.join(missing)})")
+    policy_files = [
+        ".agent/01-core/boot-manifest.md",
+        ".agent/01-core/operating-contract.md",
+        ".agent/01-core/wiring-registry.md",
+        ".agent/02-rules/vertical-slice-governance.md",
+    ]
 
-    if incomplete_adrs:
-        return FAIL, (
-            f"GOV-T10: Incomplete ADR(s): {', '.join(incomplete_adrs)} — "
-            "missing Context, Decision, or Consequences section."
-        )
+    missing_refs = []
+    checked_refs = set()
+    for rel_path in policy_files:
+        path = Path(rel_path)
+        if not path.exists():
+            continue
+        content = path.read_text(encoding="utf-8")
+        refs = set(re.findall(r"ADR-\d+", content))
+        checked_refs.update(refs)
+        for ref in refs:
+            if ref not in adr_ids:
+                missing_refs.append(f"{ref} referenced by {rel_path}")
 
-    # Cross-check: contract references patterns that should have ADRs
-    contract_path = Path(".agent/01-core/operating-contract.md")
-    if contract_path.exists():
-        contract = contract_path.read_text(encoding="utf-8")
-        # Check if contract mentions architecture patterns
-        arch_patterns = re.findall(
-            r"(?:Vertical.Slice|Clean.Architecture|DDD|CQRS|Event.Sourcing)",
-            contract
-        )
-        if arch_patterns:
-            # There should be at least one ADR about architecture
-            has_arch_adr = any(
-                "rchitect" in decisions_content[
-                    decisions_content.find(adr):
-                    decisions_content.find(adr) + 500
-                ]
-                for adr in adrs
-                if decisions_content.find(adr) >= 0
-            )
-            if not has_arch_adr:
-                return FAIL, (
-                    f"GOV-T10: Contract references {arch_patterns} but "
-                    "no architectural ADR found in decisions.md."
-                )
+    if missing_refs:
+        return FAIL, "GOV-T10: Policy references missing ADRs: " + "; ".join(missing_refs)
 
-    return PASS, f"GOV-T10: {len(adrs)} ADR(s) verified — all complete and consistent."
+    return PASS, (
+        f"GOV-T10: {len(adr_ids)} ADR(s) structurally valid; "
+        f"{len(checked_refs)} runtime ADR reference(s) resolve."
+    )
