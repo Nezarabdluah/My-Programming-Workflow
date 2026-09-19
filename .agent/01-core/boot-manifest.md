@@ -1,4 +1,4 @@
-# AOS v8.0-dev — Boot Manifest
+# AOS v8.0.0-rc.1 — Boot Manifest
 
 > Canonical runtime contract. Load this file plus canonical Boot Memory only.
 > Boot target: ≤150 lines.
