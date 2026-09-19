@@ -1,12 +1,12 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T026 — Risk & Affected-Area Context Routing 🔴
-- **State:** Validating
+- **State:** Done
 - **Branch:** `aos-v8-sprint2-risk-routing`
 - **Approval:** Navigator approved Sprint 2 continuation.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - True risk flags deterministically add required capabilities.
@@ -26,7 +26,7 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] Task Contract validates affected areas.
 - [x] GOV-T31–T35 + routing mutations added.
 - [x] CI green: 35/35 governance + 22/22 mutations.
-- [ ] Final Validating-state CI, then Done-state CI.
+- [x] Validating-state CI passed; awaiting Done-state T09.
 
 ### Next
-Run Validating-state CI; close T026 only if all routing gates stay green.
+Run Done-state CI; merge PR #5 only if GOV-T09 and all gates stay green.
