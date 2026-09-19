@@ -1,4 +1,4 @@
-# Learned Mistakes & Lessons — AOS v8.0-dev
+# Learned Mistakes & Lessons — AOS v8.0.0-rc.1
 
 > **Contract**: read mandatorily at session start.
 > **Cap**: 20 active mistakes (newest on top — Lost-in-the-Middle resistance).
