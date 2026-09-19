@@ -14,7 +14,7 @@ requires: []
 
 ## Resolution procedure (ADR-007 / ADR-008)
 
-The executable source of truth is `01-core/context-map.json`; this Markdown file documents the same capability model for humans. For 🟡/🔴 tasks, run `01-core/context_broker.py` against `task-contracts/current.json` and `profiles/project.json`.
+The executable source of truth is `01-core/context-map.json`; this Markdown file documents the capability model for humans. The broker combines explicit Task Contract capabilities with generic risk-derived capabilities from the Context Map and project-specific affected-area rules from `profiles/project.json`.
 
 Manual fallback only when the executable broker is unavailable:
 1. Identify the capability or capabilities materially affected by the task.

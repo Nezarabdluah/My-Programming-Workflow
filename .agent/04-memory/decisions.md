@@ -190,3 +190,26 @@
   * **Performance**: negligible local validation/hash cost.
   * **Maintainability**: approval provenance and execution mode become deterministic and auditable.
   * **Security**: hard-stop boundaries cannot be bypassed by forged ADR/pattern text; archived evidence can be integrity-checked.
+
+
+---
+
+## ADR-011: Risk- and affected-area-aware capability derivation
+* **Date**: 2026-09-19
+* **Status**: Approved (Sprint 2 continuation authorized by the Navigator)
+* **Context & problem**:
+  The Context Broker currently trusts the Task Contract's explicit `capabilities` list. If an agent correctly marks `security_boundary`, `data_migration`, `production_change`, or an affected path such as CI/deployment files but forgets the corresponding capability, relevant rules can be omitted.
+* **Approved decision**:
+  (1) Keep explicit capabilities as the primary declaration.
+  (2) Add a Core `risk_capability_map` in `context-map.json` that deterministically augments capabilities from true risk flags.
+  (3) Add project-specific `area_capability_rules` in Project Profile so repository paths can activate relevant capabilities without hardcoding project structure into Core.
+  (4) Context Broker returns declared capabilities, effective capabilities, and provenance for every derived capability.
+  (5) Derived capabilities are additive only; the broker never silently removes an explicit capability.
+* **Rejected alternatives and why**:
+  1. Natural-language inference from task title/body ← rejected: non-deterministic and difficult to test.
+  2. Hardcode repository paths in Core ← rejected: violates project-agnostic architecture.
+  3. Let risk only affect approval, not context ← rejected: approval safety does not guarantee the agent loaded the right engineering guidance.
+* **Technical consequences**:
+  * **Performance**: small deterministic expansion only when risk/area evidence activates a capability.
+  * **Maintainability**: project-specific path knowledge stays in Project Profile; Core keeps generic risk semantics.
+  * **Security**: sensitive risk flags automatically activate their relevant context even when explicit capability declaration is incomplete.

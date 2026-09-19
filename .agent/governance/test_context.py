@@ -183,3 +183,150 @@ def test_gov_t16_project_profile_integrity():
         f"GOV-T16: {len(profiles)} Technology Profile(s) resolve and "
         f"{len(commands)} project command(s) are defined."
     )
+
+
+def test_gov_t31_security_risk_derives_security_context():
+    """GOV-T31: security_boundary risk derives Security + Testing context."""
+    broker = _load_broker()
+    context_map = _json(".agent/01-core/context-map.json")
+    project = _json(".agent/profiles/project.json")
+    task = {
+        "task_id": "t31",
+        "classification": "sensitive",
+        "capabilities": [],
+        "affected_areas": [],
+        "risk": {"security_boundary": True},
+    }
+
+    result = broker.resolve_context(task, project, context_map)
+    effective = set(result["effective_capabilities"])
+    paths = {resource["path"] for resource in result["resources"]}
+
+    if not {"security", "testing"}.issubset(effective):
+        return FAIL, f"GOV-T31: missing derived capabilities: {effective}"
+    if ".agent/02-rules/security-checklist.md" not in paths:
+        return FAIL, "GOV-T31: security rule missing from derived context."
+    sources = result["capability_sources"].get("security", [])
+    if "risk:security_boundary" not in sources:
+        return FAIL, f"GOV-T31: risk provenance missing: {sources}"
+
+    return PASS, "GOV-T31: security risk deterministically derives Security/Testing."
+
+
+def test_gov_t32_data_migration_derives_database_context():
+    """GOV-T32: data_migration risk derives Database + Testing context."""
+    broker = _load_broker()
+    context_map = _json(".agent/01-core/context-map.json")
+    project = _json(".agent/profiles/project.json")
+    task = {
+        "task_id": "t32",
+        "classification": "sensitive",
+        "capabilities": [],
+        "affected_areas": [],
+        "risk": {"data_migration": True},
+    }
+
+    result = broker.resolve_context(task, project, context_map)
+    effective = set(result["effective_capabilities"])
+    paths = {resource["path"] for resource in result["resources"]}
+
+    if not {"database", "testing"}.issubset(effective):
+        return FAIL, f"GOV-T32: missing DB/testing capabilities: {effective}"
+    if ".agent/02-rules/database-performance.md" not in paths:
+        return FAIL, "GOV-T32: database rule missing from migration context."
+
+    return PASS, "GOV-T32: data migration derives Database/Testing context."
+
+
+def test_gov_t33_workflow_area_derives_deployment_context():
+    """GOV-T33: .github/workflows affected area derives Deployment + Testing."""
+    broker = _load_broker()
+    context_map = _json(".agent/01-core/context-map.json")
+    project = _json(".agent/profiles/project.json")
+    task = {
+        "task_id": "t33",
+        "classification": "medium",
+        "capabilities": [],
+        "affected_areas": [".github/workflows/aos-verify.yml"],
+        "risk": {},
+    }
+
+    result = broker.resolve_context(task, project, context_map)
+    effective = set(result["effective_capabilities"])
+    paths = {resource["path"] for resource in result["resources"]}
+
+    if not {"deployment", "testing"}.issubset(effective):
+        return FAIL, f"GOV-T33: workflow area missing capabilities: {effective}"
+    deployment = ".agent/03-workflows/master-pipeline/stage-7-deployment.md"
+    if deployment not in paths:
+        return FAIL, "GOV-T33: deployment workflow missing from derived context."
+    sources = result["capability_sources"].get("deployment", [])
+    if "area:.github/workflows" not in sources:
+        return FAIL, f"GOV-T33: area provenance missing: {sources}"
+
+    return PASS, "GOV-T33: CI workflow area derives Deployment/Testing context."
+
+
+def test_gov_t34_capability_sources_deduplicate():
+    """GOV-T34: One capability may have multiple provenance sources without duplication."""
+    broker = _load_broker()
+    context_map = _json(".agent/01-core/context-map.json")
+    project = _json(".agent/profiles/project.json")
+    task = {
+        "task_id": "t34",
+        "classification": "sensitive",
+        "capabilities": ["testing"],
+        "affected_areas": [".github/workflows/aos-verify.yml"],
+        "risk": {"production_change": True},
+    }
+
+    result = broker.resolve_context(task, project, context_map)
+    effective = result["effective_capabilities"]
+    if effective.count("testing") != 1:
+        return FAIL, f"GOV-T34: testing duplicated in effective list: {effective}"
+
+    sources = set(result["capability_sources"].get("testing", []))
+    required = {
+        "explicit",
+        "risk:production_change",
+        "area:.github/workflows",
+    }
+    if not required.issubset(sources):
+        return FAIL, f"GOV-T34: missing provenance source(s): {sources}"
+
+    return PASS, "GOV-T34: capability de-duplication preserves all provenance."
+
+
+def test_gov_t35_risk_and_area_maps_reference_known_capabilities():
+    """GOV-T35: Risk/area derivation maps can reference only executable capabilities."""
+    context_map = _json(".agent/01-core/context-map.json")
+    project = _json(".agent/profiles/project.json")
+    known = set(context_map.get("capabilities", {}))
+
+    bad_risks = []
+    for risk, capabilities in context_map.get("risk_capability_map", {}).items():
+        if not isinstance(capabilities, list):
+            bad_risks.append(f"{risk}:not-list")
+            continue
+        for capability in capabilities:
+            if capability not in known:
+                bad_risks.append(f"{risk}:{capability}")
+
+    bad_areas = []
+    seen_prefixes = set()
+    for rule in project.get("area_capability_rules", []):
+        prefix = rule.get("prefix")
+        if prefix in seen_prefixes:
+            bad_areas.append(f"duplicate:{prefix}")
+        seen_prefixes.add(prefix)
+        for capability in rule.get("capabilities", []):
+            if capability not in known:
+                bad_areas.append(f"{prefix}:{capability}")
+
+    if bad_risks or bad_areas:
+        return FAIL, (
+            "GOV-T35: invalid derivation mapping(s): "
+            + ", ".join(bad_risks + bad_areas)
+        )
+
+    return PASS, "GOV-T35: risk/area maps reference only known capabilities."

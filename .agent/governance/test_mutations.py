@@ -472,6 +472,77 @@ def mut_t31_reject_registry_adr_status():
     )
 
 
+def mut_t31_remove_security_risk_mapping():
+    """Mutate risk map so security_boundary no longer derives Security."""
+    import json
+    from test_context import test_gov_t31_security_risk_derives_security_context
+    path = Path(".agent/01-core/context-map.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data.get("risk_capability_map", {}).pop("security_boundary", None)
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T31-REMOVE-SECURITY-RISK-MAPPING",
+        setup,
+        test_gov_t31_security_risk_derives_security_context,
+    )
+
+
+def mut_t33_remove_workflow_area_mapping():
+    """Mutate Project Profile so CI workflow paths no longer derive Deployment."""
+    import json
+    from test_context import test_gov_t33_workflow_area_derives_deployment_context
+    path = Path(".agent/profiles/project.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["area_capability_rules"] = [
+            rule for rule in data.get("area_capability_rules", [])
+            if rule.get("prefix") != ".github/workflows"
+        ]
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T33-REMOVE-WORKFLOW-AREA-MAPPING",
+        setup,
+        test_gov_t33_workflow_area_derives_deployment_context,
+    )
+
+
+def mut_t35_unknown_derived_capability():
+    """Mutate risk map to reference a capability absent from Context Map."""
+    import json
+    from test_context import test_gov_t35_risk_and_area_maps_reference_known_capabilities
+    path = Path(".agent/01-core/context-map.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["risk_capability_map"]["security_boundary"] = [
+            "definitely-unknown-capability"
+        ]
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T35-UNKNOWN-DERIVED-CAPABILITY",
+        setup,
+        test_gov_t35_risk_and_area_maps_reference_known_capabilities,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -511,6 +582,9 @@ if __name__ == "__main__":
         mut_t27_allow_unknown_risk,
         mut_t30_forge_registry_source_marker,
         mut_t31_reject_registry_adr_status,
+        mut_t31_remove_security_risk_mapping,
+        mut_t33_remove_workflow_area_mapping,
+        mut_t35_unknown_derived_capability,
         mut_t11_boot_too_large,
     ]
 

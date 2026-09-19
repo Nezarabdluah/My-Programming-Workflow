@@ -1,11 +1,7 @@
 """AOS v8 Context Broker.
 
-Deterministically resolves task capabilities into the minimum resource set.
-No external dependencies; uses JSON contracts and the standard library only.
-
-Usage:
-  python .agent/01-core/context_broker.py
-  python .agent/01-core/context_broker.py --task .agent/task-contracts/current.json
+Deterministically resolves explicit, risk-derived, and affected-area-derived
+capabilities into the minimum resource set.
 """
 
 from __future__ import annotations
@@ -41,6 +37,82 @@ def _active_profiles(project: dict) -> set[str]:
     return {str(profile) for profile in profiles}
 
 
+def _normalize_path(value: str) -> str:
+    return value.replace("\\", "/").rstrip("/")
+
+
+def derive_capabilities(task: dict, project: dict, context_map: dict) -> tuple[list[str], dict]:
+    declared = task.get("capabilities", [])
+    if not isinstance(declared, list):
+        raise ContextBrokerError("task.capabilities must be a list")
+
+    effective = []
+    sources: dict[str, list[str]] = {}
+
+    def add(capability: str, source: str) -> None:
+        if not isinstance(capability, str) or not capability.strip():
+            raise ContextBrokerError("capability must be a non-empty string")
+        if capability not in effective:
+            effective.append(capability)
+        sources.setdefault(capability, [])
+        if source not in sources[capability]:
+            sources[capability].append(source)
+
+    for capability in declared:
+        add(capability, "explicit")
+
+    risk = task.get("risk", {})
+    if not isinstance(risk, dict):
+        raise ContextBrokerError("task.risk must be an object")
+
+    risk_map = context_map.get("risk_capability_map", {})
+    if not isinstance(risk_map, dict):
+        raise ContextBrokerError("context-map.risk_capability_map must be an object")
+
+    for risk_key, capabilities in risk_map.items():
+        if risk.get(risk_key) is True:
+            if not isinstance(capabilities, list):
+                raise ContextBrokerError(
+                    f"risk capability mapping must be a list: {risk_key}"
+                )
+            for capability in capabilities:
+                add(capability, f"risk:{risk_key}")
+
+    affected_areas = task.get("affected_areas", [])
+    if not isinstance(affected_areas, list):
+        raise ContextBrokerError("task.affected_areas must be a list")
+
+    area_rules = project.get("area_capability_rules", [])
+    if not isinstance(area_rules, list):
+        raise ContextBrokerError("project.area_capability_rules must be a list")
+
+    for area in affected_areas:
+        if not isinstance(area, str) or not area.strip():
+            raise ContextBrokerError("affected area must be a non-empty string")
+        normalized_area = _normalize_path(area)
+
+        for rule in area_rules:
+            if not isinstance(rule, dict):
+                raise ContextBrokerError("area capability rule must be an object")
+            prefix = rule.get("prefix")
+            capabilities = rule.get("capabilities", [])
+            if not isinstance(prefix, str) or not prefix.strip():
+                raise ContextBrokerError("area capability rule prefix is invalid")
+            if not isinstance(capabilities, list):
+                raise ContextBrokerError("area capability rule capabilities must be a list")
+
+            normalized_prefix = _normalize_path(prefix)
+            matches = (
+                normalized_area == normalized_prefix
+                or normalized_area.startswith(normalized_prefix + "/")
+            )
+            if matches:
+                for capability in capabilities:
+                    add(capability, f"area:{normalized_prefix}")
+
+    return effective, sources
+
+
 def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
     classification = task.get("classification")
     if classification not in {"simple", "medium", "sensitive"}:
@@ -48,9 +120,8 @@ def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
             "task.classification must be one of: simple, medium, sensitive"
         )
 
-    capabilities = task.get("capabilities", [])
-    if not isinstance(capabilities, list):
-        raise ContextBrokerError("task.capabilities must be a list")
+    declared = task.get("capabilities", [])
+    effective, sources = derive_capabilities(task, project, context_map)
 
     registry = context_map.get("capabilities", {})
     if not isinstance(registry, dict):
@@ -61,7 +132,7 @@ def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
     skipped = []
     seen = set()
 
-    for capability in capabilities:
+    for capability in effective:
         if capability not in registry:
             raise ContextBrokerError(f"Unknown capability: {capability}")
 
@@ -71,6 +142,7 @@ def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
             skipped.append({
                 "capability": capability,
                 "reason": f"requires profile: {required_profile}",
+                "sources": sources.get(capability, []),
             })
             continue
 
@@ -83,6 +155,7 @@ def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
             seen.add(key)
             selected.append({
                 "capability": capability,
+                "capability_sources": sources.get(capability, []),
                 **resource,
             })
 
@@ -90,7 +163,10 @@ def resolve_context(task: dict, project: dict, context_map: dict) -> dict:
         "task_id": task.get("task_id"),
         "classification": classification,
         "active_profiles": sorted(profiles),
-        "capabilities": capabilities,
+        "declared_capabilities": declared,
+        "effective_capabilities": effective,
+        "capabilities": effective,
+        "capability_sources": sources,
         "resources": selected,
         "skipped": skipped,
     }

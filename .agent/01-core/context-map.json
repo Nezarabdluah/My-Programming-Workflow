@@ -119,5 +119,34 @@
       ],
       "catalog_label": "Deployment / rollback"
     }
+  },
+  "risk_capability_map": {
+    "new_architecture": [
+      "architecture",
+      "testing"
+    ],
+    "security_boundary": [
+      "security",
+      "testing"
+    ],
+    "data_migration": [
+      "database",
+      "testing"
+    ],
+    "production_change": [
+      "production-readiness",
+      "deployment",
+      "testing"
+    ],
+    "breaking_external_contract": [
+      "api",
+      "testing"
+    ],
+    "destructive": [
+      "testing"
+    ],
+    "irreversible": [
+      "testing"
+    ]
   }
 }

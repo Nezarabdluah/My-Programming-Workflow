@@ -1,18 +1,16 @@
 {
   "schema_version": 1,
-  "task_id": "T025",
-  "title": "Sprint 2 — Verified provenance, evidence history, and autonomy gate",
+  "task_id": "T026",
+  "title": "Sprint 2 — Risk and affected-area context routing",
   "classification": "sensitive",
   "capabilities": [
-    "architecture",
-    "testing"
+    "architecture"
   ],
   "affected_areas": [
     ".agent/01-core",
-    ".agent/evidence",
+    ".agent/profiles",
     ".agent/governance",
     ".agent/task-contracts",
-    ".github/workflows",
     ".agent/04-memory"
   ],
   "risk": {
@@ -27,7 +25,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator explicitly requested continuing Sprint 2 autonomous execution work."
+    "reference": "Navigator explicitly requested continuing Sprint 2 risk-aware routing work."
   },
   "verification": [
     "governance_compile",
