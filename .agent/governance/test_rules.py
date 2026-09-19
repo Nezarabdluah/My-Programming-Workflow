@@ -316,6 +316,24 @@ def test_gov_t38_release_contract_entrypoints():
     if "aos-v8-convergence" in workflow:
         problems.append("workflow: stale convergence branch trigger remains")
 
+    readme = Path("README.md").read_text(encoding="utf-8")
+    if ".agent/install.py" not in readme:
+        problems.append("README: sanitized installer entrypoint missing")
+    if "Copy `.agent` into your project" in readme:
+        problems.append("README: unsafe full-state copy onboarding remains")
+
+    if "profiles/technology/" not in init:
+        problems.append("init-project: Technology Profile install scope missing")
+    for forbidden_state in [
+        "profiles/project.json",
+        "task-contracts/current.json",
+        "04-memory/",
+    ]:
+        if forbidden_state not in init:
+            problems.append(
+                f"init-project: source-state exclusion missing for {forbidden_state}"
+            )
+
     if problems:
         return FAIL, "GOV-T38: release contract drift: " + "; ".join(problems)
 
