@@ -220,3 +220,47 @@ def test_gov_t10_decision_consistency():
         f"GOV-T10: {len(adr_ids)} ADR(s) structurally valid; "
         f"{len(checked_refs)} runtime ADR reference(s) resolve."
     )
+
+
+def test_gov_t36_public_contract_sync():
+    """GOV-T36: README public contract must match the current v8 runtime."""
+    readme = Path("README.md")
+    if not readme.exists():
+        return FAIL, "GOV-T36: README.md missing."
+
+    content = readme.read_text(encoding="utf-8")
+
+    required = [
+        "execution_gate.py",
+        "context_broker.py",
+        "evidence_recorder.py",
+        "approval-registry.json",
+        "Task Contract",
+        "Evidence History",
+        "35 governance checks",
+        "22/22 mutation",
+    ]
+    forbidden = [
+        "Nothing is optional",
+        "Load ALL of it",
+        "7 Mandatory Steps",
+        "11/11 PASS",
+        "6/6 detected",
+        "runner.py before Done",
+    ]
+
+    missing = [marker for marker in required if marker not in content]
+    stale = [marker for marker in forbidden if marker in content]
+
+    if missing:
+        return FAIL, (
+            "GOV-T36: README missing current runtime marker(s): "
+            + ", ".join(missing)
+        )
+    if stale:
+        return FAIL, (
+            "GOV-T36: README contains stale public-contract marker(s): "
+            + ", ".join(stale)
+        )
+
+    return PASS, "GOV-T36: README matches the current v8 public runtime contract."
