@@ -85,7 +85,7 @@ Default = minimum relevant context.
 Until Context Broker exists:
 1. Identify capabilities materially affected.
 2. Use `01-core/wiring-registry.md` to discover candidate resources.
-3. Load at most one directly relevant rule file at a time.
+3. Load at most one directly relevant rule file from `02-rules/` at a time.
 4. Grep only targeted REF/OPS/QA anchors needed for a real decision.
 5. Load constitutions/templates/prompts/book lessons only when they materially help.
 6. Use `05-references/books/00-master-index.md` as an index, not an unconditional loader.
