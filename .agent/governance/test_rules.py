@@ -40,35 +40,43 @@ def _find_source_files():
 
 
 def test_gov_t06_rule_linkage():
-    """GOV-T06: Verify the canonical v8 boot contract links to task rules.
+    """GOV-T06: Verify canonical boot routes non-trivial context through broker.
 
-    AOS v8 uses boot-manifest.md as the single runtime entry point.
-    Legacy session-prompt.md must not be required for governance success.
+    AOS v8 Sprint 2 replaces direct manual rule linkage with:
+    Task Contract -> Context Broker -> executable Context Map.
     """
     boot_path = Path(".agent/01-core/boot-manifest.md")
     if not boot_path.exists():
         return FAIL, "GOV-T06: canonical boot-manifest.md not found."
 
     content = boot_path.read_text(encoding="utf-8")
-    has_rule_link = "02-rules/" in content
-    has_wiring_link = "wiring-registry.md" in content
+    required_links = {
+        "task-contracts/current.json": "task contract",
+        "context_broker.py": "context broker",
+        "profiles/project.json": "project profile",
+    }
+    missing = [
+        label for marker, label in required_links.items()
+        if marker not in content
+    ]
 
-    if has_rule_link and has_wiring_link:
-        return PASS, (
-            "GOV-T06: Canonical boot contract links to specialized rules "
-            "and the wiring registry."
+    broker_path = Path(".agent/01-core/context_broker.py")
+    map_path = Path(".agent/01-core/context-map.json")
+    if not broker_path.exists():
+        missing.append("context broker file")
+    if not map_path.exists():
+        missing.append("context map")
+
+    if missing:
+        return FAIL, (
+            "GOV-T06: Canonical context routing incomplete: "
+            + ", ".join(missing)
         )
 
-    missing = []
-    if not has_rule_link:
-        missing.append("02-rules/")
-    if not has_wiring_link:
-        missing.append("wiring-registry.md")
-    return FAIL, (
-        "GOV-T06: Canonical boot contract is missing rule-routing linkage: "
-        + ", ".join(missing)
+    return PASS, (
+        "GOV-T06: Boot routes non-trivial context through Task Contract, "
+        "Context Broker, Project Profile, and executable Context Map."
     )
-
 
 def test_gov_t07_reference_verification():
     """GOV-T07: Verify [REF-xxx] codes used in source match the catalog.
