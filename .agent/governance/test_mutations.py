@@ -627,6 +627,25 @@ def mut_t39_leak_project_profile():
     )
 
 
+def mut_t40_restore_dev_version_marker():
+    """Mutate root AGENTS with a stale dev version marker."""
+    from test_rules import test_gov_t40_version_consistency
+    path = Path("AGENTS.md")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        first_line, rest = original.split("\n", 1)
+        mutated = "# AGENTS.md — Agent Entry Point (AOS v8.0-dev)\n" + rest
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T40-RESTORE-DEV-VERSION-MARKER",
+        setup,
+        test_gov_t40_version_consistency,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -673,6 +692,7 @@ if __name__ == "__main__":
         mut_t37_add_volatile_branch_state,
         mut_t38_restore_stale_start_check,
         mut_t39_leak_project_profile,
+        mut_t40_restore_dev_version_marker,
         mut_t11_boot_too_large,
     ]
 
