@@ -1,4 +1,4 @@
-"""AOS Governance Runner — v8.0-dev
+"""AOS Governance Runner — v8.0.0-rc.1
 
 Runs all governance tests and produces structured results.
 Supports 5 official result statuses per ADR-006/v8 plan:
@@ -49,7 +49,7 @@ def run_all_tests(json_output=False):
     now = datetime.now(timezone.utc).isoformat()
 
     if not json_output:
-        print("🔍 [AOS v8.0-dev] Running governance tests...")
+        print("🔍 [AOS v8.0.0-rc.1] Running governance tests...")
         print("=" * 60)
 
     for module_name in TEST_MODULES:
