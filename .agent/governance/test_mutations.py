@@ -301,6 +301,52 @@ def mut_t16_missing_technology_profile():
     )
 
 
+def mut_t18_remove_destructive_hard_stop():
+    """Mutate approval policy so destructive risk can bypass human approval."""
+    import json
+    from test_execution import test_gov_t18_hard_stop_requires_human
+    path = Path(".agent/01-core/approval-policy.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["hard_stop_risks"] = [
+            item for item in data.get("hard_stop_risks", [])
+            if item != "destructive"
+        ]
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T18-REMOVE-DESTRUCTIVE-HARD-STOP",
+        setup,
+        test_gov_t18_hard_stop_requires_human,
+    )
+
+
+def mut_t20_evidence_always_passes():
+    """Mutate evidence status derivation so every exit code becomes PASS."""
+    from test_execution import test_gov_t20_evidence_status_is_derived
+    path = Path(".agent/01-core/evidence_recorder.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'return "PASS" if exit_code == 0 else "FAIL"',
+            'return "PASS"',
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T20-EVIDENCE-ALWAYS-PASSES",
+        setup,
+        test_gov_t20_evidence_status_is_derived,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -333,6 +379,8 @@ if __name__ == "__main__":
         mut_t14_unknown_capability,
         mut_t15_missing_context_resource,
         mut_t16_missing_technology_profile,
+        mut_t18_remove_destructive_hard_stop,
+        mut_t20_evidence_always_passes,
         mut_t11_boot_too_large,
     ]
 
