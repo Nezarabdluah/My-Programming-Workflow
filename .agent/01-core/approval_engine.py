@@ -1,21 +1,22 @@
 """AOS v8 Approval Engine.
 
-Evaluates approval requirements from a structured Task Contract.
-No free-text inference and no external dependencies.
-
-Usage:
-  python .agent/01-core/approval_engine.py
+Evaluates structured Task Contracts against approval policy and verified
+approval provenance. No free-text inference and no external dependencies.
 """
 
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import re
 from pathlib import Path
 
 
+CORE_DIR = Path(".agent/01-core")
 DEFAULT_TASK = Path(".agent/task-contracts/current.json")
-DEFAULT_POLICY = Path(".agent/01-core/approval-policy.json")
+DEFAULT_POLICY = CORE_DIR / "approval-policy.json"
+DEFAULT_REGISTRY = CORE_DIR / "approval-registry.json"
 
 
 class ApprovalError(ValueError):
@@ -31,19 +32,137 @@ def load_json(path: Path) -> dict:
         raise ApprovalError(f"Invalid JSON in {path}: {exc}") from exc
 
 
-def evaluate_approval(task: dict, policy: dict) -> dict:
-    classification = task.get("classification")
-    if classification not in {"simple", "medium", "sensitive"}:
-        raise ApprovalError("invalid task.classification")
+def _validate_task(task: dict) -> dict:
+    path = CORE_DIR / "task_contract.py"
+    spec = importlib.util.spec_from_file_location("aos_task_contract", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    try:
+        return module.validate_task_contract(task)
+    except Exception as exc:
+        raise ApprovalError(str(exc)) from exc
 
-    risk = task.get("risk", {})
-    if not isinstance(risk, dict):
-        raise ApprovalError("task.risk must be an object")
 
+def _verify_registry_source(entry: dict) -> None:
+    source = entry.get("source")
+    marker = entry.get("source_marker")
+    if not isinstance(source, str) or not source.strip():
+        raise ApprovalError("approval registry entry is missing source")
+    if not isinstance(marker, str) or not marker.strip():
+        raise ApprovalError("approval registry entry is missing source_marker")
+
+    path = Path(source)
+    if not path.exists():
+        raise ApprovalError(f"approval source does not exist: {source}")
+
+    content = path.read_text(encoding="utf-8")
+    if marker not in content:
+        raise ApprovalError(
+            f"approval source marker not found: {marker} in {source}"
+        )
+
+    if entry.get("type") == "approved_adr":
+        start = content.find(marker)
+        next_heading = content.find("\n## ", start + len(marker))
+        section = content[start: next_heading if next_heading != -1 else len(content)]
+        if not re.search(
+            r"\*\*Status\*\*\s*:\s*Approved\b",
+            section,
+            flags=re.IGNORECASE,
+        ):
+            raise ApprovalError(
+                f"ADR approval source is not approved: {marker}"
+            )
+
+
+def _registry_entry(task: dict, registry: dict) -> dict | None:
     approval = task.get("approval", {})
-    if not isinstance(approval, dict):
-        raise ApprovalError("task.approval must be an object")
+    provenance = approval.get("provenance")
+    if provenance not in {"approved_adr", "approved_pattern"}:
+        return None
 
+    reference = approval.get("reference")
+    if not isinstance(reference, str) or not reference.strip():
+        raise ApprovalError(
+            f"{provenance} requires a non-empty approval.reference"
+        )
+
+    entries = registry.get("entries", [])
+    if not isinstance(entries, list):
+        raise ApprovalError("approval registry entries must be a list")
+
+    matches = [
+        entry for entry in entries
+        if entry.get("id") == reference
+        and entry.get("type") == provenance
+        and entry.get("status") == "approved"
+    ]
+    if len(matches) != 1:
+        raise ApprovalError(
+            f"unverified approval provenance: {provenance}:{reference}"
+        )
+
+    entry = matches[0]
+    _verify_registry_source(entry)
+
+    task_caps = set(task.get("capabilities", []))
+    allowed_caps = set(entry.get("capabilities", []))
+    if not task_caps.issubset(allowed_caps):
+        missing = sorted(task_caps - allowed_caps)
+        raise ApprovalError(
+            "approval reference does not cover capability/capabilities: "
+            + ", ".join(missing)
+        )
+
+    active_risks = {
+        key for key, value in task.get("risk", {}).items()
+        if value is True
+    }
+    allowed_risks = set(entry.get("risk_allowlist", []))
+    uncovered = sorted(active_risks - allowed_risks)
+    if uncovered:
+        raise ApprovalError(
+            "approval reference does not cover risk(s): "
+            + ", ".join(uncovered)
+        )
+
+    return entry
+
+
+def _approved(*, provenance: str, reason: str, human_required: bool,
+              execution_mode: str, **extra) -> dict:
+    return {
+        "decision": "APPROVED",
+        "execution_mode": execution_mode,
+        "provenance": provenance,
+        "reason": reason,
+        "human_required": human_required,
+        **extra,
+    }
+
+
+def _blocked(*, provenance, reason: str, **extra) -> dict:
+    return {
+        "decision": "BLOCKED",
+        "execution_mode": "HUMAN_REQUIRED",
+        "provenance": provenance,
+        "reason": reason,
+        "human_required": True,
+        **extra,
+    }
+
+
+def evaluate_approval(
+    task: dict,
+    policy: dict,
+    registry: dict | None = None,
+) -> dict:
+    task = _validate_task(task)
+    registry = registry if registry is not None else load_json(DEFAULT_REGISTRY)
+
+    classification = task["classification"]
+    risk = task.get("risk", {})
+    approval = task.get("approval", {})
     provenance = approval.get("provenance")
     hard_stop_keys = policy.get("hard_stop_risks", [])
     active_hard_stops = [
@@ -51,73 +170,79 @@ def evaluate_approval(task: dict, policy: dict) -> dict:
     ]
 
     if classification == "simple" and not active_hard_stops:
-        return {
-            "decision": "APPROVED",
-            "provenance": "policy",
-            "reason": "simple task with no hard-stop risk",
-            "human_required": False,
-        }
+        return _approved(
+            provenance="policy",
+            reason="simple task with no hard-stop risk",
+            human_required=False,
+            execution_mode="AUTO_EXECUTE",
+        )
 
     if active_hard_stops:
         if provenance == "human" and approval.get("status") == "approved":
-            return {
-                "decision": "APPROVED",
-                "provenance": "human",
-                "reason": "hard-stop risk explicitly approved by Navigator",
-                "human_required": True,
-                "hard_stop_risks": active_hard_stops,
-            }
-        return {
-            "decision": "BLOCKED",
-            "provenance": provenance,
-            "reason": "hard-stop risk requires explicit human approval",
-            "human_required": True,
-            "hard_stop_risks": active_hard_stops,
-        }
+            return _approved(
+                provenance="human",
+                reason="hard-stop risk explicitly approved by Navigator",
+                human_required=True,
+                execution_mode="HUMAN_APPROVED",
+                hard_stop_risks=active_hard_stops,
+            )
+        return _blocked(
+            provenance=provenance,
+            reason="hard-stop risk requires explicit human approval",
+            hard_stop_risks=active_hard_stops,
+        )
+
+    verified = _registry_entry(task, registry)
 
     if classification == "medium":
         accepted = set(policy.get("accepted_medium_provenance", []))
         if provenance in accepted and approval.get("status") == "approved":
-            return {
-                "decision": "APPROVED",
-                "provenance": provenance,
-                "reason": "medium task covered by accepted approval provenance",
-                "human_required": False,
-            }
-        return {
-            "decision": "BLOCKED",
-            "provenance": provenance,
-            "reason": "medium task lacks accepted approval provenance",
-            "human_required": False,
-        }
+            if provenance in {"approved_adr", "approved_pattern"} and not verified:
+                raise ApprovalError("approval provenance was not verified")
+            mode = "HUMAN_APPROVED" if provenance == "human" else "AUTO_EXECUTE"
+            return _approved(
+                provenance=provenance,
+                reason="medium task covered by accepted approval provenance",
+                human_required=provenance == "human",
+                execution_mode=mode,
+                approval_reference=approval.get("reference"),
+            )
+        return _blocked(
+            provenance=provenance,
+            reason="medium task lacks accepted approval provenance",
+        )
 
     accepted = set(policy.get("accepted_sensitive_provenance", []))
     if provenance in accepted and approval.get("status") == "approved":
-        return {
-            "decision": "APPROVED",
-            "provenance": provenance,
-            "reason": "sensitive task covered by accepted approval provenance",
-            "human_required": provenance == "human",
-        }
+        if provenance in {"approved_adr", "approved_pattern"} and not verified:
+            raise ApprovalError("approval provenance was not verified")
+        mode = "HUMAN_APPROVED" if provenance == "human" else "AUTO_EXECUTE"
+        return _approved(
+            provenance=provenance,
+            reason="sensitive task covered by verified approval provenance",
+            human_required=provenance == "human",
+            execution_mode=mode,
+            approval_reference=approval.get("reference"),
+        )
 
-    return {
-        "decision": "BLOCKED",
-        "provenance": provenance,
-        "reason": "sensitive task requires human/ADR/pattern approval",
-        "human_required": True,
-    }
+    return _blocked(
+        provenance=provenance,
+        reason="sensitive task requires human/ADR/pattern approval",
+    )
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Evaluate AOS task approval")
     parser.add_argument("--task", default=str(DEFAULT_TASK))
     parser.add_argument("--policy", default=str(DEFAULT_POLICY))
+    parser.add_argument("--registry", default=str(DEFAULT_REGISTRY))
     args = parser.parse_args()
 
     try:
         result = evaluate_approval(
             load_json(Path(args.task)),
             load_json(Path(args.policy)),
+            load_json(Path(args.registry)),
         )
     except ApprovalError as exc:
         print(json.dumps({"status": "FAIL", "error": str(exc)}, indent=2))

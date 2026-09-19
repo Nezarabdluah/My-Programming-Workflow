@@ -167,3 +167,26 @@
   * **Performance**: fewer unnecessary approval pauses; small execution overhead for structured verification.
   * **Maintainability**: approval logic and evidence semantics become testable/versioned.
   * **Security**: hard-stop risks cannot auto-approve merely because the model says a pattern exists.
+
+
+---
+
+## ADR-010: Verified approval provenance, explicit execution mode, and tamper-evident evidence history
+* **Date**: 2026-09-19
+* **Status**: Approved (Sprint 2 continuation authorized by the Navigator)
+* **Context & problem**:
+  ADR-009 introduced structured approval provenance and executable evidence, but `approved_adr` / `approved_pattern` references are still trusted as plain text, execution intent is only implicit in APPROVED/BLOCKED, and `evidence/current.json` retains only the latest task evidence.
+* **Approved decision**:
+  (1) Add a machine-readable approval registry. Non-human provenance such as `approved_adr` and `approved_pattern` must resolve to an approved registry entry and match declared scope before the task can auto-execute.
+  (2) Approval evaluation returns an explicit execution mode: `AUTO_EXECUTE`, `HUMAN_APPROVED`, or `HUMAN_REQUIRED`.
+  (3) Hard-stop risks always require explicit human approval; registry entries cannot bypass this boundary.
+  (4) Add evidence history archiving with SHA-256 content hashes. Current evidence remains generated and ephemeral; archived bundles are immutable-by-convention records suitable for CI artifacts/audit review.
+  (5) Add executable Task Contract validation so malformed risk/provenance fields fail before approval/context resolution.
+* **Rejected alternatives and why**:
+  1. Trust any string in `approval.reference` ← rejected: spoofable provenance.
+  2. Store all evidence history directly in Git by default ← rejected: repository bloat and noisy churn.
+  3. Keep binary APPROVED/BLOCKED only ← rejected: does not tell the agent whether it may proceed autonomously or must wait for a human.
+* **Technical consequences**:
+  * **Performance**: negligible local validation/hash cost.
+  * **Maintainability**: approval provenance and execution mode become deterministic and auditable.
+  * **Security**: hard-stop boundaries cannot be bypassed by forged ADR/pattern text; archived evidence can be integrity-checked.

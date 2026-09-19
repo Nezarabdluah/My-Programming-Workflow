@@ -3,9 +3,12 @@
 `current.json` is generated evidence for the active Task Contract.
 
 Rules:
-- Do not hand-author PASS/FAIL.
-- Run named checks through `01-core/evidence_recorder.py`.
-- Status is derived from process exit code.
-- Commands come only from `profiles/project.json`.
-- Keep transient command output out of the bundle; store durable metadata only.
-- Before starting a new task, archive evidence when it is useful for audit/history or let the new task replace the current bundle.
+- Never hand-author PASS/FAIL; status derives from the actual process exit code.
+- Run only named checks declared in `profiles/project.json`.
+- Commands execute without a shell.
+- Re-running a named check replaces stale current evidence for that check.
+- Archive completed evidence with `evidence_recorder.py --archive-current`.
+- History archives contain the bundle plus SHA-256 integrity metadata.
+- Verify archives with `--verify-archive <path>`.
+- `current.json` and `history/` are generated and gitignored.
+- CI publishes history as an external artifact when audit retention is useful.
