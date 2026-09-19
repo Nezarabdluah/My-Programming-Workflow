@@ -310,3 +310,26 @@
   * **Safety**: collision detection happens before writes; upgrades preserve durable state.
   * **Portability**: consumer verification no longer depends on AOS-source README/release files.
   * **Maintainability**: bootstrap behavior is covered by governance, mutations, and an end-to-end consumer smoke test.
+
+
+---
+
+## ADR-016: Thin remote launchers for zero-setup consumer onboarding
+* **Date**: 2026-09-19
+* **Status**: Approved (Navigator requested a true one-command experience)
+* **Context & problem**:
+  The internal bootstrap already performs safe installation, discovery, initialization, and verification, but the public Quick Start still requires users to keep a separate AOS source checkout and understand its location. That is technically one bootstrap invocation, not zero-setup onboarding from the consumer project.
+* **Approved decision**:
+  (1) Add thin root launchers for POSIX shells and PowerShell.
+  (2) Each launcher treats the current directory as the target, downloads/clones AOS only into an isolated temporary directory, invokes the existing `.agent/bootstrap.py`, and removes temporary files.
+  (3) Launchers contain no target mutation logic; collision detection and all project writes remain centralized in the governed bootstrap/installer path.
+  (4) The public README begins with one copy-paste command per shell. Internal phases and advanced options remain secondary documentation.
+  (5) Support an explicit `AOS_REF` override so released versions can be pinned; the release flow must move public commands from the development branch to an immutable release reference.
+* **Rejected alternatives and why**:
+  1. Keep requiring a permanent local AOS checkout ← rejected: exposes an implementation detail and makes onboarding feel multi-step.
+  2. Duplicate install logic in shell scripts ← rejected: creates divergent safety paths and risks bypassing collision checks.
+  3. Publish immediately to npm/PyPI ← rejected for this task: adds registry ownership and release infrastructure beyond the requested UX fix.
+* **Technical consequences**:
+  * **Usability**: onboarding starts in the user's project with one command.
+  * **Maintainability**: shell launchers stay thin; Python remains the installation source of truth.
+  * **Security**: target writes remain behind preflight; immutable release pinning is required for the final release UX.

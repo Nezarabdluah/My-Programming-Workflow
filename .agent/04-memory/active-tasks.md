@@ -1,30 +1,29 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
-## T034 — One-Command Consumer Bootstrap 🔴
+## T035 — Zero-Setup One-Command Bootstrap 🔴
 - **State:** Done
-- **Approval:** explicit Navigator approval.
+- **Approval:** explicit Navigator approval to make onboarding truly one-command.
 
 ### State History
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- One command safely installs/upgrades, discovers, initializes, and verifies a consumer project.
-- Foreign agent infrastructure blocks before any AOS write.
-- Existing AOS upgrades preserve project state and back up managed adapters.
-- Consumer governance/provenance remains portable and source-scoped.
-- Real consumer bootstrap smoke passes in CI.
-- README exposes bootstrap as the default onboarding path.
+- README starts with one copy-paste command per supported shell, run from the consumer project.
+- Remote launchers use a temporary source checkout and delegate all target writes to `bootstrap.py`.
+- Foreign agent infrastructure still blocks before any target write.
+- Existing AOS safe-upgrade preservation remains unchanged.
+- Launcher smoke coverage runs in CI for Bash and PowerShell.
+- Internal phases remain documentation, not user setup steps.
 - Boot remains ≤150.
 
-### Result
-- [x] Collision-safe installer + safe upgrade/backups.
-- [x] Portable runtime ADR/provenance + consumer/source governance split.
-- [x] One-command bootstrap + T42–T45 + 32/32 mutations.
-- [x] CI consumer bootstrap smoke.
-- [x] Executing + Validating verification passed.
+### Plan
+- [x] Add root Bash and PowerShell launchers with temporary cleanup.
+- [x] Make current-directory bootstrap the primary README UX.
+- [x] Add deterministic governance/mutation/smoke coverage.
+- [x] Run full verification and CI before Done.
 
 ### Evidence
-Run `35445890991`: 45 PASS, 32/32 mutations, bootstrap smoke PASS, Boot 139/150.
+Run `35448532787`: governance PASS, Ubuntu Bash launcher PASS, Windows PowerShell launcher PASS.
 
 ### Next
-Use `bootstrap.py` as the default consumer onboarding command.
+Pin public launcher commands to an immutable release reference when the RC tag is created.

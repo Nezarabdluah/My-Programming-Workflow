@@ -248,8 +248,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "45 governance checks",
-        "32/32 mutation",
+        "46 governance checks",
+        "33/33 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -333,8 +333,9 @@ def test_gov_t38_release_contract_entrypoints():
         problems.append("workflow: stale convergence branch trigger remains")
 
     readme = Path("README.md").read_text(encoding="utf-8")
-    if ".agent/bootstrap.py" not in readme:
-        problems.append("README: one-command bootstrap entrypoint missing")
+    for launcher in ["bootstrap.sh | sh", "bootstrap.ps1 | iex"]:
+        if launcher not in readme:
+            problems.append(f"README: one-command {launcher} entrypoint missing")
     if "Copy `.agent` into your project" in readme:
         problems.append("README: unsafe full-state copy onboarding remains")
 
@@ -506,10 +507,10 @@ def test_gov_t41_readme_complete_capability_map():
         problems.append("Mermaid remains in README; colored text diagrams are the standard.")
 
     quick_start_markers = [
-        "python .agent/bootstrap.py /path/to/your-project",
-        "one bootstrap command per project",
+        "raw.githubusercontent.com/Nezarabdluah/My-Programming-Workflow/main/bootstrap.sh",
+        "raw.githubusercontent.com/Nezarabdluah/My-Programming-Workflow/main/bootstrap.ps1",
+        "inside your project",
         "BLOCKED before any write",
-        "no AOS write happens",
         "Safe upgrade",
         "NEEDS_REVIEW",
         "READY",
@@ -531,3 +532,52 @@ def test_gov_t41_readme_complete_capability_map():
         return FAIL, "GOV-T41: incomplete README showcase: " + "; ".join(problems)
 
     return PASS, "GOV-T41: README preserves the complete colored-text capability showcase."
+
+
+def test_gov_t46_zero_setup_launchers_are_thin_and_safe():
+    """GOV-T46: Public launchers stay thin and route all target writes through bootstrap."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "GOV-T46: AOS-source-only launcher contract check."
+
+    readme_path = Path("README.md")
+    shell_path = Path("bootstrap.sh")
+    powershell_path = Path("bootstrap.ps1")
+    missing = [
+        str(path) for path in [readme_path, shell_path, powershell_path]
+        if not path.exists()
+    ]
+    if missing:
+        return FAIL, "GOV-T46: missing public launcher file(s): " + ", ".join(missing)
+
+    readme = readme_path.read_text(encoding="utf-8")
+    shell = shell_path.read_text(encoding="utf-8")
+    powershell = powershell_path.read_text(encoding="utf-8")
+    quick_start = readme.split("# What AOS gives you", 1)[0]
+
+    problems = []
+    shell_markers = [
+        "AOS_REPO_URL", "AOS_REF", "AOS_TARGET", "$(pwd -P)",
+        "mktemp -d", "trap cleanup",
+        '"$AOS_TEMP_DIR/.agent/bootstrap.py" "$AOS_TARGET"',
+    ]
+    powershell_markers = [
+        "AOS_REPO_URL", "AOS_REF", "AOS_TARGET", "(Get-Location).Path",
+        "GetTempPath", "finally",
+        '$Bootstrap = Join-Path $AosTempDir ".agent/bootstrap.py"',
+    ]
+    for marker in shell_markers:
+        if marker not in shell:
+            problems.append(f"bootstrap.sh missing {marker}")
+    for marker in powershell_markers:
+        if marker not in powershell:
+            problems.append(f"bootstrap.ps1 missing {marker}")
+
+    for marker in ["bootstrap.sh | sh", "bootstrap.ps1 | iex"]:
+        if marker not in quick_start:
+            problems.append(f"Quick Start missing {marker}")
+    if "python .agent/bootstrap.py /path/to/your-project" in quick_start:
+        problems.append("Quick Start still requires a local AOS source checkout")
+
+    if problems:
+        return FAIL, "GOV-T46: " + "; ".join(problems)
+    return PASS, "GOV-T46: zero-setup launchers are thin, temporary, and bootstrap-routed."

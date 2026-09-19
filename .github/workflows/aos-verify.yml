@@ -82,3 +82,44 @@ jobs:
           name: aos-evidence-history
           path: .agent/evidence/history/*.json
           if-no-files-found: error
+
+  launcher-smoke:
+    name: Zero-setup launcher (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Bash launcher smoke
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          git branch launcher-smoke-source HEAD
+          target="$(mktemp -d)"
+          printf '{"scripts":{"build":"echo build","test":"echo test","lint":"echo lint"}}\n' > "$target/package.json"
+          AOS_REPO_URL="file://${GITHUB_WORKSPACE}" AOS_REF="launcher-smoke-source" AOS_TARGET="$target" sh bootstrap.sh
+          test -f "$target/.agent/profiles/project.json"
+
+      - name: PowerShell launcher smoke
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          git branch launcher-smoke-source HEAD
+          $target = Join-Path $env:RUNNER_TEMP "aos-launcher-consumer"
+          New-Item -ItemType Directory -Path $target -Force | Out-Null
+          '{"scripts":{"build":"echo build","test":"echo test","lint":"echo lint"}}' | Set-Content -Path (Join-Path $target "package.json")
+          $env:AOS_REPO_URL = $env:GITHUB_WORKSPACE
+          $env:AOS_REF = "launcher-smoke-source"
+          $env:AOS_TARGET = $target
+          & ./bootstrap.ps1
+          if (-not (Test-Path (Join-Path $target ".agent/profiles/project.json"))) { throw "profile missing" }

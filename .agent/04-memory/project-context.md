@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
-- **Phase:** One-Command Consumer Onboarding
-- **Task:** T034 — Done
+- **Phase:** Zero-Setup Consumer Onboarding
+- **Task:** T035 — Done
 
 ## Current
-One-command bootstrap is implemented and validated across source and a real temporary consumer project; conflict detection and safe upgrade behavior are governed.
+Zero-setup onboarding is implemented and validated on Linux and Windows; the README starts with one command per shell and target writes remain behind governed preflight.
 
 ## Next
-Use bootstrap as the default onboarding path and preserve collision-safe semantics.
+Pin public launchers to an immutable release reference during RC release preparation.
