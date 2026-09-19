@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** RC Documentation & Discoverability
-- **Task:** T031 — Done
+- **Task:** T032 — Executing
 
 ## Current
-README is the complete user-facing AOS capability map; executable runtime files remain authoritative.
+README remains the complete user-facing capability map; visuals now use lightweight colored text diagrams instead of Mermaid.
 
 ## Next
-Maintain showcase coverage through GOV-T41 and keep deep policy in runtime sources.
+Verify GOV-T41, mutation coverage, capability coverage, and Boot budget.
