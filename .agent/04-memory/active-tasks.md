@@ -1,33 +1,35 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T024 — Evidence Bundle & Approval Policy 🔴
-- **State:** Executing
+- **State:** Validating
 - **Branch:** `aos-v8-sprint2-evidence-approval`
-- **Approval:** Navigator approved continuing Sprint 2.
+- **Approval:** Navigator approved Sprint 2 continuation.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
-- Hard-stop risks cannot self-approve through model text/pattern claims.
-- Low-risk Simple work can proceed by policy without unnecessary interruption.
-- Sensitive/Medium approvals use explicit provenance in Task Contract.
-- Evidence checks run only named Project Profile commands.
-- Evidence PASS/FAIL derives only from process exit code.
-- CI generates and validates `evidence/current.json`.
-- Governance/mutations prove approval and evidence failure modes.
-- No merge to `main` before final green CI.
+- Hard-stop risk cannot bypass explicit human approval.
+- Simple low-risk work can policy-approve without interruption.
+- Medium/Sensitive provenance is structured and auditable.
+- Evidence executes only named Project Profile commands.
+- Evidence PASS/FAIL derives from exit code.
+- CI generates and validates Evidence Bundle.
+- Governance/mutations cover approval/evidence failures.
+- No merge before final green CI.
 
 ### Progress
-- [x] ADR-009 approved.
-- [x] Approval policy + engine implemented.
-- [x] Evidence recorder + evidence semantics implemented.
-- [x] T024 risk/provenance contract added.
-- [x] GOV-T17–T22 added and runner integrated.
-- [x] Approval/evidence mutations added.
-- [x] CI switched to executable Evidence Bundle.
-- [ ] Run CI and fix failures.
-- [ ] Review diff, Validating-state CI, then Done-state CI.
+- [x] ADR-009 + approval engine/policy.
+- [x] Evidence recorder + generated bundle semantics.
+- [x] T024 risk/provenance contract.
+- [x] GOV-T17–T22 + mutations.
+- [x] CI records compile + full verification evidence.
+- [x] Evidence commands hardened to shell-free execution.
+- [ ] Final Validating-state CI.
+- [ ] Done-state CI for T09.
+
+### Evidence
+Run `35437681233`: 22/22 PASS, 14/14 mutations, Evidence Bundle PASS.
 
 ### Next
-Open/use PR, run GitHub Actions, and fix any governance/evidence failures.
+Run Validating-state CI, then close T024 only if green.
