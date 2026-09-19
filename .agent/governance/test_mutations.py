@@ -600,6 +600,33 @@ def mut_t38_restore_stale_start_check():
     )
 
 
+def mut_t39_leak_project_profile():
+    """Mutate installer so source Project Profile leaks into consumer project."""
+    from test_execution import test_gov_t39_sanitized_installer_excludes_source_state
+    path = Path(".agent/install.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        marker = "    if TECHNOLOGY_PROFILES.exists():\n"
+        injected = (
+            '    _copy_file(\n'
+            '        SOURCE_AGENT / "profiles" / "project.json",\n'
+            '        target_agent / "profiles" / "project.json",\n'
+            '    )\n\n'
+        )
+        if marker not in original:
+            raise RuntimeError("installer insertion marker not found")
+        mutated = original.replace(marker, injected + marker, 1)
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T39-LEAK-PROJECT-PROFILE",
+        setup,
+        test_gov_t39_sanitized_installer_excludes_source_state,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -645,6 +672,7 @@ if __name__ == "__main__":
         mut_t36_restore_stale_readme_contract,
         mut_t37_add_volatile_branch_state,
         mut_t38_restore_stale_start_check,
+        mut_t39_leak_project_profile,
         mut_t11_boot_too_large,
     ]
 
