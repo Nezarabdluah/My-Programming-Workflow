@@ -684,7 +684,18 @@ def test_gov_t45_source_only_approval_rejected_in_consumer():
         ".agent/01-core/approval_engine.py",
     )
     policy = _json(".agent/01-core/approval-policy.json")
-    registry = _json(".agent/01-core/approval-registry.json")
+    registry = {
+        "entries": [{
+            "id": "source-only-test-pattern",
+            "type": "approved_pattern",
+            "status": "approved",
+            "scope": "aos-source",
+            "capabilities": ["architecture", "testing"],
+            "risk_allowlist": [],
+            "source": ".agent/adr/system-decisions.md",
+            "source_marker": "ADR-008",
+        }]
+    }
     task = {
         "task_id": "t45",
         "classification": "medium",
@@ -694,7 +705,7 @@ def test_gov_t45_source_only_approval_rejected_in_consumer():
         "approval": {
             "status": "approved",
             "provenance": "approved_pattern",
-            "reference": "pattern-existing-local-refactor",
+            "reference": "source-only-test-pattern",
         },
         "verification": ["aos_verify"],
     }
