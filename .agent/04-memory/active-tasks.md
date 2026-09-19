@@ -1,31 +1,33 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T027 — Stabilization & Public Contract Sync 🟡
-- **State:** Executing
+- **State:** Validating
 - **Branch:** `aos-v8-sprint2-stabilization`
 - **Approval:** verified pattern `pattern-existing-local-refactor`.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
-- README describes current Execution Gate, Context Broker, approvals, evidence, and risk routing.
-- Public metrics match current governance/mutation baseline.
-- VERSION sync metadata is current.
-- Memory reflects merged PR #5 rather than pre-merge state.
+- README matches the current Execution Gate/Context Broker/approval/evidence runtime.
+- Public governance/mutation metrics are current.
+- VERSION and post-PR5 memory are current.
 - GOV-T36 blocks stale public-contract text.
 - Mutation proves GOV-T36 can fail.
-- Execution Gate resolves T027 to AUTO_EXECUTE.
+- T027 resolves READY/AUTO_EXECUTE via verified pattern.
 - No merge before final green CI.
 
 ### Progress
-- [x] README rewritten to current v8 runtime.
-- [x] GOV-T36 added.
-- [x] README drift mutation added.
-- [x] VERSION sync date updated.
-- [ ] Sync current memory from merged PR #5.
-- [ ] Run CI and fix failures.
-- [ ] Validating + Done-state CI.
+- [x] README synchronized to v8 runtime.
+- [x] GOV-T36 + drift mutation.
+- [x] VERSION + post-PR5 memory synchronized.
+- [x] T17/T28 made provenance-aware.
+- [x] Executing-state CI: 36/36 + 23/23.
+- [ ] Validating-state CI.
+- [ ] Done-state CI for T09.
+
+### Evidence
+Run `35439510825`: 36 PASS, 23/23 mutations, Evidence Bundle PASS, Boot 193/200.
 
 ### Next
-Sync memory, open PR, and run full verification.
+Run Validating-state CI, then close T027 only if green.
