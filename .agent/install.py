@@ -84,6 +84,8 @@ def _is_aos_adapter(path: Path) -> bool:
         text = path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         return False
+    if "AOS-MANAGED-ADAPTER" in text:
+        return True
     return (
         "AOS" in text
         and ".agent/01-core/boot-manifest.md" in text
