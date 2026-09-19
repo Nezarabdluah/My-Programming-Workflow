@@ -1,4 +1,4 @@
-# INDEX.md — AOS v8.0-dev Resource Catalog
+# INDEX.md — AOS v8.0.0-rc.1 Resource Catalog
 
 > Descriptive catalog only. Runtime authority is `01-core/boot-manifest.md`. Do not load this file at boot unless navigation requires it.
 
