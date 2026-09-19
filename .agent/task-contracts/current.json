@@ -1,22 +1,23 @@
 {
   "schema_version": 1,
-  "task_id": "T026",
-  "title": "Sprint 2 — Risk and affected-area context routing",
-  "classification": "sensitive",
+  "task_id": "T027",
+  "title": "Sprint 2 — Stabilization and public contract sync",
+  "classification": "medium",
   "capabilities": [
-    "architecture"
+    "architecture",
+    "testing"
   ],
   "affected_areas": [
-    ".agent/01-core",
-    ".agent/profiles",
+    "README.md",
     ".agent/governance",
+    ".agent/VERSION",
     ".agent/task-contracts",
     ".agent/04-memory"
   ],
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": true,
+    "new_architecture": false,
     "security_boundary": false,
     "production_change": false,
     "breaking_external_contract": false,
@@ -24,8 +25,8 @@
   },
   "approval": {
     "status": "approved",
-    "provenance": "human",
-    "reference": "Navigator explicitly requested continuing Sprint 2 risk-aware routing work."
+    "provenance": "approved_pattern",
+    "reference": "pattern-existing-local-refactor"
   },
   "verification": [
     "governance_compile",

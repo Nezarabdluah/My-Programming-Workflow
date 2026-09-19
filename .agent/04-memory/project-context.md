@@ -1,17 +1,12 @@
 # Project Context — AOS v8.0-dev
 
-- **Phase:** Sprint 2 — Risk-Aware Context Routing
-- **Task:** T026 — Done
-- **Branch:** `aos-v8-sprint2-risk-routing`
-- **Main:** autonomous execution merged via PR #4 / `af9481fb278c7dd2c61c061c260d4504880c251c`
-
-## Architecture
-- ADR-008: deterministic Context Broker.
-- ADR-010: verified provenance + Execution Gate + Evidence History.
-- ADR-011: risk/affected areas augment capabilities deterministically.
+- **Phase:** Sprint 2 — Stabilization
+- **Task:** T027 — Done
+- **Branch:** `aos-v8-sprint2-stabilization`
+- **Main:** risk routing merged via PR #5
 
 ## Current
-Risk/area routing is green: 35/35 governance, 22/22 mutations, T026 derives Testing.
+README/public contract, VERSION, and post-merge memory are synchronized. GOV-T36 protects README/runtime alignment. Run `35439510825` passed 36 governance checks and 23/23 mutations.
 
 ## Next
-Run final head CI, then squash-merge PR #5 only if green.
+Run Done-state CI; if green, prepare PR #6 for squash merge.

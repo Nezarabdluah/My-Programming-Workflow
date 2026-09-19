@@ -1,32 +1,33 @@
 # Active Tasks — AOS v8.0-dev
 
-## T026 — Risk & Affected-Area Context Routing 🔴
+## T027 — Stabilization & Public Contract Sync 🟡
 - **State:** Done
-- **Branch:** `aos-v8-sprint2-risk-routing`
-- **Approval:** Navigator approved Sprint 2 continuation.
+- **Branch:** `aos-v8-sprint2-stabilization`
+- **Approval:** verified pattern `pattern-existing-local-refactor`.
 
 ### State History
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- True risk flags deterministically add required capabilities.
-- Project affected-area rules add project-specific capabilities.
-- Explicit capabilities are preserved; derived duplicates are de-duplicated.
-- Broker reports declared/effective capabilities and provenance sources.
-- Risk/area mappings may reference only executable capabilities.
-- Current T026 derives Testing although it declares only Architecture.
-- Mutations prove missing/invalid derivation mappings are detected.
+- README matches the current Execution Gate/Context Broker/approval/evidence runtime.
+- Public governance/mutation metrics are current.
+- VERSION and post-PR5 memory are current.
+- GOV-T36 blocks stale public-contract text.
+- Mutation proves GOV-T36 can fail.
+- T027 resolves READY/AUTO_EXECUTE via verified pattern.
 - No merge before final green CI.
 
 ### Progress
-- [x] ADR-011 approved.
-- [x] Core risk→capability map added.
-- [x] Project area→capability rules added.
-- [x] Broker derives and explains effective capabilities.
-- [x] Task Contract validates affected areas.
-- [x] GOV-T31–T35 + routing mutations added.
-- [x] CI green: 35/35 governance + 22/22 mutations.
-- [x] Done-state CI passed; GOV-T09 verified full history.
+- [x] README synchronized to v8 runtime.
+- [x] GOV-T36 + drift mutation.
+- [x] VERSION + post-PR5 memory synchronized.
+- [x] T17/T28 made provenance-aware.
+- [x] Executing-state CI: 36/36 + 23/23.
+- [x] Validating-state CI passed.
+- [x] T027 closed; awaiting Done-state CI for T09.
+
+### Evidence
+Run `35439510825`: 36 PASS, 23/23 mutations, Evidence Bundle PASS, Boot 193/200.
 
 ### Next
-Run final head CI; squash-merge PR #5 only if all gates stay green.
+Run Done-state CI; if green, prepare PR #6 for squash merge.

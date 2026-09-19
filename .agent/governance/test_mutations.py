@@ -543,6 +543,24 @@ def mut_t35_unknown_derived_capability():
     )
 
 
+def mut_t36_restore_stale_readme_contract():
+    """Mutate README with a stale mandatory-bundle marker."""
+    from test_rules import test_gov_t36_public_contract_sync
+    path = Path("README.md")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original + "\n\nNothing is optional. Load ALL of it.\n"
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T36-RESTORE-STALE-README-CONTRACT",
+        setup,
+        test_gov_t36_public_contract_sync,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -585,6 +603,7 @@ if __name__ == "__main__":
         mut_t31_remove_security_risk_mapping,
         mut_t33_remove_workflow_area_mapping,
         mut_t35_unknown_derived_capability,
+        mut_t36_restore_stale_readme_contract,
         mut_t11_boot_too_large,
     ]
 
