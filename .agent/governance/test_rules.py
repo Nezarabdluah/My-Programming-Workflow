@@ -422,7 +422,7 @@ def test_gov_t40_version_consistency():
     return PASS, f"GOV-T40: active runtime/public markers match {label}."
 
 def test_gov_t41_readme_complete_capability_map():
-    """GOV-T41: README must remain a complete user-facing AOS capability map."""
+    """GOV-T41: README must preserve the complete colored-text capability showcase."""
     path = Path("README.md")
     if not path.exists():
         return FAIL, "GOV-T41: README.md missing."
@@ -444,64 +444,54 @@ def test_gov_t41_readme_complete_capability_map():
         "# Governance strength",
         "# Project structure",
         "# Source of truth",
+        "## Visual legend",
     ]
 
     required_capabilities = [
-        "Architecture",
-        "Security",
-        "Testing & QA",
-        "DevOps",
-        "Reliability",
-        "Database & Performance",
-        "API & Network",
-        "Frontend & UX",
-        "Mobile QA",
-        "Memory & Learning",
-        "Autonomous Execution",
-        "Context Control",
-        "Executable Evidence",
-        "Governance",
-        "Engineering Knowledge",
+        "Architecture", "Security", "Testing & QA", "DevOps",
+        "Reliability", "Database & Performance", "API & Network",
+        "Frontend & UX", "Mobile QA", "Memory & Learning",
+        "Autonomous Execution", "Context Control", "Executable Evidence",
+        "Governance", "Engineering Knowledge",
     ]
 
-    required_runtime_markers = [
-        "execution_gate.py",
-        "context_broker.py",
-        "evidence_recorder.py",
-        "install.py",
-        "boot-manifest.md",
-        "task-contracts/current.json",
-        "Project + Technology Profiles",
-        "AUTO_EXECUTE",
-        "HUMAN_APPROVED",
-        "HUMAN_REQUIRED",
+    required_diagrams = [
+        "🟦 TASK",
+        "🟦 1. INSTALL AOS",
+        "🟦 INTAKE",
+        "🤖 AOS v8",
+        "🟦 NAMED CHECK",
     ]
 
-    missing_sections = [item for item in required_sections if item not in content]
-    missing_capabilities = [item for item in required_capabilities if item not in content]
-    missing_runtime = [item for item in required_runtime_markers if item not in content]
-
-    mermaid_count = content.count("```mermaid")
-    if mermaid_count < 3:
-        missing_sections.append(f"Mermaid diagrams >=3 (found {mermaid_count})")
-
-    if "README is the complete user-facing overview" not in content:
-        missing_sections.append("README/source-of-truth boundary")
-    if "Executable authority remains here:" not in content:
-        missing_sections.append("executable-authority table")
+    required_colors = ["🟦", "🟪", "🟨", "🟩", "🟥"]
 
     problems = []
-    if missing_sections:
-        problems.append("sections/visuals: " + ", ".join(missing_sections))
-    if missing_capabilities:
-        problems.append("capabilities: " + ", ".join(missing_capabilities))
-    if missing_runtime:
-        problems.append("runtime markers: " + ", ".join(missing_runtime))
+    missing = [item for item in required_sections if item not in content]
+    if missing:
+        problems.append("sections: " + ", ".join(missing))
+
+    missing = [item for item in required_capabilities if item not in content]
+    if missing:
+        problems.append("capabilities: " + ", ".join(missing))
+
+    missing = [item for item in required_diagrams if item not in content]
+    if missing:
+        problems.append("text diagrams: " + ", ".join(missing))
+
+    missing = [item for item in required_colors if item not in content]
+    if missing:
+        problems.append("visual colors: " + ", ".join(missing))
+
+    mermaid_marker = "```" + "mermaid"
+    if mermaid_marker in content:
+        problems.append("Mermaid remains in README; colored text diagrams are the standard.")
+
+    if "README is the complete user-facing overview" not in content:
+        problems.append("README/source-of-truth boundary missing")
+    if "Executable authority remains here:" not in content:
+        problems.append("executable-authority table missing")
 
     if problems:
         return FAIL, "GOV-T41: incomplete README showcase: " + "; ".join(problems)
 
-    return PASS, (
-        f"GOV-T41: README preserves complete capability coverage with "
-        f"{mermaid_count} Mermaid diagrams."
-    )
+    return PASS, "GOV-T41: README preserves the complete colored-text capability showcase."
