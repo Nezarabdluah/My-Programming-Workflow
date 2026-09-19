@@ -16,10 +16,10 @@ gate:
   requires:
     - completed intake (stage 0)
     - developer-provided feature description or user request
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 1 row"
-    - constitutions: ddd-constitution (Ubiquitous Language, Bounded Contexts)
+  context_candidates:
     - 03-workflows/requirements-analysis.md
+    - ddd-constitution.md (only if domain language/bounded contexts materially apply)
+    - 02-rules/vertical-slice-governance.md (only if an activated full-stack profile uses it)
   decision: proceed | skip
 
 # Skip condition: classification = 🟢
@@ -46,7 +46,8 @@ gate:
 
 ```
 □ Break the feature into independently testable MVP increments
-□ Each increment must be a vertical slice (per 02-rules/vertical-slice-governance.md)
+□ Prefer independently valuable/testable vertical increments when appropriate to the project architecture
+□ Identify the actual affected project areas; do not invent layers solely to satisfy a generic checklist
 □ Save the implementation plan to specs/[feature-name].plan.md
 □ Save the task list to specs/[feature-name].tasks.md
 ```
@@ -66,12 +67,12 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
-| `03-workflows/requirements-analysis.md` | Always at stage entry |
-| `02-rules/vertical-slice-governance.md` | When decomposing into vertical slices |
+| `03-workflows/requirements-analysis.md` | Stage workflow |
+| `02-rules/vertical-slice-governance.md` | Only when the project/profile activates full-stack vertical-slice guidance |
 
 ---
 
