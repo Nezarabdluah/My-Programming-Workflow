@@ -1,4 +1,4 @@
-"""AOS Governance — Memory Tests (v8.0-dev)
+"""AOS Governance — Memory Tests (v8.0.0-rc.1)
 
 GOV-T03: ADR structure validation
 GOV-T04: Active mistakes cap (max 20)
