@@ -78,23 +78,25 @@ def test_gov_t18_hard_stop_requires_human():
         "task_id": "t18-hard-stop",
         "classification": "sensitive",
         "capabilities": ["architecture"],
+        "affected_areas": ["src"],
         "risk": {"destructive": True},
         "approval": {
             "status": "approved",
             "provenance": "approved_pattern",
-            "reference": "pattern-existing-local-refactor",
+            "reference": "hard-stop-test-pattern",
         },
         "verification": [],
     }
     registry = {
         "entries": [{
-            "id": "pattern-existing-local-refactor",
+            "id": "hard-stop-test-pattern",
             "type": "approved_pattern",
             "status": "approved",
+            "scope": "runtime",
             "capabilities": ["architecture"],
             "risk_allowlist": ["destructive"],
-            "source": ".agent/04-memory/project-knowledge.md",
-            "source_marker": "[PATTERN:existing-local-refactor]",
+            "source": ".agent/adr/system-decisions.md",
+            "source_marker": "ADR-008",
         }]
     }
 
@@ -425,17 +427,33 @@ def test_gov_t29_registered_adr_execution_gate_auto_executes():
     policy = _json(".agent/01-core/approval-policy.json")
     registry = _json(".agent/01-core/approval-registry.json")
     context_map = _json(".agent/01-core/context-map.json")
+
+    commands = project.get("commands", {})
+    preferred = [
+        "aos_compile",
+        "governance_compile",
+        "aos_verify",
+        "governance_verify",
+    ]
+    verification_check = next(
+        (name for name in preferred if name in commands),
+        next(iter(commands), None),
+    )
+    if not verification_check:
+        return FAIL, "GOV-T29: project has no named verification command."
+
     task = {
         "task_id": "t29",
         "classification": "sensitive",
         "capabilities": ["architecture", "testing"],
+        "affected_areas": [".agent"],
         "risk": {},
         "approval": {
             "status": "approved",
             "provenance": "approved_adr",
             "reference": "ADR-008",
         },
-        "verification": ["governance_compile"],
+        "verification": [verification_check],
     }
 
     try:
@@ -450,7 +468,10 @@ def test_gov_t29_registered_adr_execution_gate_auto_executes():
     if result.get("execution_mode") != "AUTO_EXECUTE":
         return FAIL, f"GOV-T29: expected AUTO_EXECUTE: {result}"
 
-    return PASS, "GOV-T29: verified ADR task is READY/AUTO_EXECUTE."
+    return PASS, (
+        "GOV-T29: verified ADR task is READY/AUTO_EXECUTE "
+        f"using check {verification_check}."
+    )
 
 
 def test_gov_t30_approval_registry_sources_resolve():
