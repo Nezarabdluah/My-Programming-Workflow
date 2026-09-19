@@ -685,6 +685,97 @@ def mut_t41_remove_readme_capability_map():
         test_gov_t41_readme_complete_capability_map,
     )
 
+def mut_t42_disable_foreign_agent_conflict():
+    """Mutate installer so foreign .agent is no longer blocked."""
+    from test_execution import test_gov_t42_foreign_agent_conflict_is_write_free
+    path = Path(".agent/install.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            "if agent_exists and not aos_existing:",
+            "if False and agent_exists and not aos_existing:",
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T42-DISABLE-FOREIGN-AGENT-CONFLICT",
+        setup,
+        test_gov_t42_foreign_agent_conflict_is_write_free,
+    )
+
+
+def mut_t43_copy_source_memory_on_upgrade():
+    """Mutate installer so source 04-memory becomes managed runtime."""
+    from test_execution import test_gov_t43_safe_upgrade_preserves_project_state
+    path = Path(".agent/install.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'RUNTIME_DIRS = [\n',
+            'RUNTIME_DIRS = [\n    "04-memory",\n',
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T43-COPY-SOURCE-MEMORY-ON-UPGRADE",
+        setup,
+        test_gov_t43_safe_upgrade_preserves_project_state,
+    )
+
+
+def mut_t44_break_node_detection():
+    """Mutate bootstrap so package.json no longer classifies as node."""
+    from test_execution import test_gov_t44_bootstrap_initializes_detected_consumer
+    path = Path(".agent/bootstrap.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'ecosystems.add("node")',
+            'ecosystems.add("broken-node-detection")',
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T44-BREAK-NODE-DETECTION",
+        setup,
+        test_gov_t44_bootstrap_initializes_detected_consumer,
+    )
+
+
+def mut_t45_allow_source_approval_in_consumer():
+    """Mutate Approval Engine so aos-source registry scope is ignored."""
+    from test_execution import test_gov_t45_source_only_approval_rejected_in_consumer
+    path = Path(".agent/01-core/approval_engine.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        old = '''        and (
+            entry.get("scope", "runtime") != "aos-source"
+            or source_repo
+        )
+'''
+        if old not in original:
+            raise RuntimeError("approval scope guard not found")
+        mutated = original.replace(old, "        and True\n", 1)
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T45-ALLOW-SOURCE-APPROVAL-IN-CONSUMER",
+        setup,
+        test_gov_t45_source_only_approval_rejected_in_consumer,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -733,6 +824,10 @@ if __name__ == "__main__":
         mut_t39_leak_project_profile,
         mut_t40_restore_dev_version_marker,
         mut_t41_remove_readme_capability_map,
+        mut_t42_disable_foreign_agent_conflict,
+        mut_t43_copy_source_memory_on_upgrade,
+        mut_t44_break_node_detection,
+        mut_t45_allow_source_approval_in_consumer,
         mut_t11_boot_too_large,
     ]
 
@@ -743,6 +838,9 @@ if __name__ == "__main__":
             mut_t38_restore_stale_start_check,
             mut_t39_leak_project_profile,
             mut_t41_remove_readme_capability_map,
+            mut_t42_disable_foreign_agent_conflict,
+            mut_t43_copy_source_memory_on_upgrade,
+            mut_t44_break_node_detection,
         }
         mutations = [
             mutation for mutation in mutations
