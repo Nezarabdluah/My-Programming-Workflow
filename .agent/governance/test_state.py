@@ -134,32 +134,58 @@ def test_gov_t02_acceptance_criteria():
 
 
 def test_gov_t09_workflow_integrity():
-    """GOV-T09: Verify no illegal state-machine jumps.
+    """GOV-T09: Verify completed non-trivial tasks have valid state history.
 
-    A task marked Done must have evidence of having been through
-    Planning/Approved at some point (plan file, approval note, or
-    completion markers showing the task was tracked).
+    For 🟡/🔴 tasks marked Done, a checkbox or the mere presence of words like
+    "Approved" is not evidence. The task section must record an ordered
+    State History containing the required SDD transitions.
     """
     active_content = _read_file(".agent/04-memory/active-tasks.md")
     if active_content is None:
         return SKIP_EXPECTED, "GOV-T09: active-tasks.md not found."
 
-    # Check for tasks explicitly in Done state
-    done_tasks = re.findall(r"(.*Done.*)", active_content, re.IGNORECASE)
+    # Split current-task memory into task sections.
+    sections = re.split(r"(?=^##\s+)", active_content, flags=re.MULTILINE)
+    completed_non_trivial = []
 
-    if not done_tasks:
-        return PASS, "GOV-T09: No tasks in Done state — nothing to check."
+    for section in sections:
+        if not re.search(r"(?:🟡|🔴)", section):
+            continue
+        state_match = re.search(r"(?:\*\*)?State(?:\*\*)?\s*:\s*\*\*?([A-Za-z]+)", section)
+        if not state_match:
+            state_match = re.search(r"(?:SDD\s+)?State\s*:\s*\[?([A-Za-z]+)\]?", section)
+        if state_match and state_match.group(1) == "Done":
+            completed_non_trivial.append(section)
 
-    # If there are Done tasks, verify evidence of planning
-    has_plan_evidence = (
-        "Approved" in active_content or
-        "Planning" in active_content or
-        "[x]" in active_content or  # tracked progress
-        bool(Path(".agent").glob("**/implementation_plan.md")) or
-        bool(re.search(r"specs/.*\.plan\.md", active_content))
+    if not completed_non_trivial:
+        return PASS, "GOV-T09: No completed 🟡/🔴 task requires state-history validation."
+
+    required = ["Draft", "Clarify", "Approved", "Planning", "Ready",
+                "Executing", "Validating", "Done"]
+
+    for section in completed_non_trivial:
+        history_match = re.search(
+            r"###\s+State History\s*\n([^#]+)",
+            section,
+            flags=re.IGNORECASE
+        )
+        if not history_match:
+            return FAIL, "GOV-T09: Completed 🟡/🔴 task is missing State History."
+
+        history = history_match.group(1)
+        positions = [history.find(state) for state in required]
+        if any(pos < 0 for pos in positions):
+            missing = [state for state, pos in zip(required, positions) if pos < 0]
+            return FAIL, (
+                "GOV-T09: Completed 🟡/🔴 task has incomplete State History; "
+                f"missing: {', '.join(missing)}"
+            )
+        if positions != sorted(positions):
+            return FAIL, (
+                "GOV-T09: Completed 🟡/🔴 task State History is out of order."
+            )
+
+    return PASS, (
+        f"GOV-T09: {len(completed_non_trivial)} completed 🟡/🔴 task(s) "
+        "have ordered SDD state history."
     )
-
-    if has_plan_evidence:
-        return PASS, "GOV-T09: Done tasks have planning/tracking evidence."
-
-    return FAIL, "GOV-T09: Task(s) marked Done with no evidence of planning phase."
