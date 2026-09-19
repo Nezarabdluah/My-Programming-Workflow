@@ -12,9 +12,11 @@ requires: []
 > Resolution is **lazy** — load a resource only at the moment its capability becomes active.
 > Direction is **one-way** — consumers know their dependencies; resources never know their consumers (REF-ARCH-DEP applied to the knowledge system itself).
 
-## Resolution procedure (ADR-007 manual fallback)
+## Resolution procedure (ADR-007 / ADR-008)
 
-Until Context Broker is implemented:
+The executable source of truth is `01-core/context-map.json`; this Markdown file documents the same capability model for humans. For 🟡/🔴 tasks, run `01-core/context_broker.py` against `task-contracts/current.json` and `profiles/project.json`.
+
+Manual fallback only when the executable broker is unavailable:
 1. Identify the capability or capabilities materially affected by the task.
 2. Use the matching row below to discover available resources.
 3. Load at most ONE directly relevant rule file at a time.
@@ -122,9 +124,9 @@ Until Context Broker is implemented:
 For the **stage-by-stage resource index** (what may be relevant at each pipeline stage), see:
 → **`05-references/books/00-master-index.md`**
 
-Legacy injection labels remain during convergence, but ADR-007 governs runtime selection: load only what is materially relevant. Sprint 2 will replace this fallback with Context Broker policy.
+ADR-007/ADR-008 govern runtime selection: load only broker-selected resources. Legacy injection labels in reference documentation are descriptive migration metadata only.
 
 ## Registry discipline
-- This file is the **only** place where capability→resource discovery is defined ("point, don't copy").
+- `01-core/context-map.json` is the executable capability→resource source of truth; this file is its human-readable catalog.
 - Adding a REF category, constitution, or anchor requires updating this registry.
 - Constitution files = extracted actionable rules from 16 engineering books (see `books/constitutions/`).
