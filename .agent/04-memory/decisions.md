@@ -283,3 +283,30 @@
   * **Usability**: users can understand AOS from one page before opening internal files.
   * **Maintainability**: deep rules remain in authoritative runtime files.
   * **Governance**: public capability coverage becomes testable rather than editorial.
+
+
+---
+
+## ADR-015: One-command bootstrap with collision-safe consumer onboarding
+* **Date**: 2026-09-19
+* **Status**: Approved
+* **Context & problem**:
+  The previous consumer flow required a sanitized install command, then a separate agent-driven initialization step. It also treated existing agent infrastructure too simplistically: projects may already contain `.agent`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, or Copilot instructions from another system. Blind merge/overwrite is unsafe.
+* **Approved decision**:
+  (1) Make `.agent/bootstrap.py <target>` the default consumer onboarding command.
+  (2) Bootstrap performs write-free preflight, safe install/upgrade, conservative project discovery, target-specific state initialization, and portable AOS verification.
+  (3) Foreign or unknown agent infrastructure blocks before any AOS write; AOS never guesses, deletes, renames, or merges it automatically.
+  (4) Recognized AOS upgrades preserve Memory, Project Profile, Task Contract, and Evidence History; managed root adapters are backed up before refresh.
+  (5) Runtime ADRs required by AOS live in bundled `.agent/adr/system-decisions.md`; project ADRs remain in project Memory.
+  (6) AOS-source-only governance/mutations are skipped in consumer projects while portable runtime governance still runs.
+  (7) Project discovery is evidence-based; uncertain stacks return `NEEDS_REVIEW` instead of fabricated commands/profile data.
+* **Rejected alternatives and why**:
+  1. Keep install + manual initialization as the primary UX ← rejected: avoidable friction and setup mistakes.
+  2. Auto-merge any existing `.agent` or agent instruction files ← rejected: can silently corrupt another agent system.
+  3. Always overwrite existing AOS project state during upgrade ← rejected: destroys durable project memory and evidence.
+  4. Assume a stack from folder names alone ← rejected: weak evidence and unsafe automation.
+* **Technical consequences**:
+  * **Usability**: one command produces a ready or explicitly review-required project.
+  * **Safety**: collision detection happens before writes; upgrades preserve durable state.
+  * **Portability**: consumer verification no longer depends on AOS-source README/release files.
+  * **Maintainability**: bootstrap behavior is covered by governance, mutations, and an end-to-end consumer smoke test.

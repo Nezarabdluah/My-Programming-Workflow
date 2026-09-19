@@ -131,21 +131,29 @@ def mut_t09_done_without_state_history():
     )
 
 
+
 def mut_t10_missing_referenced_adr():
-    """Mutate: policy references ADR-006 but decisions only contains ADR-099."""
+    """Mutate all ADR sources so runtime policy ADR references disappear."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
         content = """# Decisions
 
 ## ADR-099: Complete but unrelated
-* **Context & problem**: Mutation test context.
-* **Approved decision**: Keep only ADR-099.
-* **Technical consequences**: Mutation test consequences.
+**Status**: Approved
+**Context**: Mutation test context.
+**Decision**: Keep only ADR-099.
+**Consequences**: Runtime references must now fail.
 """
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((path, _backup_and_write(path, content)))
+        return backups
 
     return run_mutation(
         "T10-MISSING-REFERENCED-ADR",
@@ -155,37 +163,55 @@ def mut_t10_missing_referenced_adr():
 
 
 def mut_t10_incomplete_adr():
-    """Mutate decisions.md to have an ADR missing required sections."""
+    """Mutate every ADR-006 source into the same incomplete decision."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
         content = """# Decisions
 
-## 🏛️ ADR-099: Incomplete Test Decision
-* **Date**: 2026-01-01
-* **Status**: Approved
-* **Context & problem**:
-  This ADR is intentionally missing Decision and Consequences sections.
+## ADR-006: Incomplete mutation
+**Status**: Approved
+**Context**: This intentionally lacks Decision and Consequences.
 """
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((path, _backup_and_write(path, content)))
+        return backups
 
-    return run_mutation("T10-INCOMPLETE-ADR", setup, test_gov_t10_decision_consistency)
-
+    return run_mutation(
+        "T10-INCOMPLETE-ADR",
+        setup,
+        test_gov_t10_decision_consistency,
+    )
 
 def mut_t10_no_adr_with_rules():
-    """Mutate: rules exist but no ADR recorded."""
+    """Mutate all ADR sources so no ADR exists while policy references remain."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
-        content = "# Decisions\n\nNo decisions recorded yet.\n"
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((
+                    path,
+                    _backup_and_write(path, "# Decisions\n\nNo decisions recorded.\n"),
+                ))
+        return backups
 
-    return run_mutation("T10-NO-ADR-WITH-RULES", setup, test_gov_t10_decision_consistency)
-
+    return run_mutation(
+        "T10-NO-ADR-WITH-RULES",
+        setup,
+        test_gov_t10_decision_consistency,
+    )
 
 def mut_t03_bad_adr_format():
     """Mutate: ADR exists but missing Consequences section."""
@@ -440,10 +466,11 @@ def mut_t30_forge_registry_source_marker():
     )
 
 
+
 def mut_t31_reject_registry_adr_status():
-    """Mutate ADR-008 source status to Rejected; registry provenance must fail."""
+    """Mutate bundled ADR-008 status to Rejected; registry provenance must fail."""
     from test_execution import test_gov_t30_approval_registry_sources_resolve
-    path = Path(".agent/04-memory/decisions.md")
+    path = Path(".agent/adr/system-decisions.md")
 
     def setup():
         content = path.read_text(encoding="utf-8")
@@ -454,11 +481,11 @@ def mut_t31_reject_registry_adr_status():
         if end < 0:
             end = len(content)
         section = content[start:end]
-        if "* **Status**: Approved" not in section:
+        if "**Status**: Approved" not in section:
             raise RuntimeError("ADR-008 approved status not found")
         section = section.replace(
-            "* **Status**: Approved",
-            "* **Status**: Rejected",
+            "**Status**: Approved",
+            "**Status**: Rejected",
             1,
         )
         mutated = content[:start] + section + content[end:]
@@ -470,7 +497,6 @@ def mut_t31_reject_registry_adr_status():
         setup,
         test_gov_t30_approval_registry_sources_resolve,
     )
-
 
 def mut_t31_remove_security_risk_mapping():
     """Mutate risk map so security_boundary no longer derives Security."""
@@ -664,6 +690,97 @@ def mut_t41_remove_readme_capability_map():
         test_gov_t41_readme_complete_capability_map,
     )
 
+def mut_t42_disable_foreign_agent_conflict():
+    """Mutate installer so foreign .agent is no longer blocked."""
+    from test_execution import test_gov_t42_foreign_agent_conflict_is_write_free
+    path = Path(".agent/install.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            "if agent_exists and not aos_existing:",
+            "if False and agent_exists and not aos_existing:",
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T42-DISABLE-FOREIGN-AGENT-CONFLICT",
+        setup,
+        test_gov_t42_foreign_agent_conflict_is_write_free,
+    )
+
+
+def mut_t43_copy_source_memory_on_upgrade():
+    """Mutate installer so source 04-memory becomes managed runtime."""
+    from test_execution import test_gov_t43_safe_upgrade_preserves_project_state
+    path = Path(".agent/install.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'RUNTIME_DIRS = [\n',
+            'RUNTIME_DIRS = [\n    "04-memory",\n',
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T43-COPY-SOURCE-MEMORY-ON-UPGRADE",
+        setup,
+        test_gov_t43_safe_upgrade_preserves_project_state,
+    )
+
+
+def mut_t44_break_node_detection():
+    """Mutate bootstrap so package.json no longer classifies as node."""
+    from test_execution import test_gov_t44_bootstrap_initializes_detected_consumer
+    path = Path(".agent/bootstrap.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            'ecosystems.add("node")',
+            'ecosystems.add("broken-node-detection")',
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T44-BREAK-NODE-DETECTION",
+        setup,
+        test_gov_t44_bootstrap_initializes_detected_consumer,
+    )
+
+
+def mut_t45_allow_source_approval_in_consumer():
+    """Mutate Approval Engine so aos-source registry scope is ignored."""
+    from test_execution import test_gov_t45_source_only_approval_rejected_in_consumer
+    path = Path(".agent/01-core/approval_engine.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        old = '''        and (
+            entry.get("scope", "runtime") != "aos-source"
+            or source_repo
+        )
+'''
+        if old not in original:
+            raise RuntimeError("approval scope guard not found")
+        mutated = original.replace(old, "        and True\n", 1)
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T45-ALLOW-SOURCE-APPROVAL-IN-CONSUMER",
+        setup,
+        test_gov_t45_source_only_approval_rejected_in_consumer,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -712,8 +829,29 @@ if __name__ == "__main__":
         mut_t39_leak_project_profile,
         mut_t40_restore_dev_version_marker,
         mut_t41_remove_readme_capability_map,
+        mut_t42_disable_foreign_agent_conflict,
+        mut_t43_copy_source_memory_on_upgrade,
+        mut_t44_break_node_detection,
+        mut_t45_allow_source_approval_in_consumer,
         mut_t11_boot_too_large,
     ]
+
+    from test_rules import _is_aos_source_repo
+    if not _is_aos_source_repo():
+        source_only_mutations = {
+            mut_t36_restore_stale_readme_contract,
+            mut_t38_restore_stale_start_check,
+            mut_t39_leak_project_profile,
+            mut_t41_remove_readme_capability_map,
+            mut_t42_disable_foreign_agent_conflict,
+            mut_t43_copy_source_memory_on_upgrade,
+            mut_t44_break_node_detection,
+        }
+        mutations = [
+            mutation for mutation in mutations
+            if mutation not in source_only_mutations
+        ]
+        print("Consumer mode: skipped AOS-source-only README/release mutations.\n")
 
     passed = 0
     failed = 0

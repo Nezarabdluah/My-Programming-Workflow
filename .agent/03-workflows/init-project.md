@@ -1,84 +1,91 @@
 # Init Project — AOS v8.0.0-rc.1
 
-> One-time workflow for linking a software project to AOS.
-> Runtime authority after initialization: `.agent/01-core/boot-manifest.md`.
+> Manual/fallback initialization workflow.
+> **Default onboarding:** run `python .agent/bootstrap.py /path/to/target-project` from the AOS source repository.
+> Use this file only for recovery, manual setup, or reviewing a bootstrap result marked `NEEDS_REVIEW`.
 
 ## 1. Discover the project
 
-Inspect the repository to identify:
-- stack and package/build manifests,
-- test infrastructure,
-- repository state,
+Inspect the target repository and record only evidence-backed facts:
+- stack/package/build manifests,
+- test/lint/E2E infrastructure,
+- repository structure,
 - existing architecture/patterns.
 
-Do not force a predefined architecture.
+Do not force a predefined architecture or invent commands.
 
-## 2. Install the AOS runtime
+## 2. Safe runtime installation
 
-Preferred path: run the source repository's sanitized installer:
+Preferred/default path is the one-command bootstrap.
+
+If installation must be performed manually, use the source installer:
 
 ```bash
 python .agent/install.py /path/to/target-project
 ```
 
-The install phase copies reusable runtime assets only:
+Before any write, preflight must protect:
+- existing foreign/unknown `.agent`,
+- `AGENTS.md`,
+- `CLAUDE.md`,
+- `.cursorrules`,
+- GitHub Copilot instructions.
+
+Unknown agent infrastructure is a hard stop. Do not auto-delete, rename, merge, or overwrite it.
+
+Reusable runtime includes:
 - `01-core/`, `02-rules/`, `03-workflows/`
 - `05-references/`, `06-templates/`, `governance/`, `adr/`
 - `profiles/technology/`
 - `evidence/README.md`
-- `INDEX.md`, `AGENTS.md`, `VERSION`, and supported root adapters
+- `INDEX.md`, `AGENTS.md`, `VERSION`, supported root adapters
 
-The install phase must **not** copy source-project state:
+Fresh installation must not copy source-project state:
 - `04-memory/`
 - `profiles/project.json`
-- `task-contracts/current.json`
+- `task-contracts/`
 - `evidence/current.json`
 - `evidence/history/`
 
-If installing manually, reproduce the same inclusion/exclusion contract exactly.
-Do not treat legacy compatibility files as canonical runtime policy.
+Recognized AOS upgrades preserve those project-owned paths and back up managed root adapters before refresh.
 
-## 3. Initialize project memory
+## 3. Initialize project-owned state
 
-Create `.agent/04-memory/` with:
-- `project-context.md`
-- `learned-mistakes.md`
-- `decisions.md`
-- `active-tasks.md`
-- `project-knowledge.md`
-- `codebase-map.md`
-- `mistakes-archive.md`
+Create/repair target-specific:
+- `.agent/profiles/project.json`
+- `.agent/task-contracts/current.json`
+- `.agent/04-memory/project-context.md`
+- `.agent/04-memory/learned-mistakes.md`
+- `.agent/04-memory/decisions.md`
+- `.agent/04-memory/active-tasks.md`
+- `.agent/04-memory/project-knowledge.md`
+- `.agent/04-memory/codebase-map.md`
 
-Initialize only truthful current state. Do not pre-mark work as Approved or Done.
+Runtime ADRs belong to `.agent/adr/system-decisions.md`; project decisions belong to project Memory.
 
-## 4. Record project knowledge
+## 4. Record project evidence
 
-For an existing project:
-- map key folders/components,
-- detect test/build/lint/E2E commands,
-- record established conventions,
-- record architecture only from evidence in the codebase.
+Record:
+- project type/languages only from repository evidence,
+- real build/test/lint/E2E commands,
+- activated Technology Profiles only when applicable,
+- architecture source of truth from the target codebase.
 
-Create or validate `.agent/profiles/project.json` from repository evidence:
-- project type and languages,
-- activated Technology Profiles,
-- architecture source of truth,
-- real build/test/lint/E2E commands.
+If evidence is insufficient, mark the profile `needs_review` instead of guessing.
 
-Activate only Technology Profiles that match the project. Do not infer full-stack/DDD/Clean Architecture merely from AOS defaults.
+## 5. Validate execution runtime
 
-## 5. Validate Execution Runtime
-
-For a representative non-trivial task:
-1. create/update `.agent/task-contracts/current.json`,
-2. validate the Project/Technology Profiles,
+1. validate Project/Technology Profiles,
+2. ensure the current Task Contract has at least one resolvable capability,
 3. run `python .agent/01-core/execution_gate.py`,
-4. confirm approval mode, broker-selected resources, and named checks are correct,
-5. run named verification through `.agent/01-core/evidence_recorder.py`.
+4. confirm approval/context/check resolution,
+5. run `python .agent/governance/verify.py`.
 
-## 6. Write VERSION
+AOS-source-only README/release governance may be `SKIP_EXPECTED` in consumer projects; portable hard gates must still pass.
 
-Use the current source version:
+## 6. VERSION
+
+Use the installed runtime version:
 
 ```yaml
 aos_version: 8.0.0-rc.1
@@ -86,8 +93,8 @@ last_sync: [today]
 source_path: [YOUR-LOCAL-AOS-PATH]
 ```
 
-## 7. Verify initialization
+## 7. Handoff
 
-Run `python .agent/governance/verify.py` and verify required runtime files exist.
+After initialization/repair, normal operation returns to `.agent/01-core/boot-manifest.md`.
 
-Then hand off to `01-core/boot-manifest.md` for normal operation.
+For normal onboarding, this entire workflow is orchestrated automatically by `bootstrap.py`.

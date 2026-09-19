@@ -6,7 +6,8 @@
 | File | Description |
 |------|-------------|
 | `01-core/boot-manifest.md` | Canonical runtime contract: boot, routing, budget, governance, handoff |
-| `install.py` | Sanitized consumer installer; excludes source Project Profile, current Task Contract, Memory, and generated evidence |
+| `bootstrap.py` | **Default consumer entrypoint**: preflight → safe install/upgrade → discovery → initialization → portable verification |
+| `install.py` | Advanced/internal safe installer used by bootstrap; supports write-free preflight and state-preserving upgrades |
 | `start.py` | Boot prompt helper; `--check` runs full `governance/verify.py` |
 | `VERSION` | Version number, last sync date, and source path |
 
@@ -55,7 +56,7 @@
 ## 🔄 03-workflows/ — Workflows (Markdown-driven)
 | File | Description |
 |------|-------------|
-| `init-project.md` | Two-phase consumer onboarding: sanitized runtime install, then target-specific Memory/Profile/Task initialization |
+| `init-project.md` | Manual/fallback initialization workflow for recovery or `NEEDS_REVIEW`; normal users start with `bootstrap.py` |
 | `start-session.md` | Session start protocol: context continuity and version sync |
 | `end-session.md` | Session end protocol: memory save, **governance enforcement gate (pre-Done)**, and handoff summary export |
 | `requirements-analysis.md` | Requirements analysis and SDD spec drafting (Draft → Clarify → Approved) with user stories — supports **Given/When/Then and EARS** notation |

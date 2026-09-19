@@ -5,6 +5,7 @@ GOV-T07: REF citation validity (project-agnostic source discovery)
 GOV-T08: Dead/stale reference detection (project-agnostic)
 GOV-T10: ADR consistency — actually verifies changes (not rubber-stamp)
 """
+import json
 import re
 from pathlib import Path
 
@@ -12,6 +13,20 @@ PASS = "PASS"
 FAIL = "FAIL"
 SKIP_EXPECTED = "SKIP_EXPECTED"
 SKIP_UNSUPPORTED = "SKIP_UNSUPPORTED"
+
+
+def _is_aos_source_repo():
+    path = Path(".agent/profiles/project.json")
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        data.get("project_id") == "my-programming-workflow"
+        and data.get("project_type") == "engineering-workflow-framework"
+    )
 
 
 def _find_source_files():
@@ -152,25 +167,22 @@ def test_gov_t08_dead_references():
 
 
 def test_gov_t10_decision_consistency():
-    """GOV-T10: Verify runtime policy references real approved ADRs.
+    """GOV-T10: Runtime policy references real system/project ADRs."""
+    sources = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
-    Deterministic checks:
-    1. decisions.md exists and real ADR entries are structurally complete.
-    2. ADR IDs referenced by active Core/rule policy files exist in decisions.md.
-    3. v8 migration policy cannot cite a missing ADR.
+    existing = [path for path in sources if path.exists()]
+    if not existing:
+        return FAIL, "GOV-T10: no system/project ADR source exists."
 
-    This check intentionally does not infer file chronology from filesystem
-    modification timestamps because checkout/copy operations make that signal
-    unreliable.
-    """
-    decisions_path = Path(".agent/04-memory/decisions.md")
-    if not decisions_path.exists():
-        return FAIL, "GOV-T10: decisions.md is missing."
-
-    decisions_content = decisions_path.read_text(encoding="utf-8")
+    decisions_content = "\n\n".join(
+        path.read_text(encoding="utf-8") for path in existing
+    )
     adr_ids = set(re.findall(r"## .*?(ADR-\d+)", decisions_content))
     if not adr_ids:
-        return FAIL, "GOV-T10: decisions.md contains no ADR entries."
+        return FAIL, "GOV-T10: no ADR entries found in runtime/project sources."
 
     incomplete = []
     for adr_id in sorted(adr_ids):
@@ -182,11 +194,9 @@ def test_gov_t10_decision_consistency():
         if not match:
             continue
         section = match.group(0)
-        if "[Architectural Decision Title]" in section:
-            continue
-        required_labels = ("Context", "decision", "consequences")
         lowered = section.lower()
-        missing = [label for label in required_labels if label.lower() not in lowered]
+        required_labels = ("context", "decision", "consequences")
+        missing = [label for label in required_labels if label not in lowered]
         if missing:
             incomplete.append(f"{adr_id} (missing: {', '.join(missing)})")
 
@@ -206,8 +216,7 @@ def test_gov_t10_decision_consistency():
         path = Path(rel_path)
         if not path.exists():
             continue
-        content = path.read_text(encoding="utf-8")
-        refs = set(re.findall(r"ADR-\d+", content))
+        refs = set(re.findall(r"ADR-\d+", path.read_text(encoding="utf-8")))
         checked_refs.update(refs)
         for ref in refs:
             if ref not in adr_ids:
@@ -217,13 +226,15 @@ def test_gov_t10_decision_consistency():
         return FAIL, "GOV-T10: Policy references missing ADRs: " + "; ".join(missing_refs)
 
     return PASS, (
-        f"GOV-T10: {len(adr_ids)} ADR(s) structurally valid; "
+        f"GOV-T10: {len(adr_ids)} system/project ADR(s) valid; "
         f"{len(checked_refs)} runtime ADR reference(s) resolve."
     )
 
-
 def test_gov_t36_public_contract_sync():
     """GOV-T36: README public contract must match the current v8 runtime."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t36_public_contract_sync: AOS-source-only check."
+
     readme = Path("README.md")
     if not readme.exists():
         return FAIL, "GOV-T36: README.md missing."
@@ -237,8 +248,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "41 governance checks",
-        "28/28 mutation",
+        "45 governance checks",
+        "32/32 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -268,6 +279,9 @@ def test_gov_t36_public_contract_sync():
 
 def test_gov_t38_release_contract_entrypoints():
     """GOV-T38: Public/runtime entrypoints must route through current v8 execution."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t38_release_contract_entrypoints: AOS-source-only check."
+
     files = {
         "root AGENTS": Path("AGENTS.md"),
         "nested AGENTS": Path(".agent/AGENTS.md"),
@@ -319,8 +333,8 @@ def test_gov_t38_release_contract_entrypoints():
         problems.append("workflow: stale convergence branch trigger remains")
 
     readme = Path("README.md").read_text(encoding="utf-8")
-    if ".agent/install.py" not in readme:
-        problems.append("README: sanitized installer entrypoint missing")
+    if ".agent/bootstrap.py" not in readme:
+        problems.append("README: one-command bootstrap entrypoint missing")
     if "Copy `.agent` into your project" in readme:
         problems.append("README: unsafe full-state copy onboarding remains")
 
@@ -357,7 +371,6 @@ def test_gov_t40_version_consistency():
     label = f"v{version}"
 
     required = {
-        "README.md": label,
         "AGENTS.md": label,
         ".agent/AGENTS.md": label,
         ".agent/INDEX.md": label,
@@ -371,6 +384,8 @@ def test_gov_t40_version_consistency():
         ".agent/04-memory/active-tasks.md": label,
         ".agent/04-memory/learned-mistakes.md": label,
     }
+    if _is_aos_source_repo():
+        required["README.md"] = label
 
     problems = []
     for rel, marker in required.items():
@@ -423,6 +438,9 @@ def test_gov_t40_version_consistency():
 
 def test_gov_t41_readme_complete_capability_map():
     """GOV-T41: README must preserve the complete colored-text capability showcase."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t41_readme_complete_capability_map: AOS-source-only check."
+
     path = Path("README.md")
     if not path.exists():
         return FAIL, "GOV-T41: README.md missing."
@@ -430,10 +448,10 @@ def test_gov_t41_readme_complete_capability_map():
     content = path.read_text(encoding="utf-8")
 
     required_sections = [
-        "# ⚡ Quick Start — 3 Steps",
+        "# ⚡ Quick Start — One Command",
         "# What AOS gives you",
         "# How AOS works",
-        "# From install to Done",
+        "# What bootstrap does under the hood",
         "# Engineering lifecycle",
         "# Capability map",
         "# Core runtime",
@@ -458,7 +476,7 @@ def test_gov_t41_readme_complete_capability_map():
 
     required_diagrams = [
         "🟦 TASK",
-        "🟦 1. INSTALL AOS",
+        "🔎 1. PREFLIGHT",
         "🟦 INTAKE",
         "🤖 AOS v8",
         "🟦 NAMED CHECK",
@@ -488,10 +506,13 @@ def test_gov_t41_readme_complete_capability_map():
         problems.append("Mermaid remains in README; colored text diagrams are the standard.")
 
     quick_start_markers = [
-        "python .agent/install.py /path/to/your-project",
-        "Run .agent/03-workflows/init-project.md for this repository.",
-        "There is no always-running AOS process.",
-        "Each project carries its own governed .agent runtime.",
+        "python .agent/bootstrap.py /path/to/your-project",
+        "one bootstrap command per project",
+        "BLOCKED before any write",
+        "no AOS write happens",
+        "Safe upgrade",
+        "NEEDS_REVIEW",
+        "READY",
     ]
     missing_quick_start = [
         item for item in quick_start_markers if item not in content

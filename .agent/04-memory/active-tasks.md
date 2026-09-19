@@ -1,6 +1,6 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
-## T033 — README Three-Step Quick Start 🟡
+## T034 — One-Command Consumer Bootstrap 🔴
 - **State:** Done
 - **Approval:** explicit Navigator approval.
 
@@ -8,19 +8,23 @@
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- README begins with a simple 3-step startup path.
-- Installation model is explicit: one AOS source copy, per-project `.agent`, no background service.
-- Windows and generic install examples are shown.
-- Initialization and normal task usage are understandable without browsing internal files.
-- GOV-T41 protects the Quick Start markers.
-- Full verification remains green; Boot stays ≤150.
+- One command safely installs/upgrades, discovers, initializes, and verifies a consumer project.
+- Foreign agent infrastructure blocks before any AOS write.
+- Existing AOS upgrades preserve project state and back up managed adapters.
+- Consumer governance/provenance remains portable and source-scoped.
+- Real consumer bootstrap smoke passes in CI.
+- README exposes bootstrap as the default onboarding path.
+- Boot remains ≤150.
 
 ### Result
-- [x] Three-step Quick Start added.
-- [x] Installation model explained.
-- [x] Windows/generic examples added.
-- [x] GOV-T41 protects Quick Start markers.
+- [x] Collision-safe installer + safe upgrade/backups.
+- [x] Portable runtime ADR/provenance + consumer/source governance split.
+- [x] One-command bootstrap + T42–T45 + 32/32 mutations.
+- [x] CI consumer bootstrap smoke.
 - [x] Executing + Validating verification passed.
 
+### Evidence
+Run `35445890991`: 45 PASS, 32/32 mutations, bootstrap smoke PASS, Boot 139/150.
+
 ### Next
-Keep startup simple: install → initialize → give the agent a task.
+Use `bootstrap.py` as the default consumer onboarding command.

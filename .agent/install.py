@@ -1,7 +1,9 @@
-"""AOS v8 sanitized installer for consumer projects.
+"""AOS v8 safe installer for consumer projects.
 
-Copies reusable runtime assets while deliberately excluding source-project
-memory, Project Profile, current Task Contract, and generated evidence.
+Preflight runs before any write:
+- fresh target -> sanitized install
+- recognized AOS target -> safe runtime upgrade, preserving project state
+- foreign/unknown agent infrastructure -> hard stop, no overwrite
 
 Usage:
   python .agent/install.py /path/to/target-project
@@ -42,9 +44,95 @@ ROOT_ADAPTERS = [
 TECHNOLOGY_PROFILES = SOURCE_AGENT / "profiles" / "technology"
 EVIDENCE_README = SOURCE_AGENT / "evidence" / "README.md"
 
+PRESERVED_STATE = [
+    ".agent/04-memory/",
+    ".agent/profiles/project.json",
+    ".agent/task-contracts/",
+    ".agent/evidence/current.json",
+    ".agent/evidence/history/",
+]
+
+AOS_MARKERS = [
+    ".agent/VERSION",
+    ".agent/01-core/boot-manifest.md",
+]
+
 
 class InstallError(ValueError):
     pass
+
+
+def _is_aos_agent_dir(target_root: Path) -> bool:
+    version = target_root / ".agent" / "VERSION"
+    boot = target_root / ".agent" / "01-core" / "boot-manifest.md"
+    if not version.exists() or not boot.exists():
+        return False
+
+    try:
+        version_text = version.read_text(encoding="utf-8", errors="ignore")
+        boot_text = boot.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+
+    return "aos_version:" in version_text and "AOS" in boot_text
+
+
+def _is_aos_adapter(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    if "AOS-MANAGED-ADAPTER" in text:
+        return True
+    return (
+        "AOS" in text
+        and ".agent/01-core/boot-manifest.md" in text
+    )
+
+
+def inspect_target(target_root: Path) -> dict:
+    """Classify target before any write occurs."""
+    target_root = target_root.resolve()
+    if target_root == SOURCE_ROOT.resolve():
+        raise InstallError(
+            "Refusing to install consumer runtime over the AOS source repository."
+        )
+
+    target_agent = target_root / ".agent"
+    agent_exists = target_agent.exists()
+    aos_existing = agent_exists and _is_aos_agent_dir(target_root)
+
+    conflicts = []
+
+    if agent_exists and not aos_existing:
+        conflicts.append(
+            ".agent exists but is not a recognized AOS runtime"
+        )
+
+    for name in ROOT_ADAPTERS:
+        path = target_root / name
+        if path.exists() and not _is_aos_adapter(path):
+            conflicts.append(
+                f"{name} already exists and is not recognized as AOS-owned"
+            )
+
+    copilot = target_root / ".github" / "copilot-instructions.md"
+    if copilot.exists() and not _is_aos_adapter(copilot):
+        conflicts.append(
+            ".github/copilot-instructions.md already exists and is not "
+            "recognized as AOS-owned"
+        )
+
+    mode = "conflict" if conflicts else ("upgrade" if aos_existing else "fresh")
+    return {
+        "target": str(target_root),
+        "mode": mode,
+        "conflicts": conflicts,
+        "aos_existing": aos_existing,
+        "preserved_state": list(PRESERVED_STATE),
+    }
 
 
 def _copy_dir(source: Path, target: Path) -> None:
@@ -60,11 +148,28 @@ def _copy_file(source: Path, target: Path) -> None:
     shutil.copy2(source, target)
 
 
-def install(target_root: Path) -> dict:
-    target_root = target_root.resolve()
-    if target_root == SOURCE_ROOT.resolve():
-        raise InstallError("Refusing to install consumer runtime over the AOS source repository.")
+def _backup_managed_adapters(target_root: Path) -> list[str]:
+    backup_root = target_root / ".agent" / "backups" / "last-upgrade"
+    backed_up = []
 
+    candidates = [
+        *(target_root / name for name in ROOT_ADAPTERS),
+        target_root / ".github" / "copilot-instructions.md",
+    ]
+
+    for path in candidates:
+        if not path.exists() or not _is_aos_adapter(path):
+            continue
+        relative = path.relative_to(target_root)
+        destination = backup_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, destination)
+        backed_up.append(str(relative).replace("\\", "/"))
+
+    return backed_up
+
+
+def _install_runtime(target_root: Path) -> None:
     target_agent = target_root / ".agent"
     target_agent.mkdir(parents=True, exist_ok=True)
 
@@ -98,41 +203,74 @@ def install(target_root: Path) -> dict:
             target_root / ".github" / "copilot-instructions.md",
         )
 
-    excluded = [
-        ".agent/04-memory/",
-        ".agent/profiles/project.json",
-        ".agent/task-contracts/current.json",
-        ".agent/evidence/current.json",
-        ".agent/evidence/history/",
-    ]
+
+def install(target_root: Path) -> dict:
+    """Install or safely upgrade AOS after a write-free preflight."""
+    target_root = target_root.resolve()
+    report = inspect_target(target_root)
+
+    if report["mode"] == "conflict":
+        raise InstallError(
+            "Agent infrastructure conflict detected; nothing was changed. "
+            + " | ".join(report["conflicts"])
+        )
+
+    target_root.mkdir(parents=True, exist_ok=True)
+    backed_up_adapters = (
+        _backup_managed_adapters(target_root)
+        if report["mode"] == "upgrade"
+        else []
+    )
+    _install_runtime(target_root)
 
     return {
-        "target": str(target_root),
+        **report,
         "runtime_installed": True,
-        "excluded_source_state": excluded,
-        "next": "Run .agent/03-workflows/init-project.md in the target repository.",
+        "runtime_upgraded": report["mode"] == "upgrade",
+        "backed_up_adapters": backed_up_adapters,
+        "next": (
+            "Initialize target-specific AOS state."
+            if report["mode"] == "fresh"
+            else "Existing project state preserved; revalidate project profile."
+        ),
     }
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Install sanitized AOS runtime")
+    parser = argparse.ArgumentParser(description="Safely install/upgrade AOS runtime")
     parser.add_argument("target", help="Target project root")
+    parser.add_argument(
+        "--preflight",
+        action="store_true",
+        help="Inspect collisions only; make no changes.",
+    )
     args = parser.parse_args()
 
     target = Path(args.target)
-    target.mkdir(parents=True, exist_ok=True)
 
     try:
+        if args.preflight:
+            result = inspect_target(target)
+            print(f"AOS preflight: {result['mode']}")
+            for conflict in result["conflicts"]:
+                print(f"  CONFLICT: {conflict}")
+            return 2 if result["mode"] == "conflict" else 0
+
         result = install(target)
     except InstallError as exc:
-        print(f"INSTALL FAILED: {exc}")
-        return 1
+        print(f"INSTALL BLOCKED: {exc}")
+        return 2
 
-    print("AOS runtime installed.")
+    action = "upgraded" if result["runtime_upgraded"] else "installed"
+    print(f"AOS runtime {action} safely.")
     print(f"Target: {result['target']}")
-    print("Source-specific state excluded:")
-    for item in result["excluded_source_state"]:
+    print("Preserved project state:")
+    for item in result["preserved_state"]:
         print(f"  - {item}")
+    if result["backed_up_adapters"]:
+        print("Backed up managed adapters:")
+        for item in result["backed_up_adapters"]:
+            print(f"  - {item}")
     print(result["next"])
     return 0
 

@@ -12,8 +12,9 @@
       "risk_allowlist": [
         "new_architecture"
       ],
-      "source": ".agent/04-memory/decisions.md",
-      "source_marker": "ADR-008"
+      "source": ".agent/adr/system-decisions.md",
+      "source_marker": "ADR-008",
+      "scope": "runtime"
     },
     {
       "id": "ADR-009",
@@ -26,8 +27,9 @@
       "risk_allowlist": [
         "new_architecture"
       ],
-      "source": ".agent/04-memory/decisions.md",
-      "source_marker": "ADR-009"
+      "source": ".agent/adr/system-decisions.md",
+      "source_marker": "ADR-009",
+      "scope": "runtime"
     },
     {
       "id": "pattern-existing-local-refactor",
@@ -39,7 +41,8 @@
       ],
       "risk_allowlist": [],
       "source": ".agent/04-memory/project-knowledge.md",
-      "source_marker": "[PATTERN:existing-local-refactor]"
+      "source_marker": "[PATTERN:existing-local-refactor]",
+      "scope": "aos-source"
     }
   ]
 }

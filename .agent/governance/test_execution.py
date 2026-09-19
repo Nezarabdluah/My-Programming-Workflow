@@ -16,6 +16,20 @@ def _load_module(name, path):
     return module
 
 
+def _is_aos_source_repo():
+    path = Path(".agent/profiles/project.json")
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        data.get("project_id") == "my-programming-workflow"
+        and data.get("project_type") == "engineering-workflow-framework"
+    )
+
+
 def _json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -64,23 +78,25 @@ def test_gov_t18_hard_stop_requires_human():
         "task_id": "t18-hard-stop",
         "classification": "sensitive",
         "capabilities": ["architecture"],
+        "affected_areas": ["src"],
         "risk": {"destructive": True},
         "approval": {
             "status": "approved",
             "provenance": "approved_pattern",
-            "reference": "pattern-existing-local-refactor",
+            "reference": "hard-stop-test-pattern",
         },
         "verification": [],
     }
     registry = {
         "entries": [{
-            "id": "pattern-existing-local-refactor",
+            "id": "hard-stop-test-pattern",
             "type": "approved_pattern",
             "status": "approved",
+            "scope": "runtime",
             "capabilities": ["architecture"],
             "risk_allowlist": ["destructive"],
-            "source": ".agent/04-memory/project-knowledge.md",
-            "source_marker": "[PATTERN:existing-local-refactor]",
+            "source": ".agent/adr/system-decisions.md",
+            "source_marker": "ADR-008",
         }]
     }
 
@@ -411,17 +427,33 @@ def test_gov_t29_registered_adr_execution_gate_auto_executes():
     policy = _json(".agent/01-core/approval-policy.json")
     registry = _json(".agent/01-core/approval-registry.json")
     context_map = _json(".agent/01-core/context-map.json")
+
+    commands = project.get("commands", {})
+    preferred = [
+        "aos_compile",
+        "governance_compile",
+        "aos_verify",
+        "governance_verify",
+    ]
+    verification_check = next(
+        (name for name in preferred if name in commands),
+        next(iter(commands), None),
+    )
+    if not verification_check:
+        return FAIL, "GOV-T29: project has no named verification command."
+
     task = {
         "task_id": "t29",
         "classification": "sensitive",
         "capabilities": ["architecture", "testing"],
+        "affected_areas": [".agent"],
         "risk": {},
         "approval": {
             "status": "approved",
             "provenance": "approved_adr",
             "reference": "ADR-008",
         },
-        "verification": ["governance_compile"],
+        "verification": [verification_check],
     }
 
     try:
@@ -436,7 +468,10 @@ def test_gov_t29_registered_adr_execution_gate_auto_executes():
     if result.get("execution_mode") != "AUTO_EXECUTE":
         return FAIL, f"GOV-T29: expected AUTO_EXECUTE: {result}"
 
-    return PASS, "GOV-T29: verified ADR task is READY/AUTO_EXECUTE."
+    return PASS, (
+        "GOV-T29: verified ADR task is READY/AUTO_EXECUTE "
+        f"using check {verification_check}."
+    )
 
 
 def test_gov_t30_approval_registry_sources_resolve():
@@ -451,7 +486,12 @@ def test_gov_t30_approval_registry_sources_resolve():
         return FAIL, "GOV-T30: approval registry has no entries."
 
     seen = set()
+    source_repo = engine._is_aos_source_repo()
+    checked = 0
     for entry in entries:
+        if entry.get("scope", "runtime") == "aos-source" and not source_repo:
+            continue
+
         entry_id = entry.get("id")
         if not isinstance(entry_id, str) or not entry_id.strip():
             return FAIL, "GOV-T30: registry entry missing id."
@@ -463,15 +503,19 @@ def test_gov_t30_approval_registry_sources_resolve():
             engine._verify_registry_source(entry)
         except Exception as exc:
             return FAIL, f"GOV-T30: {entry_id} source invalid: {exc}"
+        checked += 1
 
     return PASS, (
-        f"GOV-T30: {len(entries)} approval registry entries resolve "
+        f"GOV-T30: {checked} applicable approval registry entries resolve "
         "to durable source evidence."
     )
 
 
 def test_gov_t39_sanitized_installer_excludes_source_state():
     """GOV-T39: Consumer installer must not copy source-specific project state."""
+    if not _is_aos_source_repo():
+        return "SKIP_EXPECTED", "GOV-T39: AOS-source-only installer self-test."
+
     installer = _load_module(
         "aos_sanitized_installer",
         ".agent/install.py",
@@ -518,3 +562,184 @@ def test_gov_t39_sanitized_installer_excludes_source_state():
             return FAIL, "GOV-T39: installer did not report runtime_installed=true."
 
     return PASS, "GOV-T39: sanitized installer copies runtime and excludes source state."
+
+
+def test_gov_t42_foreign_agent_conflict_is_write_free():
+    """GOV-T42: Foreign agent infrastructure blocks before any AOS write."""
+    if not _is_aos_source_repo():
+        return "SKIP_EXPECTED", "GOV-T42: AOS-source-only installer safety test."
+
+    installer = _load_module("aos_installer_conflict", ".agent/install.py")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "foreign-project"
+        (root / ".agent").mkdir(parents=True)
+        sentinel = root / ".agent" / "foreign-system.txt"
+        sentinel.write_text("foreign-agent-state", encoding="utf-8")
+
+        try:
+            installer.install(root)
+        except installer.InstallError:
+            pass
+        except Exception as exc:
+            return FAIL, f"GOV-T42: unexpected conflict exception: {exc}"
+        else:
+            return FAIL, "GOV-T42: foreign .agent was not blocked."
+
+        if sentinel.read_text(encoding="utf-8") != "foreign-agent-state":
+            return FAIL, "GOV-T42: foreign agent state was modified."
+        if (root / ".agent" / "VERSION").exists():
+            return FAIL, "GOV-T42: AOS wrote files despite preflight conflict."
+
+    return PASS, "GOV-T42: foreign agent conflict blocks with zero AOS writes."
+
+
+def test_gov_t43_safe_upgrade_preserves_project_state():
+    """GOV-T43: Recognized AOS upgrades preserve project state and back up adapters."""
+    if not _is_aos_source_repo():
+        return "SKIP_EXPECTED", "GOV-T43: AOS-source-only upgrade safety test."
+
+    installer = _load_module("aos_installer_upgrade", ".agent/install.py")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "existing-aos"
+        root.mkdir(parents=True)
+
+        first = installer.install(root)
+        if first.get("mode") != "fresh":
+            return FAIL, f"GOV-T43: first install was not fresh: {first}"
+
+        state = {
+            root / ".agent/04-memory/project-context.md": "KEEP-MEMORY",
+            root / ".agent/profiles/project.json": '{"keep":"profile"}\n',
+            root / ".agent/task-contracts/current.json": '{"keep":"task"}\n',
+            root / ".agent/evidence/history/keep.json": '{"keep":"evidence"}\n',
+        }
+        for path, value in state.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(value, encoding="utf-8")
+
+        adapter = root / "AGENTS.md"
+        adapter.write_text(
+            adapter.read_text(encoding="utf-8") + "\nCUSTOM-AOS-ADAPTER-LINE\n",
+            encoding="utf-8",
+        )
+
+        second = installer.install(root)
+        if second.get("mode") != "upgrade":
+            return FAIL, f"GOV-T43: existing AOS was not classified upgrade: {second}"
+
+        for path, value in state.items():
+            if not path.exists() or path.read_text(encoding="utf-8") != value:
+                return FAIL, f"GOV-T43: preserved state changed: {path}"
+
+        backup = root / ".agent/backups/last-upgrade/AGENTS.md"
+        if not backup.exists():
+            return FAIL, "GOV-T43: managed adapter backup missing."
+        if "CUSTOM-AOS-ADAPTER-LINE" not in backup.read_text(encoding="utf-8"):
+            return FAIL, "GOV-T43: adapter backup did not preserve prior content."
+
+    return PASS, "GOV-T43: safe upgrade preserves state and backs up managed adapters."
+
+
+def test_gov_t44_bootstrap_initializes_detected_consumer():
+    """GOV-T44: One-command bootstrap initializes a detected consumer project."""
+    if not _is_aos_source_repo():
+        return "SKIP_EXPECTED", "GOV-T44: AOS-source-only bootstrap self-test."
+
+    bootstrap = _load_module("aos_bootstrap_consumer", ".agent/bootstrap.py")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "web-app"
+        root.mkdir(parents=True)
+        (root / "package.json").write_text(
+            json.dumps({
+                "scripts": {
+                    "build": "vite build",
+                    "test": "vitest run",
+                    "lint": "eslint .",
+                }
+            }),
+            encoding="utf-8",
+        )
+        (root / "tsconfig.json").write_text("{}", encoding="utf-8")
+
+        result = bootstrap.bootstrap(root, verify=False)
+
+        if result.get("status") != "READY":
+            return FAIL, f"GOV-T44: detected project was not READY: {result}"
+        if result.get("project_type") != "node":
+            return FAIL, f"GOV-T44: expected node project: {result}"
+        if set(result.get("languages", [])) != {"javascript", "typescript"}:
+            return FAIL, f"GOV-T44: language detection mismatch: {result}"
+
+        profile = json.loads(
+            (root / ".agent/profiles/project.json").read_text(encoding="utf-8")
+        )
+        for command in ["aos_compile", "aos_verify", "project_build", "project_test", "project_lint"]:
+            if command not in profile.get("commands", {}):
+                return FAIL, f"GOV-T44: missing detected command: {command}"
+
+        task = json.loads(
+            (root / ".agent/task-contracts/current.json").read_text(encoding="utf-8")
+        )
+        if task.get("capabilities") != ["testing"]:
+            return FAIL, "GOV-T44: bootstrap task lacks portable testing context."
+
+        for name in [
+            "project-context.md",
+            "active-tasks.md",
+            "learned-mistakes.md",
+            "decisions.md",
+        ]:
+            if not (root / ".agent/04-memory" / name).exists():
+                return FAIL, f"GOV-T44: missing initialized memory file: {name}"
+
+    return PASS, "GOV-T44: one-command bootstrap creates detected consumer state."
+
+
+def test_gov_t45_source_only_approval_rejected_in_consumer():
+    """GOV-T45: AOS-source approval patterns cannot authorize consumer work."""
+    engine = _load_module(
+        "aos_approval_scope_consumer",
+        ".agent/01-core/approval_engine.py",
+    )
+    policy = _json(".agent/01-core/approval-policy.json")
+    registry = {
+        "entries": [{
+            "id": "source-only-test-pattern",
+            "type": "approved_pattern",
+            "status": "approved",
+            "scope": "aos-source",
+            "capabilities": ["architecture", "testing"],
+            "risk_allowlist": [],
+            "source": ".agent/adr/system-decisions.md",
+            "source_marker": "ADR-008",
+        }]
+    }
+    task = {
+        "task_id": "t45",
+        "classification": "medium",
+        "capabilities": ["architecture", "testing"],
+        "affected_areas": ["src"],
+        "risk": {},
+        "approval": {
+            "status": "approved",
+            "provenance": "approved_pattern",
+            "reference": "source-only-test-pattern",
+        },
+        "verification": ["aos_verify"],
+    }
+
+    original = engine._is_aos_source_repo
+    engine._is_aos_source_repo = lambda: False
+    try:
+        engine.evaluate_approval(task, policy, registry)
+    except engine.ApprovalError:
+        return PASS, "GOV-T45: source-only approval pattern rejected in consumer mode."
+    except Exception as exc:
+        return FAIL, f"GOV-T45: unexpected exception: {exc}"
+    finally:
+        engine._is_aos_source_repo = original
+
+    return FAIL, "GOV-T45: source-only approval pattern authorized consumer work."
