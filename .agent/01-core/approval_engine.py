@@ -42,6 +42,34 @@ def _validate_task(task: dict) -> dict:
         raise ApprovalError(str(exc)) from exc
 
 
+def _verify_registry_source(entry: dict) -> None:
+    source = entry.get("source")
+    marker = entry.get("source_marker")
+    if not isinstance(source, str) or not source.strip():
+        raise ApprovalError("approval registry entry is missing source")
+    if not isinstance(marker, str) or not marker.strip():
+        raise ApprovalError("approval registry entry is missing source_marker")
+
+    path = Path(source)
+    if not path.exists():
+        raise ApprovalError(f"approval source does not exist: {source}")
+
+    content = path.read_text(encoding="utf-8")
+    if marker not in content:
+        raise ApprovalError(
+            f"approval source marker not found: {marker} in {source}"
+        )
+
+    if entry.get("type") == "approved_adr":
+        start = content.find(marker)
+        next_heading = content.find("\n## ", start + len(marker))
+        section = content[start: next_heading if next_heading != -1 else len(content)]
+        if "Status" not in section or "Approved" not in section:
+            raise ApprovalError(
+                f"ADR approval source is not approved: {marker}"
+            )
+
+
 def _registry_entry(task: dict, registry: dict) -> dict | None:
     approval = task.get("approval", {})
     provenance = approval.get("provenance")
@@ -70,6 +98,8 @@ def _registry_entry(task: dict, registry: dict) -> dict | None:
         )
 
     entry = matches[0]
+    _verify_registry_source(entry)
+
     task_caps = set(task.get("capabilities", []))
     allowed_caps = set(entry.get("capabilities", []))
     if not task_caps.issubset(allowed_caps):
