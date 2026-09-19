@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
-- **Phase:** v8 Release Candidate
-- **Task:** T030 — Done
+- **Phase:** RC Documentation & Discoverability
+- **Task:** T031 — Done
 
 ## Current
-RC1 markers and version consistency are validated. Run `35441304411` passed 40 governance checks, 27/27 mutations, and Boot 145/150.
+README is the complete user-facing AOS capability map; executable runtime files remain authoritative.
 
 ## Next
-Verify completed state, merge to main, verify main push, then tag/release RC1.
+Maintain showcase coverage through GOV-T41 and keep deep policy in runtime sources.

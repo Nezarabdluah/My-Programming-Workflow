@@ -8,121 +8,232 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0.0--rc.1-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-40%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-27%2F27%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-41%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-28%2F28%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/boot-%E2%89%A4150%20lines-success" alt="boot budget">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
 
+<p align="center">
+  <strong>Architecture · Security · Testing · DevOps · UX · Performance · Memory · Evidence · Governance</strong>
+</p>
+
 ---
 
-## Start in 30 Seconds
+# What AOS gives you
 
-From this AOS repository, install the sanitized runtime into your project:
+AOS turns an AI coding agent from “a model that edits files” into a governed engineering worker with explicit context, risk, approval, verification, memory, and release discipline.
+
+| Capability | What AOS provides | Where it lives |
+|---|---|---|
+| 🏗️ **Architecture** | ADRs, architecture review, DDD/Clean Architecture guidance when applicable, profile-scoped patterns | `.agent/04-memory/decisions.md`, `.agent/02-rules/` |
+| 🔐 **Security** | Threat modeling, auth/authorization review, hard-stop risks, security gates, secret/dependency checks | `.agent/02-rules/security-checklist.md`, `.agent/03-workflows/security-gate/` |
+| 🧪 **Testing & QA** | Unit/integration/E2E strategy, quality gates, mutation-tested governance | `.agent/03-workflows/qa-strategy.md`, `.agent/governance/` |
+| 🚀 **DevOps & Deployment** | CI validation, production readiness, deployment, rollback, post-launch checks | `.agent/03-workflows/master-pipeline/` |
+| 📈 **Reliability & Observability** | Resilience, health/readiness, logging/tracing, production-readiness review | `.agent/02-rules/testing-and-quality.md`, production-readiness workflow |
+| ⚡ **Database & Performance** | Query/index guidance, bounded result handling, performance-aware access patterns | `.agent/02-rules/database-performance.md` |
+| 🌐 **API & Network** | API contracts, payload design, latency/chatty-call review, versioning guidance | `.agent/02-rules/network-and-api.md` |
+| 🎨 **Frontend & UX** | UX review, accessibility, responsive behavior, frontend workflow guidance | `.agent/03-workflows/create-frontend-module.md`, UX workflow |
+| 📱 **Mobile QA** | Environment discovery, build verification, scenarios, evidence reporting | `.agent/03-workflows/mobile-qa/` |
+| 🧠 **Memory & Learning** | Project context, decisions, learned mistakes, durable patterns, merge-safe handoff | `.agent/04-memory/` |
+| 🤖 **Autonomous Execution** | `AUTO_EXECUTE`, `HUMAN_APPROVED`, `HUMAN_REQUIRED` modes | Execution Gate + Approval Engine |
+| 🎯 **Context Control** | Context Broker selects only relevant rules/workflows/references | `context_broker.py`, `context-map.json` |
+| 🧾 **Executable Evidence** | Named checks, PASS/FAIL from exit code, SHA-256 Evidence History | `evidence_recorder.py`, `.agent/evidence/` |
+| 🛡️ **Governance** | 41 checks + 28 mutation tests proving checks can fail | `.agent/governance/` |
+| 📚 **Engineering Knowledge** | 16 distilled books, 6 constitutions, REF/OPS/QA catalogs, prompts/templates | `.agent/05-references/`, `.agent/06-templates/` |
+
+> **Important:** this README is the complete user-facing overview. It is **not** a second runtime authority. Executable truth remains in `boot-manifest.md`, Task Contract, Execution Gate, Context Map, Profiles, and Project Profile.
+
+---
+
+# How AOS works
+
+```mermaid
+flowchart TD
+    A[Task] --> B[Task Contract]
+    B --> C{Execution Gate}
+    C -->|HUMAN_REQUIRED| H[Stop for approval]
+    C -->|HUMAN_APPROVED| D[Context Broker]
+    C -->|AUTO_EXECUTE| D
+    D --> E[Project + Technology Profiles]
+    E --> F[Minimal selected resources]
+    F --> G[Implementation]
+    G --> I[Named verification checks]
+    I --> J[Evidence Bundle]
+    J --> K[Evidence History + SHA-256]
+    K --> L[Governance + Mutation Tests]
+    L --> M[Durable merge-safe Memory]
+    M --> N[Done]
+```
+
+The agent does not load everything. It declares the task, resolves approval, selects the smallest relevant context, executes, verifies, records evidence, and only then completes the task.
+
+---
+
+# From install to Done
+
+```mermaid
+flowchart LR
+    A[1. Install AOS] --> B[2. Initialize target project]
+    B --> C[3. Discover stack + architecture]
+    C --> D[4. Create Project Profile]
+    D --> E[5. Give the agent a task]
+    E --> F[6. Execution Gate]
+    F --> G[7. Context Broker]
+    G --> H[8. Implement]
+    H --> I[9. Verify + Evidence]
+    I --> J[10. Governance]
+    J --> K[11. Memory update]
+    K --> L[12. Done]
+```
+
+## 1) Install the sanitized runtime
+
+From the AOS repository:
 
 ```bash
 python .agent/install.py /path/to/your-project
 ```
 
-Then open the target project and tell your AI tool:
+The installer copies reusable runtime assets and deliberately excludes source-project state:
+
+- `.agent/04-memory/`
+- `.agent/profiles/project.json`
+- `.agent/task-contracts/current.json`
+- `.agent/evidence/current.json`
+- `.agent/evidence/history/`
+
+This prevents a new project from inheriting AOS's own identity, approvals, task, or history.
+
+## 2) Initialize the target project
+
+Open the target repository and tell your AI tool:
 
 ```text
 Run .agent/03-workflows/init-project.md for this repository.
-Discover the project and create target-specific memory, Project Profile, Task Contract,
-and verification commands. Do not reuse source-project state.
+Discover the project and create target-specific memory, Project Profile,
+Task Contract, and verification commands.
 After initialization, follow .agent/01-core/boot-manifest.md exactly.
 ```
 
-The installer copies reusable runtime assets but deliberately excludes AOS's own
-`04-memory/`, `profiles/project.json`, `task-contracts/current.json`,
-and generated evidence history.
+The initialization workflow discovers the actual stack, architecture, tests, commands, CI, and conventions before enabling full governance.
 
-Automatic entry adapters are installed for tools that support repository instructions:
-`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, and GitHub Copilot instructions.
+## 3) Work normally
 
----
+For non-trivial work, AOS maintains `.agent/task-contracts/current.json` and runs:
 
-## What AOS Is
+```bash
+python .agent/01-core/execution_gate.py
+```
 
-AOS is a small operating system around an AI coding agent. It makes task execution:
+The result is one of:
 
-- **stateful** — durable memory and SDD state survive sessions,
-- **risk-aware** — classification, explicit risk flags, affected areas,
-- **approval-aware** — deterministic approval provenance and hard-stop policy,
-- **context-efficient** — Context Broker selects only relevant resources,
-- **project-aware** — Project Profile + Technology Profiles,
-- **evidence-driven** — PASS/FAIL comes from executed checks,
-- **self-verifying** — governance + mutation tests prove checks can fail.
-
-The runtime is intentionally deterministic where determinism matters.
+| Mode | Meaning |
+|---|---|
+| 🟢 `AUTO_EXECUTE` | Existing verified policy/ADR/pattern covers the task |
+| 🟡 `HUMAN_APPROVED` | Explicit Navigator approval covers the task |
+| 🔴 `HUMAN_REQUIRED` | Stop before implementation |
 
 ---
 
-## Runtime Flow
+# Engineering lifecycle
 
-```text
-Task
-  ↓
-Task Contract
-  - classification
-  - capabilities
-  - affected areas
-  - risk flags
-  - approval provenance
-  - named verification checks
-  ↓
-Execution Gate
-  ├─ HUMAN_REQUIRED → stop
-  ├─ HUMAN_APPROVED → proceed
-  └─ AUTO_EXECUTE → proceed
-  ↓
-Context Broker
-  - explicit capabilities
-  - risk-derived capabilities
-  - affected-area-derived capabilities
-  - Technology Profile gates
-  ↓
-Minimal selected resources
-  ↓
-Implementation
-  ↓
-Evidence Recorder
-  - executes named Project Profile commands
-  - derives PASS/FAIL from exit code
-  ↓
-Evidence Bundle + Evidence History
-  ↓
-Governance + Mutation Tests
+For full lifecycle work AOS provides nine stages:
+
+```mermaid
+flowchart LR
+    S0[Intake] --> S1[Requirements]
+    S1 --> S2[Architecture]
+    S2 --> S3[Threat Model]
+    S3 --> S4[Implementation]
+    S4 --> S5[Testing]
+    S5 --> S6[Production Readiness]
+    S6 --> S7[Deployment]
+    S7 --> S8[Post-Launch]
+```
+
+| Stage | Typical focus |
+|---|---|
+| **0 — Intake** | Scope, classification, risks, affected areas |
+| **1 — Requirements** | Acceptance criteria, ambiguity removal, SDD |
+| **2 — Architecture** | Boundaries, decisions, ADRs, trade-offs |
+| **3 — Threat Model** | Security boundaries, abuse cases, data risk |
+| **4 — Implementation** | Existing project patterns + selected rules |
+| **5 — Testing** | Unit/integration/E2E/static/security checks as applicable |
+| **6 — Production Readiness** | Reliability, observability, recovery, operations |
+| **7 — Deployment** | Rollout, rollback, smoke checks |
+| **8 — Post-Launch** | Health, incidents, DORA/user impact, retrospective |
+
+Pipeline depth is proportional to task risk. AOS does not force every task through every stage.
+
+---
+
+# Capability map
+
+```mermaid
+mindmap
+  root((AOS v8))
+    Engineering
+      Architecture
+      DDD / Clean Architecture
+      API / Network
+      Database / Performance
+    Quality
+      Unit / Integration / E2E
+      Mobile QA
+      Accessibility / UX
+      Mutation-tested Governance
+    Security
+      Threat Modeling
+      Auth / Authorization
+      Secrets / Dependencies
+      Hard-stop Risks
+    Operations
+      DevOps / CI
+      Production Readiness
+      Deployment / Rollback
+      Post-Launch
+    Intelligence
+      Context Broker
+      Technology Profiles
+      16 Distilled Books
+      6 Constitutions
+    Control
+      Execution Gate
+      Approval Provenance
+      Evidence Bundle
+      Evidence History
+      Merge-safe Memory
 ```
 
 ---
 
-## Canonical Core
+# Core runtime
 
-| File | Purpose |
+| File | Role |
 |---|---|
 | `.agent/01-core/boot-manifest.md` | Canonical runtime contract |
-| `.agent/01-core/task_contract.py` | Structured Task Contract validation |
+| `.agent/01-core/task_contract.py` | Validates structured task contracts |
 | `.agent/01-core/execution_gate.py` | Unified pre-execution decision |
-| `.agent/01-core/approval_engine.py` | Approval provenance and hard-stop policy |
-| `.agent/01-core/approval-policy.json` | Executable approval policy |
+| `.agent/01-core/approval_engine.py` | Approval provenance + hard-stop policy |
+| `.agent/01-core/approval-policy.json` | Executable approval rules |
 | `.agent/01-core/approval-registry.json` | Verified ADR/pattern approval sources |
 | `.agent/01-core/context_broker.py` | Deterministic context resolver |
 | `.agent/01-core/context-map.json` | Executable capability → resource map |
-| `.agent/01-core/evidence_recorder.py` | Executable Evidence Bundle/History recorder |
-| `.agent/01-core/wiring-registry.md` | Human-readable capability/resource catalog |
-
-`context-map.json` is the executable resource source of truth. The Markdown wiring registry is documentation for humans and agents.
+| `.agent/01-core/evidence_recorder.py` | Runs named checks + records Evidence |
+| `.agent/profiles/project.json` | Project-specific stack, commands, affected-area routing |
+| `.agent/profiles/technology/` | Optional Technology Profiles |
 
 ---
 
-## Task Contract
+# Task Contract
 
-The current non-trivial task lives in:
+A non-trivial task records its execution contract in:
 
 `.agent/task-contracts/current.json`
 
-It records:
+Typical fields:
 
 ```json
 {
@@ -143,79 +254,64 @@ It records:
 }
 ```
 
-Unknown risks, invalid provenance, missing verification names, and invalid affected areas are rejected by executable validation.
+Unknown risks, invalid provenance, invalid affected areas, and missing named checks are rejected by executable validation.
 
 ---
 
-## Approval & Autonomous Execution
+# Context Broker
 
-The Execution Gate returns one of three modes:
+Context selection comes from three sources:
 
-| Mode | Meaning |
-|---|---|
-| `AUTO_EXECUTE` | Policy/verified ADR/pattern covers the task |
-| `HUMAN_APPROVED` | Explicit Navigator approval covers the task |
-| `HUMAN_REQUIRED` | Stop before implementation |
-
-Hard-stop risks include destructive/irreversible changes, new architecture, security boundaries, production changes, breaking external contracts, and data migrations.
-
-A text string such as `"approved_adr"` is not trusted by itself. ADR/pattern provenance must resolve through `approval-registry.json` to durable source evidence and valid scope.
-
----
-
-## Context Broker
-
-The broker combines three sources:
-
-1. **Explicit capabilities** from the Task Contract.
-2. **Risk-derived capabilities** from `context-map.json`.
-3. **Affected-area-derived capabilities** from the Project Profile.
+```text
+Explicit capabilities
+       +
+Risk-derived capabilities
+       +
+Affected-area-derived capabilities
+       ↓
+Context Broker
+       ↓
+Minimal relevant resources
+```
 
 Examples:
 
-```text
-security_boundary=true
-  → Security + Testing
+| Input | Derived context |
+|---|---|
+| `security_boundary=true` | Security + Testing |
+| `data_migration=true` | Database + Testing |
+| `production_change=true` | Production Readiness + Deployment + Testing |
+| `.github/workflows/**` | Deployment + Testing |
 
-data_migration=true
-  → Database + Testing
-
-production_change=true
-  → Production Readiness + Deployment + Testing
-
-.github/workflows/**
-  → Deployment + Testing   (project-specific rule)
-```
-
-Capabilities are de-duplicated while preserving provenance such as:
-`explicit`, `risk:security_boundary`, or `area:.github/workflows`.
-
-Technology-specific resources load only when their Technology Profile is active.
+Technology-specific guidance loads only when its Technology Profile is active.
 
 ---
 
-## Project & Technology Profiles
+# Security model
 
-`.agent/profiles/project.json` defines the current project:
+AOS treats security as an engineering boundary, not a final checklist.
 
-- project type,
-- languages,
-- active Technology Profiles,
-- architecture source of truth,
-- named verification commands,
-- affected-area → capability rules.
+It can route tasks into:
 
-Technology Profiles live under:
+- threat modeling,
+- auth/authz review,
+- IDOR/access-control analysis,
+- injection/XSS input boundaries,
+- secret scanning,
+- dependency checks,
+- security-focused code review,
+- test verification,
+- security gate reporting.
 
-`.agent/profiles/technology/`
-
-The full-stack seven-layer model is optional profile guidance, not a Core assumption.
+Hard-stop risks such as destructive changes, security boundaries, data migrations, production changes, or breaking contracts cannot silently self-approve.
 
 ---
 
-## Evidence Bundle & History
+# Testing, QA & evidence
 
-Verification commands are named in the Project Profile and executed through:
+AOS separates **claims** from **evidence**.
+
+Named verification commands come from the Project Profile and run through:
 
 ```bash
 python .agent/01-core/evidence_recorder.py --check governance_compile
@@ -224,146 +320,132 @@ python .agent/01-core/evidence_recorder.py --check governance_verify
 
 Rules:
 
-- commands must be declared in the Project Profile,
-- execution is shell-free,
-- PASS/FAIL is derived from the process exit code,
-- current evidence is written to `.agent/evidence/current.json`,
+- arbitrary undeclared commands are rejected,
+- commands run shell-free,
+- PASS/FAIL is derived from exit code,
+- current evidence is stored in `.agent/evidence/current.json`,
 - completed evidence can be archived with SHA-256 integrity,
-- tampering with archived evidence is detected,
-- CI can upload Evidence History as an artifact.
+- CI can upload Evidence History,
+- tampering with archived evidence is detected.
 
-A prose claim such as “tests passed” is not executable evidence.
-
----
-
-## Knowledge System
-
-AOS still includes:
-
-- 16 distilled engineering books,
-- 6 constitutions,
-- REF/OPS/QA reference catalogs,
-- specialized engineering rules,
-- prompts and templates.
-
-But knowledge loading is now **on demand**.
-
-```text
-Task Contract
-  ↓
-Context Broker
-  ↓
-selected rule/reference/workflow entries only
+```mermaid
+flowchart LR
+    A[Named Check] --> B[Execute Process]
+    B --> C{Exit Code}
+    C -->|0| D[PASS]
+    C -->|non-zero| E[FAIL]
+    D --> F[Evidence Bundle]
+    E --> F
+    F --> G[SHA-256 History]
+    G --> H[Governance]
 ```
 
-Heavy references are search/grep-first. Complete bundles are not loaded by default.
+---
+
+# DevOps, production & release discipline
+
+AOS includes workflows for:
+
+- CI verification,
+- production readiness,
+- deployment strategy,
+- rollback planning,
+- smoke checks,
+- observability/readiness,
+- post-launch monitoring,
+- evidence artifacts,
+- release version consistency.
+
+For AOS itself, GitHub Actions verifies pull requests and `main`, and release consistency is protected by governance.
 
 ---
 
-## Master Pipeline
+# Memory that learns without becoming stale
 
-For full lifecycle work AOS provides nine stages:
-
-```text
-0 Intake
-1 Requirements
-2 Architecture
-3 Threat Model
-4 Implementation
-5 Testing
-6 Production Readiness
-7 Deployment
-8 Post-Launch
-```
-
-The required depth depends on task risk/classification. Stage resources are selected contextually; the pipeline does not force every project into a fixed full-stack architecture.
-
----
-
-## Memory & SDD
-
-Canonical states for non-trivial work:
+Canonical SDD lifecycle:
 
 ```text
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 ```
 
-Durable memory:
+Memory files:
 
 | File | Purpose |
 |---|---|
-| `project-context.md` | Current project/session state |
-| `active-tasks.md` | Current task + SDD state |
-| `learned-mistakes.md` | Active learned mistakes |
+| `project-context.md` | Durable current engineering state |
+| `active-tasks.md` | Current task + ordered SDD state |
+| `learned-mistakes.md` | Active lessons that should not repeat |
 | `decisions.md` | ADR log |
-| `project-knowledge.md` | Durable discovered project patterns |
+| `project-knowledge.md` | Verified durable project patterns |
 | `codebase-map.md` | Discovered project structure |
 
-Completed historical task detail should be archived instead of bloating Boot Context.
-
-Durable Boot Memory is **merge-safe**: current branch, PR status, mergeability, and queued/in-progress CI state are queried live from version control instead of being persisted. Immutable evidence such as completed CI run IDs, commit SHAs, ADR IDs, and completed task states may be retained.
+Boot Memory is merge-safe: current branch, PR status, mergeability, and queued CI are queried live instead of being persisted as durable truth.
 
 ---
 
-## Governance
+# Knowledge system
 
-Run full verification with:
+AOS includes:
+
+- **16 distilled engineering books**
+- **6 constitutions**
+- REF / OPS / QA catalogs
+- specialized rules
+- workflows
+- templates and prompts
+
+Knowledge is loaded **on demand**, not as a giant prompt.
+
+```text
+Task Contract
+  ↓
+Execution Gate
+  ↓
+Context Broker
+  ↓
+only the relevant rule / workflow / reference anchors
+```
+
+This keeps context focused while retaining access to deeper engineering knowledge.
+
+---
+
+# Governance strength
+
+Full verification:
 
 ```bash
 python .agent/governance/verify.py
 ```
 
-Current governance covers T01–T40, including:
+Current RC baseline:
 
-- task state and acceptance criteria,
-- ADR/memory integrity,
-- boot context budget,
-- Context Broker minimality/profile gating,
-- Project Profile integrity,
-- Approval Engine behavior,
-- Evidence Bundle semantics,
-- approval provenance/source verification,
-- Execution Gate behavior,
-- Evidence History tamper detection,
-- risk/affected-area capability derivation,
-- public README/runtime contract synchronization,
-- merge-safe durable Boot Memory,
-- release entrypoint/runtime contract alignment,
-- sanitized consumer installation that excludes source-project state,
-- release version consistency across active runtime/public markers.
+- **41 governance checks**
+- **28/28 mutation violations detected**
+- **Boot Context hard gate: ≤150 lines**
+- Evidence Bundle verified
+- Evidence History verified
+- sanitized installation behaviorally tested
+- README capability coverage governed
+- version consistency governed
 
-Mutation tests deliberately corrupt the system and verify governance catches the violation.
-
-Current release-readiness baseline:
-
-- **40 governance checks** (Done state may include expected skips),
-- **27/27 mutation violations detected**,
-- **Boot Context 144/150 lines** under the v8 release hard gate,
-- Evidence Bundle and Evidence History verified in CI,
-- sanitized consumer installation verified behaviorally.
+Mutation tests deliberately break the operating system and prove the relevant governance check catches the violation.
 
 ---
 
-## Project Structure
+# Project structure
 
 ```text
 .agent/
-├── 01-core/
-│   ├── boot-manifest.md
-│   ├── task_contract.py
-│   ├── execution_gate.py
-│   ├── approval_engine.py
-│   ├── approval-policy.json
-│   ├── approval-registry.json
-│   ├── context_broker.py
-│   ├── context-map.json
-│   └── evidence_recorder.py
-├── 02-rules/
-├── 03-workflows/
-│   └── master-pipeline/
-├── 04-memory/
-├── 05-references/
-├── 06-templates/
+├── 01-core/                  # execution, approval, context, evidence
+├── 02-rules/                 # architecture/security/DB/API/testing rules
+├── 03-workflows/             # features, QA, security, pipeline, deployment
+│   ├── master-pipeline/
+│   ├── mobile-qa/
+│   └── security-gate/
+├── 04-memory/                # context, ADRs, mistakes, project knowledge
+├── 05-references/            # books, constitutions, reference catalogs
+├── 06-templates/             # engineering templates
 ├── profiles/
 │   ├── project.json
 │   └── technology/
@@ -385,56 +467,45 @@ Current release-readiness baseline:
 
 ---
 
-## Context Budget
+# Source of truth
 
-Release hard gate:
+README tells you **what AOS is, what it can do, and how to use it**.
 
-- Boot Context: **≤150 lines**
+Executable authority remains here:
 
-Task expansion budgets remain proportional to task complexity. The budget is a guardrail, never a reason to omit required security/correctness evidence.
+| Question | Source of truth |
+|---|---|
+| How should the agent operate? | `boot-manifest.md` |
+| What is this task? | `task-contracts/current.json` |
+| May the agent proceed? | `execution_gate.py` + approval policy/registry |
+| What context should load? | `context-map.json` + Context Broker |
+| What stack/project rules apply? | Project + Technology Profiles |
+| What actually passed? | Evidence Bundle/History |
+| Is AOS internally consistent? | Governance + mutation verification |
 
----
-
-## Core Principles
-
-1. Security and data integrity.
-2. Accurate context and approved decisions.
-3. Correctness and executable evidence.
-4. Simplicity and reversibility.
-5. Performance and cost.
-6. Stack conventions.
-
-Additional rules:
-
-- evidence over claims,
-- no hidden classification downgrade,
-- no direct AOS self-development writes to `main`,
-- no unconditional full-reference loading,
-- no fixed full-stack assumptions without profile activation,
-- no unverified ADR/pattern string as approval provenance.
+This boundary lets README stay rich and friendly without duplicating executable policy.
 
 ---
 
-## Architecture Decisions
+# Architecture decisions
 
-Current v8 direction is defined by:
+Current v8 direction:
 
-- ADR-006 — Vertical Slice → optional Technology Profile.
-- ADR-007 — references/resources → on-demand.
-- ADR-008 — deterministic Context Broker.
-- ADR-009 — Approval Engine + executable Evidence Bundle.
-- ADR-010 — verified provenance + autonomous Execution Gate + Evidence History.
-- ADR-011 — risk/affected-area capability routing.
-- ADR-012 — merge-safe durable Boot Memory.
-- ADR-013 — sanitized two-phase consumer installation.
-
-Older ADRs remain in the log as historical decisions and may be superseded by later ADRs.
+- ADR-006 — Vertical Slice → optional Technology Profile
+- ADR-007 — resources/references → on-demand
+- ADR-008 — deterministic Context Broker
+- ADR-009 — Approval Engine + executable Evidence Bundle
+- ADR-010 — verified provenance + Execution Gate + Evidence History
+- ADR-011 — risk/affected-area capability routing
+- ADR-012 — merge-safe durable Boot Memory
+- ADR-013 — sanitized two-phase consumer installation
+- ADR-014 — README as complete user-facing capability map
 
 ---
 
-## Contributing
+# Contributing
 
-Before submitting a change:
+Before submitting a non-trivial AOS change:
 
 ```bash
 python .agent/01-core/execution_gate.py
@@ -442,16 +513,17 @@ python .agent/01-core/evidence_recorder.py --check governance_compile
 python .agent/01-core/evidence_recorder.py --check governance_verify
 ```
 
-Use a branch/PR for AOS self-development. Merge only after final CI and Done-state verification are green.
+Use a branch/PR for AOS self-development. Merge only after final CI and completed-state verification are green.
 
 ---
 
-## License
+# License
 
 MIT License — see [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
-  <strong>AOS v8.0.0-rc.1</strong> · Deterministic context · Verified approvals · Executable evidence · Mutation-tested governance
+  <strong>AOS v8.0.0-rc.1</strong><br>
+  Deterministic context · Verified approvals · Executable evidence · Mutation-tested governance
 </p>

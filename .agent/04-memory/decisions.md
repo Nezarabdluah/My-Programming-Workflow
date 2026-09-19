@@ -259,3 +259,26 @@
   * **Performance**: negligible copy overhead.
   * **Maintainability**: one source runtime with deterministic exclusions.
   * **Security**: prevents accidental reuse of source approvals, project identity, and evidence in unrelated repositories.
+
+
+---
+
+## ADR-014: README is the complete user-facing capability map, not a second runtime authority
+* **Date**: 2026-09-19
+* **Status**: Approved (Navigator requested a complete README experience)
+* **Context & problem**:
+  AOS has a rich runtime across Core, workflows, rules, profiles, references, governance, DevOps, security, QA, UX, memory, and evidence. A technically correct README can still force a new user to browse many files just to understand what the project contains, how the pieces connect, and how to start. That weakens discoverability and makes the project look smaller than it is.
+* **Approved decision**:
+  (1) README is the canonical **user-facing overview**: a new user should understand the project's purpose, capabilities, lifecycle, major subsystems, installation, first-run flow, evidence model, governance strength, and where to go deeper without browsing the repository first.
+  (2) README must include visual capability/lifecycle maps (Mermaid where appropriate), a capability matrix covering Architecture, Security, Testing/QA, DevOps/Deployment, Reliability/Observability, Database/Performance, API/Network, UX/Frontend, Mobile QA, Memory/Learning, Governance, Evidence, and Knowledge.
+  (3) README must clearly distinguish overview documentation from executable authority: `boot-manifest.md`, Task Contract, Execution Gate, Context Map, Profiles, and Project Profile remain runtime sources of truth.
+  (4) README should link concepts to their authoritative files instead of duplicating detailed rules that can drift.
+  (5) Governance must fail if the README loses its required overview sections, visual maps, quick-start path, source-of-truth boundary, or major capability coverage.
+* **Rejected alternatives and why**:
+  1. Keep README minimal and make users browse `.agent` ← rejected: poor onboarding/discoverability.
+  2. Copy all runtime rules into README ← rejected: creates a second executable truth source and drift.
+  3. Rely on screenshots only ← rejected: harder to maintain, search, diff, and keep accessible.
+* **Technical consequences**:
+  * **Usability**: users can understand AOS from one page before opening internal files.
+  * **Maintainability**: deep rules remain in authoritative runtime files.
+  * **Governance**: public capability coverage becomes testable rather than editorial.
