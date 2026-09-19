@@ -37,12 +37,9 @@ Before writing any code, draft the work plan as follows:
 
 ---
 
-## 3. Strict Task Classification — No Downgrades
-- ⚠️ **No agent self-assessment**: when in doubt, the task classification escalates automatically; downgrading is forbidden.
-- **Strict automatic classification**:
-  * 🔴 **Sensitive automatically, no debate**: any task touching the database, auth/security, or core architecture.
-  * 🟡 **Medium**: tasks adding new business logic or editing multiple files without touching sensitive entities.
-  * 🟢 **Simple**: purely visual/textual minor edits only.
+## 3. Task Classification
+Use the canonical policy in `task-classification.md` and `boot-manifest.md`.
+Classification is risk-first, may escalate during execution, and must not be silently downgraded.
 
 ---
 
@@ -60,9 +57,7 @@ The agent must **stop immediately and raise its hand to ask** in these cases:
 
 ---
 
-## 6. Approved Response Structure
-To avoid fluff and verbal theater, every reply follows this structure:
-1. **Acknowledgment & classification**: [Mode & Proof of Read]
-2. **Analysis & open plan**: [assumptions + risks + rejected alternatives]
-3. **Modified/written code**: [with an explicit technical justification before the code]
-4. **Strict practical evidence**: [confirmation that the actual check tools passed locally / in CI]
+## 6. Communication
+Keep responses proportional to the task.
+For non-trivial work, communicate classification, material plan/risks, implemented changes, and verification evidence.
+Do not force a fixed response template when it adds no value.
