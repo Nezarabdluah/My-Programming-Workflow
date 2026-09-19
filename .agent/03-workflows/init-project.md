@@ -15,18 +15,27 @@ Do not force a predefined architecture.
 
 ## 2. Install the AOS runtime
 
-Copy the current AOS runtime structure into the project's `.agent/` directory, including:
-- `01-core/`
-- `02-rules/`
-- `03-workflows/`
-- `05-references/`
-- `06-templates/`
-- `governance/`
-- `adr/`
-- `INDEX.md`
-- `AGENTS.md`
-- `VERSION`
+Preferred path: run the source repository's sanitized installer:
 
+```bash
+python .agent/install.py /path/to/target-project
+```
+
+The install phase copies reusable runtime assets only:
+- `01-core/`, `02-rules/`, `03-workflows/`
+- `05-references/`, `06-templates/`, `governance/`, `adr/`
+- `profiles/technology/`
+- `evidence/README.md`
+- `INDEX.md`, `AGENTS.md`, `VERSION`, and supported root adapters
+
+The install phase must **not** copy source-project state:
+- `04-memory/`
+- `profiles/project.json`
+- `task-contracts/current.json`
+- `evidence/current.json`
+- `evidence/history/`
+
+If installing manually, reproduce the same inclusion/exclusion contract exactly.
 Do not treat legacy compatibility files as canonical runtime policy.
 
 ## 3. Initialize project memory
@@ -58,13 +67,14 @@ Create or validate `.agent/profiles/project.json` from repository evidence:
 
 Activate only Technology Profiles that match the project. Do not infer full-stack/DDD/Clean Architecture merely from AOS defaults.
 
-## 5. Validate Context Broker
+## 5. Validate Execution Runtime
 
 For a representative non-trivial task:
 1. create/update `.agent/task-contracts/current.json`,
-2. run `python .agent/01-core/context_broker.py`,
-3. verify only relevant resources are returned,
-4. run governance checks.
+2. validate the Project/Technology Profiles,
+3. run `python .agent/01-core/execution_gate.py`,
+4. confirm approval mode, broker-selected resources, and named checks are correct,
+5. run named verification through `.agent/01-core/evidence_recorder.py`.
 
 ## 6. Write VERSION
 
@@ -78,6 +88,6 @@ source_path: [YOUR-LOCAL-AOS-PATH]
 
 ## 7. Verify initialization
 
-Run available AOS governance checks and verify required runtime files exist.
+Run `python .agent/governance/verify.py` and verify required runtime files exist.
 
 Then hand off to `01-core/boot-manifest.md` for normal operation.

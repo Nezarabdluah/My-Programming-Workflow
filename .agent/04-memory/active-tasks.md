@@ -1,6 +1,6 @@
 # Active Tasks — AOS v8.0-dev
 
-## T028 — Merge-Safe Durable Memory 🔴
+## T029 — v8 Release Readiness & Sanitized Installation 🔴
 - **State:** Done
 - **Approval:** explicit Navigator approval.
 
@@ -8,20 +8,20 @@
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- Boot Memory excludes volatile branch/PR/mergeability/queued-CI state.
-- Immutable completed evidence remains allowed.
-- Boot/end-session define durable vs volatile state.
-- GOV-T37 + mutation enforce merge-safe memory.
-- Public metrics include T37 and mutation coverage.
-- Execution Gate and final verification remain green.
+- Entrypoints/CI must match Execution Gate + executable evidence.
+- Consumer install must exclude source project state.
+- GOV-T38/T39 + mutations must enforce release/onboarding contracts.
+- Boot must remain ≤150 lines before RC.
 
 ### Result
-- [x] ADR-012, Boot/end-session policy, GOV-T37, mutation, README, and T028 contract completed.
-- [x] Executing and Validating verification passed.
-- [x] T028 closed; final Done-state verification pending as completion evidence.
+- [x] Entrypoints, start/init flow, CI triggers, README, and INDEX aligned.
+- [x] ADR-013 + sanitized installer behaviorally verified.
+- [x] GOV-T38/T39 with 26/26 mutation coverage.
+- [x] Boot hard gate set to 150 and validated below ceiling.
+- [x] T029 completed; final Done-state verification is the completion evidence.
 
 ### Evidence
-Completed verification `35439819747`: 37 PASS, 24/24 mutations, Evidence Bundle PASS.
+Completed validation `35440422576`: 39 PASS, 26/26 mutations, Boot 146/150, Evidence Bundle/History PASS.
 
 ### Next
-Verify the completed task state; subsequent work should use merge-safe memory semantics.
+Use this baseline for the v8 release-candidate cut after completed-state verification.

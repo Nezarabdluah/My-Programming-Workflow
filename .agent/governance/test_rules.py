@@ -237,8 +237,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "37 governance checks",
-        "24/24 mutation",
+        "39 governance checks",
+        "26/26 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -264,3 +264,79 @@ def test_gov_t36_public_contract_sync():
         )
 
     return PASS, "GOV-T36: README matches the current v8 public runtime contract."
+
+
+def test_gov_t38_release_contract_entrypoints():
+    """GOV-T38: Public/runtime entrypoints must route through current v8 execution."""
+    files = {
+        "root AGENTS": Path("AGENTS.md"),
+        "nested AGENTS": Path(".agent/AGENTS.md"),
+        "start.py": Path(".agent/start.py"),
+        "init-project": Path(".agent/03-workflows/init-project.md"),
+        "workflow": Path(".github/workflows/aos-verify.yml"),
+    }
+    missing_files = [label for label, path in files.items() if not path.exists()]
+    if missing_files:
+        return FAIL, (
+            "GOV-T38: required release entrypoint(s) missing: "
+            + ", ".join(missing_files)
+        )
+
+    root_agents = files["root AGENTS"].read_text(encoding="utf-8")
+    nested_agents = files["nested AGENTS"].read_text(encoding="utf-8")
+    start = files["start.py"].read_text(encoding="utf-8")
+    init = files["init-project"].read_text(encoding="utf-8")
+    workflow = files["workflow"].read_text(encoding="utf-8")
+
+    problems = []
+    for label, content in [
+        ("root AGENTS", root_agents),
+        ("nested AGENTS", nested_agents),
+    ]:
+        if "execution_gate.py" not in content:
+            problems.append(f"{label}: missing Execution Gate")
+        if "evidence_recorder.py" not in content:
+            problems.append(f"{label}: missing Evidence Recorder")
+
+    start_verify_path = 'str(agent_dir / "governance" / "verify.py")'
+    start_runner_path = 'str(agent_dir / "governance" / "runner.py")'
+    if start_verify_path not in start:
+        problems.append("start.py: --check must execute full verify.py")
+    if start_runner_path in start:
+        problems.append("start.py: --check still executes runner.py")
+
+    for required in ["profiles/", "task-contracts/", "evidence/README.md"]:
+        if required not in init:
+            problems.append(f"init-project: missing {required}")
+    if "execution_gate.py" not in init:
+        problems.append("init-project: missing Execution Gate validation")
+    if "governance/verify.py" not in init:
+        problems.append("init-project: missing full verification")
+
+    if "- main" not in workflow or "workflow_dispatch:" not in workflow:
+        problems.append("workflow: main/manual release verification trigger missing")
+    if "aos-v8-convergence" in workflow:
+        problems.append("workflow: stale convergence branch trigger remains")
+
+    readme = Path("README.md").read_text(encoding="utf-8")
+    if ".agent/install.py" not in readme:
+        problems.append("README: sanitized installer entrypoint missing")
+    if "Copy `.agent` into your project" in readme:
+        problems.append("README: unsafe full-state copy onboarding remains")
+
+    if "profiles/technology/" not in init:
+        problems.append("init-project: Technology Profile install scope missing")
+    for forbidden_state in [
+        "profiles/project.json",
+        "task-contracts/current.json",
+        "04-memory/",
+    ]:
+        if forbidden_state not in init:
+            problems.append(
+                f"init-project: source-state exclusion missing for {forbidden_state}"
+            )
+
+    if problems:
+        return FAIL, "GOV-T38: release contract drift: " + "; ".join(problems)
+
+    return PASS, "GOV-T38: release entrypoints match the current v8 execution runtime."

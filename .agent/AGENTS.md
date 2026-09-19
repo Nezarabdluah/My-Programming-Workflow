@@ -1,40 +1,23 @@
 # Agent Operating System (AOS v8.0-dev)
 
-You are a professional coding agent. You work in pair-programming style with a senior engineer (the Navigator).
-You communicate with the developer in Modern Standard Arabic.
+Read `.agent/01-core/boot-manifest.md` first. It is the canonical runtime contract.
 
-## At the start of every session — read these files in order:
-1. `.agent/01-core/boot-manifest.md` — the unified boot contract (classification, budget, governance, rules)
-2. `.agent/04-memory/project-context.md` — current project state
-3. `.agent/04-memory/learned-mistakes.md` — avoid recorded mistakes
-4. `.agent/04-memory/active-tasks.md` — active and pending tasks
-5. `.agent/VERSION` — version number
+## Boot
+Load only the Boot Manifest plus the memory files listed in its Boot Sequence. Do not preload INDEX, workflows, rules, profiles, or references.
 
-⚠️ Do not read other files unless the task requires them. Convergence boot ceiling: ≤200 lines; final v8 goal: ≤150.
+## Non-trivial tasks
+1. Maintain `.agent/task-contracts/current.json`.
+2. Run `python .agent/01-core/execution_gate.py`.
+3. Stop if mode is `HUMAN_REQUIRED`.
+4. For `HUMAN_APPROVED` or `AUTO_EXECUTE`, use only returned broker resources and named verification checks.
 
-## Conditional files (read only when task requires):
-- `.agent/04-memory/decisions.md` ← architectural decisions (🔴 tasks)
-- `.agent/04-memory/codebase-map.md` ← when touching new files
-- `.agent/04-memory/project-knowledge.md` ← when asked about patterns
-- `.agent/02-rules/` ← load ONE rules file per task type
-- `.agent/05-references/` ← grep only, never full-read
+## Governance & Evidence
+Before Done, run named checks through `.agent/01-core/evidence_recorder.py`.
+Use `governance_verify` for full governance + mutation verification.
+PASS/FAIL must come from executable evidence.
 
-## Source Protection
-- Consumer mode: do not modify upstream AOS source.
-- AOS self-development mode: modify AOS only on an explicit non-main branch; never write directly to `main`.
+## Source protection
+Consumer mode must not modify upstream AOS. AOS self-development must use a non-main branch and green final verification before merge.
 
-## Governance
-Run `python .agent/governance/verify.py` before Done when available (governance + mutations). Fall back to `runner.py` only if necessary. SKIP is never PASS.
-
-## Mistake Classification
-- **A**: existing rule not followed → review and fix checklist
-- **B**: new project knowledge → record in `learned-mistakes.md`
-- **C**: missing general rule → propose adding to `02-rules/`
-
-## Forbidden
-- Writing outside the local project
-- Loading more than one rules file simultaneously
-- Reading `05-references/` in full
-- Skipping task classification for 🟡/🔴
-- Writing code for 🟡/🔴 without approved specs and plan
-- Ending a reply without updating memory for 🟡/🔴 tasks
+## Memory
+Keep Boot Memory durable and merge-safe. Query branch/PR/mergeability/queued-CI state live instead of persisting it.

@@ -13,9 +13,8 @@ FAIL = "FAIL"
 SKIP_EXPECTED = "SKIP_EXPECTED"
 SKIP_UNSUPPORTED = "SKIP_UNSUPPORTED"
 
-# v8 boot context limits
-BOOT_CONTEXT_HARD_LIMIT = 200  # convergence ceiling
-BOOT_CONTEXT_GOAL = 150        # final v8 target
+# v8 release boot context limit
+BOOT_CONTEXT_HARD_LIMIT = 150
 
 # Canonical boot context only. Entry adapters such as .agent/AGENTS.md are not
 # counted because boot-manifest.md is the runtime authority.
@@ -141,11 +140,7 @@ def test_gov_t05_handoff_validity():
 
 
 def test_gov_t11_boot_context_budget():
-    """GOV-T11: Verify canonical boot context stays within the v8 budget.
-
-    During convergence, >200 lines is a hard failure.
-    The final v8 optimization goal is <=150 lines.
-    """
+    """GOV-T11: Verify canonical Boot Context stays within the v8 release budget."""
     total_lines = 0
     missing = []
     file_stats = []
@@ -169,14 +164,12 @@ def test_gov_t11_boot_context_budget():
     if total_lines > BOOT_CONTEXT_HARD_LIMIT:
         return FAIL, (
             f"GOV-T11: Canonical boot context {total_lines} lines exceeds "
-            f"convergence ceiling {BOOT_CONTEXT_HARD_LIMIT}. "
-            f"Final goal: {BOOT_CONTEXT_GOAL}. [{detail}]"
+            f"release ceiling {BOOT_CONTEXT_HARD_LIMIT}. [{detail}]"
         )
 
     return PASS, (
         f"GOV-T11: Canonical boot context {total_lines} lines is within "
-        f"convergence ceiling {BOOT_CONTEXT_HARD_LIMIT}. "
-        f"Final goal: {BOOT_CONTEXT_GOAL}. [{detail}]"
+        f"release ceiling {BOOT_CONTEXT_HARD_LIMIT}. [{detail}]"
     )
 
 

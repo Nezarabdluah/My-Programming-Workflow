@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0--dev-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-37%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-24%2F24%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-39%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-26%2F26%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
@@ -18,22 +18,26 @@
 
 ## Start in 30 Seconds
 
-Copy `.agent` into your project, then tell your AI tool:
+From this AOS repository, install the sanitized runtime into your project:
 
-```text
-Read .agent/01-core/boot-manifest.md and follow it exactly.
-It is the canonical runtime contract.
-
-For non-trivial work:
-1. Update .agent/task-contracts/current.json.
-2. Run: python .agent/01-core/execution_gate.py
-3. If HUMAN_REQUIRED, stop for approval.
-4. If HUMAN_APPROVED or AUTO_EXECUTE, use only broker-selected context.
-5. Before Done, run named checks through .agent/01-core/evidence_recorder.py.
-Never fabricate evidence.
+```bash
+python .agent/install.py /path/to/your-project
 ```
 
-Automatic entry adapters are also included for tools that support repository instructions:
+Then open the target project and tell your AI tool:
+
+```text
+Run .agent/03-workflows/init-project.md for this repository.
+Discover the project and create target-specific memory, Project Profile, Task Contract,
+and verification commands. Do not reuse source-project state.
+After initialization, follow .agent/01-core/boot-manifest.md exactly.
+```
+
+The installer copies reusable runtime assets but deliberately excludes AOS's own
+`04-memory/`, `profiles/project.json`, `task-contracts/current.json`,
+and generated evidence history.
+
+Automatic entry adapters are installed for tools that support repository instructions:
 `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, and GitHub Copilot instructions.
 
 ---
@@ -309,7 +313,7 @@ Run full verification with:
 python .agent/governance/verify.py
 ```
 
-Current governance covers T01–T37, including:
+Current governance covers T01–T39, including:
 
 - task state and acceptance criteria,
 - ADR/memory integrity,
@@ -323,16 +327,19 @@ Current governance covers T01–T37, including:
 - Evidence History tamper detection,
 - risk/affected-area capability derivation,
 - public README/runtime contract synchronization,
-- merge-safe durable Boot Memory.
+- merge-safe durable Boot Memory,
+- release entrypoint/runtime contract alignment,
+- sanitized consumer installation that excludes source-project state.
 
 Mutation tests deliberately corrupt the system and verify governance catches the violation.
 
-Current verified baseline from Sprint 2:
+Current release-readiness baseline:
 
-- **37 governance checks** (Done state may include expected skips),
-- **24/24 mutation violations detected**,
-- **Boot Context 194/200 lines** on the final risk-routing validation,
-- Evidence Bundle and Evidence History verified in CI.
+- **39 governance checks** (Done state may include expected skips),
+- **26/26 mutation violations detected**,
+- **Boot Context 144/150 lines** under the v8 release hard gate,
+- Evidence Bundle and Evidence History verified in CI,
+- sanitized consumer installation verified behaviorally.
 
 ---
 
@@ -379,12 +386,11 @@ Current verified baseline from Sprint 2:
 
 ## Context Budget
 
-Current convergence ceiling:
+Release hard gate:
 
-- Boot Context: **≤200 lines**
-- Final v8 target: **≤150 lines**
+- Boot Context: **≤150 lines**
 
-Task expansion budgets are proportional to task complexity. Context budget is a guardrail, not a reason to omit required security/correctness evidence.
+Task expansion budgets remain proportional to task complexity. The budget is a guardrail, never a reason to omit required security/correctness evidence.
 
 ---
 
@@ -418,6 +424,8 @@ Current v8 direction is defined by:
 - ADR-009 — Approval Engine + executable Evidence Bundle.
 - ADR-010 — verified provenance + autonomous Execution Gate + Evidence History.
 - ADR-011 — risk/affected-area capability routing.
+- ADR-012 — merge-safe durable Boot Memory.
+- ADR-013 — sanitized two-phase consumer installation.
 
 Older ADRs remain in the log as historical decisions and may be superseded by later ADRs.
 

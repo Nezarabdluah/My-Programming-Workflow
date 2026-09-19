@@ -468,3 +468,53 @@ def test_gov_t30_approval_registry_sources_resolve():
         f"GOV-T30: {len(entries)} approval registry entries resolve "
         "to durable source evidence."
     )
+
+
+def test_gov_t39_sanitized_installer_excludes_source_state():
+    """GOV-T39: Consumer installer must not copy source-specific project state."""
+    installer = _load_module(
+        "aos_sanitized_installer",
+        ".agent/install.py",
+    )
+
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "consumer-project"
+        target.mkdir(parents=True, exist_ok=True)
+
+        try:
+            result = installer.install(target)
+        except Exception as exc:
+            return FAIL, f"GOV-T39: installer failed: {exc}"
+
+        required = [
+            target / ".agent/01-core/boot-manifest.md",
+            target / ".agent/governance/verify.py",
+            target / ".agent/profiles/technology",
+            target / ".agent/evidence/README.md",
+            target / "AGENTS.md",
+        ]
+        missing = [str(path.relative_to(target)) for path in required if not path.exists()]
+        if missing:
+            return FAIL, (
+                "GOV-T39: reusable runtime missing after install: "
+                + ", ".join(missing)
+            )
+
+        forbidden = [
+            target / ".agent/04-memory",
+            target / ".agent/profiles/project.json",
+            target / ".agent/task-contracts/current.json",
+            target / ".agent/evidence/current.json",
+            target / ".agent/evidence/history",
+        ]
+        leaked = [str(path.relative_to(target)) for path in forbidden if path.exists()]
+        if leaked:
+            return FAIL, (
+                "GOV-T39: source-specific state leaked into consumer install: "
+                + ", ".join(leaked)
+            )
+
+        if result.get("runtime_installed") is not True:
+            return FAIL, "GOV-T39: installer did not report runtime_installed=true."
+
+    return PASS, "GOV-T39: sanitized installer copies runtime and excludes source state."

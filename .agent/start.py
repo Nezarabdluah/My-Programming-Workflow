@@ -3,7 +3,7 @@
 Usage:
   python .agent/start.py          → prints boot prompt to screen
   python .agent/start.py --copy   → copies to clipboard (Windows)
-  python .agent/start.py --check  → runs governance checks
+  python .agent/start.py --check  → runs full governance + mutation verification
 """
 import sys
 import subprocess
@@ -19,7 +19,11 @@ def main():
     agent_dir = root / ".agent"
 
     if "--check" in sys.argv:
-        subprocess.run([sys.executable, str(agent_dir / "governance" / "runner.py")], cwd=str(root))
+        subprocess.run(
+            [sys.executable, str(agent_dir / "governance" / "verify.py")],
+            cwd=str(root),
+            check=False,
+        )
         return
 
     # Boot files to include
@@ -44,10 +48,10 @@ def main():
             prompt_parts.append(f"\n> ⚠️ Missing: {f.relative_to(root)}\n")
 
     prompt_parts.append("\n---\n## Quick Reference\n")
-    prompt_parts.append("- Wiring Registry: `.agent/01-core/wiring-registry.md`")
-    prompt_parts.append("- Master Pipeline: `.agent/03-workflows/master-pipeline/00-coordinator.md`")
-    prompt_parts.append("- Governance: `python .agent/governance/runner.py`")
-    prompt_parts.append("- Knowledge Index: `.agent/05-references/books/00-master-index.md`\n")
+    prompt_parts.append("- Execution Gate: `python .agent/01-core/execution_gate.py`")
+    prompt_parts.append("- Evidence: `python .agent/01-core/evidence_recorder.py --check <name>`")
+    prompt_parts.append("- Full verification: `python .agent/governance/verify.py`")
+    prompt_parts.append("- Context map: `.agent/01-core/context-map.json`\n")
 
     full_prompt = "\n".join(prompt_parts)
 
