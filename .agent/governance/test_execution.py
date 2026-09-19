@@ -16,6 +16,20 @@ def _load_module(name, path):
     return module
 
 
+def _is_aos_source_repo():
+    path = Path(".agent/profiles/project.json")
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        data.get("project_id") == "my-programming-workflow"
+        and data.get("project_type") == "engineering-workflow-framework"
+    )
+
+
 def _json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -478,6 +492,9 @@ def test_gov_t30_approval_registry_sources_resolve():
 
 def test_gov_t39_sanitized_installer_excludes_source_state():
     """GOV-T39: Consumer installer must not copy source-specific project state."""
+    if not _is_aos_source_repo():
+        return "SKIP_EXPECTED", "GOV-T39: AOS-source-only installer self-test."
+
     installer = _load_module(
         "aos_sanitized_installer",
         ".agent/install.py",
