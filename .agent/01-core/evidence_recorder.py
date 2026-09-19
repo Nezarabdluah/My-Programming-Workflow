@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -109,10 +110,14 @@ def run_named_check(
 
     started = datetime.now(timezone.utc).isoformat()
     before = time.monotonic()
+    argv = shlex.split(command)
+    if not argv:
+        raise EvidenceError(f"Project Profile command '{check_name}' is empty.")
+
     completed = subprocess.run(
-        command,
+        argv,
         cwd=ROOT,
-        shell=True,
+        shell=False,
         check=False,
     )
     duration_ms = int((time.monotonic() - before) * 1000)
