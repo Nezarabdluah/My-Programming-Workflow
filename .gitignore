@@ -13,3 +13,6 @@ __pycache__/
 
 # Generated executable evidence for the active task
 .agent/evidence/current.json
+
+# Generated tamper-evident evidence archives (publish as CI artifacts)
+.agent/evidence/history/
