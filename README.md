@@ -21,6 +21,88 @@
 
 ---
 
+# ⚡ Quick Start — 3 Steps
+
+> You do **not** install AOS as a Windows service or background application.
+> Keep one AOS source copy on your machine, then add a clean `.agent` runtime to each project you want AOS to govern.
+
+```text
+🟦 KEEP ONE AOS SOURCE COPY
+   C:\Tools\AOS   or   ~/tools/AOS
+              │
+              ├──────────────► Project A\.agent
+              ├──────────────► Project B\.agent
+              └──────────────► Project C\.agent
+
+AOS does not stay running in the background.
+Each project carries its own governed .agent runtime.
+```
+
+## ① Add AOS to your project
+
+From the AOS source repository:
+
+```bash
+python .agent/install.py /path/to/your-project
+```
+
+**Windows example:**
+
+```powershell
+python .agent\install.py C:\Projects\MyApp
+```
+
+This copies the reusable AOS runtime into:
+
+```text
+MyApp/
+└── .agent/
+```
+
+It intentionally does **not** copy AOS's own project memory, current task, Project Profile, or evidence history.
+
+## ② Initialize that project
+
+Open the target project in your AI coding tool and say:
+
+```text
+Run .agent/03-workflows/init-project.md for this repository.
+```
+
+AOS then discovers the real project and creates the project-specific profile, memory, task contract, and verification commands.
+
+## ③ Give the agent your task normally
+
+Example:
+
+```text
+Add password reset to this project.
+```
+
+From there AOS handles the engineering flow:
+
+```text
+TASK
+  ↓
+Risk + Approval
+  ↓
+Relevant Context
+  ↓
+Implementation
+  ↓
+Tests + Evidence
+  ↓
+Governance
+  ↓
+Memory
+  ↓
+DONE
+```
+
+**That's it.** You only keep the AOS source repository available when you want to install/update AOS in another project. There is no always-running AOS process.
+
+---
+
 # What AOS gives you
 
 AOS turns an AI coding agent from “a model that edits files” into a governed engineering worker with explicit context, risk, approval, verification, memory, and release discipline.
