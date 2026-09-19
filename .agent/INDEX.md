@@ -16,9 +16,18 @@
 | `task-classification.md` | 🟢/🟡/🔴 classification indicators, keywords, scope, and the Zero-Trust escalation rule |
 | `token-budget.md` | Supplemental selective-loading guidance; boot limits are defined by boot-manifest/governance |
 | `collaboration-rules.md` | Pair-programming protocol: Driver/Navigator roles, step & proof, stop gates, response structure |
-| `wiring-registry.md` | Capability/resource discovery registry used by selective context expansion |
+| `context-map.json` | Executable capability→resource map used by Context Broker |
+| `context_broker.py` | Deterministic resolver for Task Contract + Project/Technology Profiles |
+| `wiring-registry.md` | Human-readable capability/resource catalog mirroring the executable map |
 
-## 📐 02-rules/ — Specialized Rules (conditionally loaded, ONE at a time)
+## profiles/ + task-contracts/ — Sprint 2 execution contracts
+| Path | Description |
+|------|-------------|
+| `profiles/project.json` | Project type, activated Technology Profiles, and executable commands |
+| `profiles/technology/*.json` | Optional stack/architecture-specific capabilities and constraints |
+| `task-contracts/current.json` | Current non-trivial task classification, capabilities, approval, and verification |
+
+## 📐 02-rules/ — Specialized Rules (broker-selected, ONE at a time)
 | File | Description |
 |------|-------------|
 | `architecture-and-design.md` | Clean Architecture dependency rule, DDD (Aggregates, Value Objects, Events), SOLID review checklist |
@@ -91,5 +100,5 @@
 |------|-------------|
 | `runner.py` | Core governance runner |
 | `verify.py` | Full verification entry point: governance + mutation checks |
-| `test_memory.py`, `test_rules.py`, `test_state.py` | Governance test suite |
+| `test_memory.py`, `test_rules.py`, `test_state.py`, `test_context.py` | Governance test suite |
 | `test_mutations.py` | Mutation suite proving governance checks can fail |
