@@ -1,4 +1,4 @@
-# Start Session — Legacy Compatibility Workflow (AOS v8.0-dev)
+# Start Session — Legacy Compatibility Workflow (AOS v8.0.0-rc.1)
 
 > **Status:** Deprecated compatibility workflow.
 > **Canonical runtime entry point:** `.agent/01-core/boot-manifest.md`
