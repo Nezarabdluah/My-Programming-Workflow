@@ -1,13 +1,12 @@
 """AOS Governance — State Tests (v8.0-dev)
 
-GOV-T01: Task state validity (supports multiple task formats)
-GOV-T02: Acceptance criteria presence
-GOV-T09: State machine integrity (no illegal jumps)
+GOV-T01: Current task state validity
+GOV-T02: Acceptance criteria for active non-trivial tasks
+GOV-T09: Ordered state history for completed non-trivial tasks
 """
 import re
 from pathlib import Path
 
-# Official statuses
 PASS = "PASS"
 FAIL = "FAIL"
 SKIP_EXPECTED = "SKIP_EXPECTED"
@@ -18,174 +17,171 @@ VALID_STATES = {
     "Executing", "Validating", "Done"
 }
 
-# Patterns that indicate an active task with a declared state
-STATE_PATTERNS = [
-    # "Current feature state: X" (v7 format)
-    r"Current\s+feature\s+state\s*:\s*\[?([A-Za-z]+)\]?",
-    # "State: X" or "SDD State: X"
-    r"(?:SDD\s+)?State\s*:\s*\[?([A-Za-z]+)\]?",
-]
-
-# Patterns indicating completed tasks (not requiring active state)
-COMPLETED_MARKERS = [
-    r"\[x\]",           # Markdown checkbox completed
-    r"DONE",            # Explicit DONE marker
-    r"COMPLETE",        # Explicit COMPLETE marker
-]
+STATE_PATTERN = re.compile(
+    r"(?:\*\*)?(?:SDD\s+)?State(?:\*\*)?\s*:\s*"
+    r"(?:\*\*)?\[?([A-Za-z]+)\]?(?:\*\*)?",
+    re.IGNORECASE,
+)
 
 
 def _read_file(rel_path):
-    """Read a file relative to project root, return content or None."""
     path = Path(rel_path)
     if path.exists():
         return path.read_text(encoding="utf-8")
     return None
 
 
+def _task_sections(content):
+    """Return Markdown sections that look like current task records."""
+    sections = re.split(r"(?=^##\s+)", content, flags=re.MULTILINE)
+    return [
+        section for section in sections
+        if re.search(r"^##\s+", section, flags=re.MULTILINE)
+    ]
+
+
+def _extract_state(section):
+    match = STATE_PATTERN.search(section)
+    if not match:
+        return None
+    raw = match.group(1)
+    for state in VALID_STATES:
+        if raw.lower() == state.lower():
+            return state
+    return raw
+
+
+def _is_non_trivial(section):
+    return bool(re.search(r"(?:🟡|🔴)", section))
+
+
 def test_gov_t01_state_validity():
-    """GOV-T01: Verify task states match the approved state machine.
-
-    Accepts multiple formats:
-    - 'Current feature state: X'
-    - 'State: X' / 'SDD State: X'
-    - Inline '(DONE ✅)' in task lines
-    - '[x]' checkboxes for completed tasks
-
-    If no active (non-completed) task exists, the check passes
-    (no task = no state to validate).
-    """
+    """GOV-T01: Every current task with a State field uses a valid state."""
     content = _read_file(".agent/04-memory/active-tasks.md")
     if content is None:
         return FAIL, "GOV-T01: active-tasks.md not found."
 
-    # Collect all declared states
-    found_states = set()
-    for pattern in STATE_PATTERNS:
-        for match in re.finditer(pattern, content):
-            found_states.add(match.group(1))
+    sections = _task_sections(content)
+    states = []
 
-    # If the file has completed markers but no explicit state declarations,
-    # that's valid — tasks are done
-    has_completed = any(re.search(p, content) for p in COMPLETED_MARKERS)
+    for section in sections:
+        state = _extract_state(section)
+        if state is not None:
+            states.append(state)
 
-    if not found_states:
-        if has_completed:
-            return PASS, "GOV-T01: No active state declared; all tasks appear completed."
-        # Check if file is essentially empty/template
-        non_empty_lines = [l for l in content.split("\n")
-                          if l.strip() and not l.strip().startswith("#")
-                          and not l.strip().startswith(">")
-                          and not l.strip().startswith("---")]
-        if len(non_empty_lines) < 3:
-            return SKIP_EXPECTED, "GOV-T01: active-tasks.md is empty/template — no state to validate."
-        return PASS, "GOV-T01: Tasks present with completion markers but no invalid states."
+    if not states:
+        meaningful = [
+            line for line in content.splitlines()
+            if line.strip()
+            and not line.lstrip().startswith(("#", ">", "---"))
+        ]
+        if len(meaningful) < 3:
+            return SKIP_EXPECTED, (
+                "GOV-T01: active-tasks.md contains no active task."
+            )
+        return FAIL, (
+            "GOV-T01: Task content exists but no parseable State field was found."
+        )
 
-    # Validate found states
-    invalid = found_states - VALID_STATES
-    # Allow common completion synonyms
-    allowed_synonyms = {"COMPLETE", "PARTIAL", "REVIEWED", "PUBLISHED"}
-    truly_invalid = invalid - allowed_synonyms
+    invalid = [state for state in states if state not in VALID_STATES]
+    if invalid:
+        return FAIL, f"GOV-T01: Invalid state(s): {sorted(set(invalid))}"
 
-    if truly_invalid:
-        return FAIL, f"GOV-T01: Invalid state(s) found: {truly_invalid}"
-
-    return PASS, f"GOV-T01: All declared states valid: {found_states}"
+    return PASS, f"GOV-T01: Current task state(s) valid: {states}"
 
 
 def test_gov_t02_acceptance_criteria():
-    """GOV-T02: Verify acceptance criteria exist for non-trivial tasks.
-
-    For tasks in Draft/Clarify state, criteria may not exist yet (SKIP_EXPECTED).
-    For completed tasks, criteria are not required retroactively.
-    For active 🟡/🔴 tasks past Approved state, Given/When/Then or
-    measurable criteria must be present.
-    """
+    """GOV-T02: Active 🟡/🔴 tasks past Clarify have acceptance criteria."""
     content = _read_file(".agent/04-memory/active-tasks.md")
     if content is None:
-        return SKIP_EXPECTED, "GOV-T02: active-tasks.md not found — nothing to validate."
+        return SKIP_EXPECTED, "GOV-T02: active-tasks.md not found."
 
-    # Check if there are active (non-completed) 🟡/🔴 tasks past Draft/Clarify
-    has_active_medium_or_sensitive = bool(
-        re.search(r"(?:🟡|🔴).*(?:Approved|Planning|Ready|Executing|Validating)", content)
-    )
+    required_states = {"Approved", "Planning", "Ready", "Executing", "Validating"}
+    candidates = []
 
-    if not has_active_medium_or_sensitive:
+    for section in _task_sections(content):
+        state = _extract_state(section)
+        if _is_non_trivial(section) and state in required_states:
+            candidates.append(section)
+
+    if not candidates:
         return SKIP_EXPECTED, (
-            "GOV-T02: No active 🟡/🔴 tasks past Draft/Clarify — "
-            "acceptance criteria not required at this stage."
+            "GOV-T02: No active 🟡/🔴 task past Clarify requires criteria."
         )
 
-    # Look for structured acceptance criteria
-    has_given = bool(re.search(r"\bGiven\b", content))
-    has_when = bool(re.search(r"\bWhen\b", content))
-    has_then = bool(re.search(r"\bThen\b", content))
-    has_criteria = bool(re.search(
-        r"(?:acceptance|criteria|requirement|must|shall|expect)", content, re.IGNORECASE
-    ))
+    for section in candidates:
+        has_heading = bool(re.search(
+            r"^###\s+Acceptance Criteria\s*$",
+            section,
+            flags=re.IGNORECASE | re.MULTILINE,
+        ))
+        has_structured_language = bool(re.search(
+            r"\b(?:Given|When|Then|must|shall|criterion|criteria)\b",
+            section,
+            flags=re.IGNORECASE,
+        ))
+        if not (has_heading and has_structured_language):
+            return FAIL, (
+                "GOV-T02: Active 🟡/🔴 task is missing structured "
+                "Acceptance Criteria."
+            )
 
-    if has_given and has_when and has_then:
-        return PASS, "GOV-T02: Given/When/Then acceptance criteria found."
-    if has_criteria:
-        return PASS, "GOV-T02: Acceptance criteria found (non-GWT format)."
-
-    return FAIL, (
-        "GOV-T02: Active 🟡/🔴 task past Approved but no acceptance criteria found."
+    return PASS, (
+        f"GOV-T02: Acceptance criteria present for {len(candidates)} "
+        "active non-trivial task(s)."
     )
 
 
 def test_gov_t09_workflow_integrity():
-    """GOV-T09: Verify completed non-trivial tasks have valid state history.
-
-    For 🟡/🔴 tasks marked Done, a checkbox or the mere presence of words like
-    "Approved" is not evidence. The task section must record an ordered
-    State History containing the required SDD transitions.
-    """
-    active_content = _read_file(".agent/04-memory/active-tasks.md")
-    if active_content is None:
+    """GOV-T09: Completed 🟡/🔴 tasks must record ordered SDD state history."""
+    content = _read_file(".agent/04-memory/active-tasks.md")
+    if content is None:
         return SKIP_EXPECTED, "GOV-T09: active-tasks.md not found."
 
-    # Split current-task memory into task sections.
-    sections = re.split(r"(?=^##\s+)", active_content, flags=re.MULTILINE)
-    completed_non_trivial = []
+    completed = []
+    for section in _task_sections(content):
+        if _is_non_trivial(section) and _extract_state(section) == "Done":
+            completed.append(section)
 
-    for section in sections:
-        if not re.search(r"(?:🟡|🔴)", section):
-            continue
-        state_match = re.search(r"(?:\*\*)?State(?:\*\*)?\s*:\s*\*\*?([A-Za-z]+)", section)
-        if not state_match:
-            state_match = re.search(r"(?:SDD\s+)?State\s*:\s*\[?([A-Za-z]+)\]?", section)
-        if state_match and state_match.group(1) == "Done":
-            completed_non_trivial.append(section)
-
-    if not completed_non_trivial:
-        return PASS, "GOV-T09: No completed 🟡/🔴 task requires state-history validation."
-
-    required = ["Draft", "Clarify", "Approved", "Planning", "Ready",
-                "Executing", "Validating", "Done"]
-
-    for section in completed_non_trivial:
-        history_match = re.search(
-            r"###\s+State History\s*\n([^#]+)",
-            section,
-            flags=re.IGNORECASE
+    if not completed:
+        return PASS, (
+            "GOV-T09: No completed 🟡/🔴 task requires state-history validation."
         )
-        if not history_match:
-            return FAIL, "GOV-T09: Completed 🟡/🔴 task is missing State History."
 
-        history = history_match.group(1)
+    required = [
+        "Draft", "Clarify", "Approved", "Planning",
+        "Ready", "Executing", "Validating", "Done",
+    ]
+
+    for section in completed:
+        match = re.search(
+            r"^###\s+State History\s*$\n(.*?)(?=^###\s+|^##\s+|\Z)",
+            section,
+            flags=re.IGNORECASE | re.MULTILINE | re.DOTALL,
+        )
+        if not match:
+            return FAIL, (
+                "GOV-T09: Completed 🟡/🔴 task is missing State History."
+            )
+
+        history = match.group(1)
         positions = [history.find(state) for state in required]
-        if any(pos < 0 for pos in positions):
-            missing = [state for state, pos in zip(required, positions) if pos < 0]
+        if any(position < 0 for position in positions):
+            missing = [
+                state for state, position in zip(required, positions)
+                if position < 0
+            ]
             return FAIL, (
                 "GOV-T09: Completed 🟡/🔴 task has incomplete State History; "
                 f"missing: {', '.join(missing)}"
             )
+
         if positions != sorted(positions):
             return FAIL, (
                 "GOV-T09: Completed 🟡/🔴 task State History is out of order."
             )
 
     return PASS, (
-        f"GOV-T09: {len(completed_non_trivial)} completed 🟡/🔴 task(s) "
+        f"GOV-T09: {len(completed)} completed 🟡/🔴 task(s) "
         "have ordered SDD state history."
     )
