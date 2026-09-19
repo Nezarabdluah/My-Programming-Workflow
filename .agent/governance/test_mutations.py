@@ -647,6 +647,23 @@ def mut_t40_restore_dev_version_marker():
     )
 
 
+def mut_t41_remove_readme_capability_map():
+    """Mutate README so the complete capability-map contract is broken."""
+    from test_rules import test_gov_t41_readme_complete_capability_map
+    path = Path("README.md")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace("# Capability map", "# Removed capability map", 1)
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T41-REMOVE-README-CAPABILITY-MAP",
+        setup,
+        test_gov_t41_readme_complete_capability_map,
+    )
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -694,6 +711,7 @@ if __name__ == "__main__":
         mut_t38_restore_stale_start_check,
         mut_t39_leak_project_profile,
         mut_t40_restore_dev_version_marker,
+        mut_t41_remove_readme_capability_map,
         mut_t11_boot_too_large,
     ]
 
