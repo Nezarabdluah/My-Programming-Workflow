@@ -178,3 +178,40 @@ def test_gov_t11_boot_context_budget():
         f"convergence ceiling {BOOT_CONTEXT_HARD_LIMIT}. "
         f"Final goal: {BOOT_CONTEXT_GOAL}. [{detail}]"
     )
+
+
+def test_gov_t37_merge_safe_boot_memory():
+    """GOV-T37: Canonical Boot Memory must exclude volatile VCS state."""
+    files = [
+        Path(".agent/04-memory/project-context.md"),
+        Path(".agent/04-memory/active-tasks.md"),
+    ]
+
+    violations = []
+    field_patterns = [
+        re.compile(r"^\s*-\s*\*\*(?:Branch|PR|Main):\*\*", re.MULTILINE),
+        re.compile(r"^\s*(?:Branch|PR|Main)\s*:", re.MULTILINE),
+    ]
+    phrase_patterns = [
+        re.compile(r"\bprepare\s+PR\s*#?\d*", re.IGNORECASE),
+        re.compile(r"\bmerge\s+PR\s*#?\d*", re.IGNORECASE),
+        re.compile(r"\bawaiting\s+(?:final\s+)?(?:done-state\s+)?CI\b", re.IGNORECASE),
+        re.compile(r"\brun\s+(?:final\s+)?done-state\s+CI\b", re.IGNORECASE),
+    ]
+
+    for path in files:
+        if not path.exists():
+            continue
+        content = path.read_text(encoding="utf-8")
+        for pattern in field_patterns + phrase_patterns:
+            match = pattern.search(content)
+            if match:
+                violations.append(f"{path.name}: {match.group(0)!r}")
+
+    if violations:
+        return FAIL, (
+            "GOV-T37: volatile VCS state found in Boot Memory: "
+            + "; ".join(violations)
+        )
+
+    return PASS, "GOV-T37: Boot Memory is merge-safe and free of volatile VCS state."

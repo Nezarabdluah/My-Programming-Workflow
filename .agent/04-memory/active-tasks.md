@@ -1,33 +1,27 @@
 # Active Tasks — AOS v8.0-dev
 
-## T027 — Stabilization & Public Contract Sync 🟡
+## T028 — Merge-Safe Durable Memory 🔴
 - **State:** Done
-- **Branch:** `aos-v8-sprint2-stabilization`
-- **Approval:** verified pattern `pattern-existing-local-refactor`.
+- **Approval:** explicit Navigator approval.
 
 ### State History
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- README matches the current Execution Gate/Context Broker/approval/evidence runtime.
-- Public governance/mutation metrics are current.
-- VERSION and post-PR5 memory are current.
-- GOV-T36 blocks stale public-contract text.
-- Mutation proves GOV-T36 can fail.
-- T027 resolves READY/AUTO_EXECUTE via verified pattern.
-- No merge before final green CI.
+- Boot Memory excludes volatile branch/PR/mergeability/queued-CI state.
+- Immutable completed evidence remains allowed.
+- Boot/end-session define durable vs volatile state.
+- GOV-T37 + mutation enforce merge-safe memory.
+- Public metrics include T37 and mutation coverage.
+- Execution Gate and final verification remain green.
 
-### Progress
-- [x] README synchronized to v8 runtime.
-- [x] GOV-T36 + drift mutation.
-- [x] VERSION + post-PR5 memory synchronized.
-- [x] T17/T28 made provenance-aware.
-- [x] Executing-state CI: 36/36 + 23/23.
-- [x] Validating-state CI passed.
-- [x] T027 closed; awaiting Done-state CI for T09.
+### Result
+- [x] ADR-012, Boot/end-session policy, GOV-T37, mutation, README, and T028 contract completed.
+- [x] Executing and Validating verification passed.
+- [x] T028 closed; final Done-state verification pending as completion evidence.
 
 ### Evidence
-Run `35439510825`: 36 PASS, 23/23 mutations, Evidence Bundle PASS, Boot 193/200.
+Completed verification `35439819747`: 37 PASS, 24/24 mutations, Evidence Bundle PASS.
 
 ### Next
-Run Done-state CI; if green, prepare PR #6 for squash merge.
+Verify the completed task state; subsequent work should use merge-safe memory semantics.

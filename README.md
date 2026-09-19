@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0--dev-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-36%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-23%2F23%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-37%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-24%2F24%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
@@ -297,6 +297,8 @@ Durable memory:
 
 Completed historical task detail should be archived instead of bloating Boot Context.
 
+Durable Boot Memory is **merge-safe**: current branch, PR status, mergeability, and queued/in-progress CI state are queried live from version control instead of being persisted. Immutable evidence such as completed CI run IDs, commit SHAs, ADR IDs, and completed task states may be retained.
+
 ---
 
 ## Governance
@@ -307,7 +309,7 @@ Run full verification with:
 python .agent/governance/verify.py
 ```
 
-Current governance covers T01–T35, including:
+Current governance covers T01–T37, including:
 
 - task state and acceptance criteria,
 - ADR/memory integrity,
@@ -319,14 +321,16 @@ Current governance covers T01–T35, including:
 - approval provenance/source verification,
 - Execution Gate behavior,
 - Evidence History tamper detection,
-- risk/affected-area capability derivation.
+- risk/affected-area capability derivation,
+- public README/runtime contract synchronization,
+- merge-safe durable Boot Memory.
 
 Mutation tests deliberately corrupt the system and verify governance catches the violation.
 
 Current verified baseline from Sprint 2:
 
-- **36 governance checks** (Done state may include expected skips),
-- **23/23 mutation violations detected**,
+- **37 governance checks** (Done state may include expected skips),
+- **24/24 mutation violations detected**,
 - **Boot Context 194/200 lines** on the final risk-routing validation,
 - Evidence Bundle and Evidence History verified in CI.
 

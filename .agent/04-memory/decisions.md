@@ -213,3 +213,26 @@
   * **Performance**: small deterministic expansion only when risk/area evidence activates a capability.
   * **Maintainability**: project-specific path knowledge stays in Project Profile; Core keeps generic risk semantics.
   * **Security**: sensitive risk flags automatically activate their relevant context even when explicit capability declaration is incomplete.
+
+
+---
+
+## ADR-012: Merge-safe durable memory excludes volatile VCS state
+* **Date**: 2026-09-19
+* **Status**: Approved (Sprint 2 continuation authorized by the Navigator)
+* **Context & problem**:
+  Boot Memory repeatedly stored branch names, pull-request status, and next-step instructions such as "merge PR" or "run Done-state CI". Those statements were true on the feature branch but became stale immediately after squash merge, forcing a new repair task after nearly every merge.
+* **Approved decision**:
+  (1) Durable Boot Memory must record project/task facts that remain true across branch and PR transitions.
+  (2) Current branch, PR state, mergeability, queued/in-progress CI state, and "merge this PR next" are volatile VCS state and must be queried live from the repository instead of persisted in `project-context.md` or `active-tasks.md`.
+  (3) Immutable evidence identifiers such as commit SHAs, completed CI run IDs, ADR IDs, and completed task states may be stored.
+  (4) Completed task memory should end with an engineering next step, or no next step, rather than repository-transport instructions.
+  (5) Governance must detect volatile VCS state in canonical Boot Memory.
+* **Rejected alternatives and why**:
+  1. Run a post-merge memory repair commit after every PR ← rejected: creates endless follow-up churn and another merge cycle.
+  2. Store PR/branch facts with "may be stale" labels ← rejected: Boot Memory should be reliable by default.
+  3. Remove all execution evidence from memory ← rejected: immutable completed evidence remains useful for handoff and audit.
+* **Technical consequences**:
+  * **Performance**: smaller Boot Memory and fewer repair commits.
+  * **Maintainability**: memory remains valid across squash/rebase/branch transitions.
+  * **Security**: reduces incorrect operational decisions caused by stale repository state.

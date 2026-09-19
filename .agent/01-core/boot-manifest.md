@@ -113,9 +113,11 @@ SKIP is never PASS; a failing hard gate blocks clean delivery.
 
 ## Handoff
 Before changing tools:
-1. Update current project memory truthfully.
-2. Record exact stopping point, next action, material decisions/risks, and verification status.
-3. Do not turn active memory into a historical changelog.
+1. Update durable project/task facts truthfully.
+2. Record material decisions/risks and immutable completed evidence.
+3. Do not persist volatile VCS state (current branch/PR/mergeability/queued CI); query it live when needed.
+4. Keep completed-task next steps engineering-focused, not "merge this PR" transport instructions.
+5. Do not turn active memory into a historical changelog.
 
 ## Forbidden
 - Direct AOS self-development writes to `main`
