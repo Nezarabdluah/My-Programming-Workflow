@@ -6,19 +6,22 @@ globs: []
 requires: []
 ---
 
-# Wiring Registry — Central Dependency Injection Container (AOS v7.0)
+# Wiring Registry — Capability & Resource Registry (AOS v8.0-dev)
 
 > **How this works**: every capability row below declares its dependencies **by ID** (declarative wiring).
 > Resolution is **lazy** — load a resource only at the moment its capability becomes active.
 > Direction is **one-way** — consumers know their dependencies; resources never know their consumers (REF-ARCH-DEP applied to the knowledge system itself).
 
-## Resolution procedure (Mandatory Injection)
-1. Find your capability row below.
-2. Load the **constitution** (L4-C) — actionable rules from 16 engineering books.
-3. Load the **rule file** (L3) — one file at a time, never two.
-4. Grep the **reference anchor** (L4) inside the named file — **never read the full file**.
-5. Cite applied contracts in code comments, e.g. `// [REF-DB-N1]: prevent N+1 query`.
-6. For full stage-by-stage resource mapping, see **`books/00-master-index.md`** (Resource Injection Matrix).
+## Resolution procedure (ADR-007 manual fallback)
+
+Until Context Broker is implemented:
+1. Identify the capability or capabilities materially affected by the task.
+2. Use the matching row below to discover available resources.
+3. Load at most ONE directly relevant rule file at a time.
+4. Grep only the specific reference anchor needed for the current decision.
+5. Load constitutions/templates/prompts/book lessons only when they materially change or verify the decision.
+6. Record relevant compliance in task evidence/reports. Production-source REF/CONST comments are optional.
+7. For lifecycle stages, use `books/00-master-index.md` as an index, not an unconditional loading mandate.
 
 ## Capability → Dependency Map
 
@@ -42,10 +45,10 @@ requires: []
 > **Prompts**: `backend-prompts.md`, `frontend-prompts.md`, `debugging-prompts.md` in `05-references/prompts/`
 > **Templates**: `06-templates/` (entity-patterns, coding-standards, pre-commit-template, github-security-gate, pull_request_template) — universal, stack-agnostic
 
-## Knowledge Bundles (AppBundling)
+## Capability Resource Sets (formerly Knowledge Bundles)
 
-> Each bundle groups ALL related resources (constitution + rules + templates + prompts + book references)
-> for a specific capability. Load the ENTIRE bundle when the capability is active.
+> Each set lists resources that may help with a capability. Do **not** load the entire set by default.
+> Select the minimum relevant subset based on the task, project architecture, and evidence needed.
 
 ### Bundle: DB Performance
 ```
@@ -114,13 +117,13 @@ requires: []
 └── 05-references/engineering-rules-catalog-REF.md             (grep REF-OPS-*)
 ```
 
-## Resource Injection Matrix (Master Index)
-For the **full stage-by-stage mandatory resource map** (what to load at each pipeline stage), see:
+## Lifecycle Resource Index (Master Index)
+For the **stage-by-stage resource index** (what may be relevant at each pipeline stage), see:
 → **`05-references/books/00-master-index.md`**
 
-Injection modes: **MUST** = gate blocked | **SHOULD** = recommended | **IF** = conditional on stack/context
+Legacy injection labels remain during convergence, but ADR-007 governs runtime selection: load only what is materially relevant. Sprint 2 will replace this fallback with Context Broker policy.
 
 ## Registry discipline
-- This file is the **only** place where capability→dependency wiring is defined ("point, don't copy").
+- This file is the **only** place where capability→resource discovery is defined ("point, don't copy").
 - Adding a REF category, constitution, or anchor requires updating this registry.
 - Constitution files = extracted actionable rules from 16 engineering books (see `books/constitutions/`).
