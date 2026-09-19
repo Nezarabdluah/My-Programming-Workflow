@@ -1,57 +1,69 @@
-# 🚀 Init Project — New Project Initialization (AOS v7.0)
+# Init Project — AOS v8.0-dev
 
-> **Contract**: used once only when linking a new project to AOS.
-> **Main source**: `[YOUR-LOCAL-AOS-PATH]`
+> One-time workflow for linking a software project to AOS.
+> Runtime authority after initialization: `.agent/01-core/boot-manifest.md`.
 
----
+## 1. Discover the project
 
-## 🔍 Step 1: Technology Discovery
-Inspect the project root and discovered files:
-* `package.json` ← Node.js / React / Next.js
-* `requirements.txt` or `pyproject.toml` ← Python
-* `csproj` or `sln` ← .NET / C#
-* Otherwise ← General Stack
+Inspect the repository to identify:
+- stack and package/build manifests,
+- test infrastructure,
+- repository state,
+- existing architecture/patterns.
 
----
+Do not force a predefined architecture.
 
-## 📂 Step 2: Copy the Main AOS v7.0 Structure
-Copy the following folders and files from the absolute main source into the new project's `.agent/` folder:
-1. `01-core/` in full (operating-contract.md, session-prompt.md, and supporting files).
-2. `02-rules/` in full (the six specialized rule files).
-3. `03-workflows/` in full (init-project.md, start-session.md, end-session.md, requirements-analysis.md, etc.).
-4. `05-references/` in full (engineering-rules-catalog-REF.md + books/ + qa-testing/ + devops-ops/ + prompts/).
-5. `governance/` in full (runner.py + tests) + `adr/` + `06-templates/` when available.
-6. Root files: `INDEX.md` + `AGENTS.md` + `VERSION`.
+## 2. Install the AOS runtime
 
----
+Copy the current AOS runtime structure into the project's `.agent/` directory, including:
+- `01-core/`
+- `02-rules/`
+- `03-workflows/`
+- `05-references/`
+- `06-templates/`
+- `governance/`
+- `adr/`
+- `INDEX.md`
+- `AGENTS.md`
+- `VERSION`
 
-## 💾 Step 3: Create the Cumulative Memory Module (04-memory/)
-Create the `.agent/04-memory/` folder locally in the new project and initialize it with these default files:
-* `project-context.md` ← write into it: "Init date: [today's date] | Project state: initial setup".
-* `learned-mistakes.md` ← empty table with the approved column headers.
-* `decisions.md` ← empty template of the approved ADR format.
-* `active-tasks.md` ← initialized with state `Approved` and the initial linking/setup tasks.
-* `project-knowledge.md` ← empty, for discovered patterns.
-* `codebase-map.md` ← records the currently discovered file structure.
-* `mistakes-archive.md` ← empty, for historical mistakes.
+Do not treat legacy compatibility files as canonical runtime policy.
 
----
+## 3. Initialize project memory
 
-## 🔄 Step 4: Write the VERSION File
-Create `.agent/VERSION` in the new project with this content:
+Create `.agent/04-memory/` with:
+- `project-context.md`
+- `learned-mistakes.md`
+- `decisions.md`
+- `active-tasks.md`
+- `project-knowledge.md`
+- `codebase-map.md`
+- `mistakes-archive.md`
+
+Initialize only truthful current state. Do not pre-mark work as Approved or Done.
+
+## 4. Record project knowledge
+
+For an existing project:
+- map key folders/components,
+- detect test/build/lint/E2E commands,
+- record established conventions,
+- record architecture only from evidence in the codebase.
+
+Technology Profiles and Project Profile support are Sprint 2 work; do not fabricate them if they are absent.
+
+## 5. Write VERSION
+
+Use the current source version:
+
 ```yaml
-aos_version: 7.0.0
-last_sync: [today's date]
+aos_version: 8.0.0-dev
+last_sync: [today]
 source_path: [YOUR-LOCAL-AOS-PATH]
 ```
 
----
+## 6. Verify initialization
 
-## 📝 Step 5: Project Init Report
-Print the formatted initialization report to notify the developer of readiness:
+Run available AOS governance checks and verify required runtime files exist.
 
-   ✅ Project initialized successfully for AOS v7.0
-   📋 Detected stack: [stack name]
-   🧠 Contextual memory: 04-memory/ folder created and all 7 files initialized successfully.
-   🔄 Version: 7.0.0 (in sync with the main source)
-   🎯 Ready to start — please assign the first task!
+Then hand off to `01-core/boot-manifest.md` for normal operation.
