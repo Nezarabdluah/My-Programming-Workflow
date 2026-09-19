@@ -35,7 +35,8 @@ Until Context Broker is implemented:
 | Resilience / concurrency | `02-rules/testing-and-quality.md` §3 | `REF-RES-*` | `resilience-constitution.md` | — |
 | API / network / latency | `02-rules/network-and-api.md` | `REF-NET-*` | `integration-constitution.md` | devops: `[OPS-K6]` |
 | Context budget / sessions | `01-core/token-budget.md` | `REF-AI-*` | — | — |
-| Feature completeness (🟡/🔴) | `02-rules/vertical-slice-governance.md` | — | — | — |
+| Affected-area completeness | project/profile-defined evidence | — | — | — |
+| Full-stack vertical-slice coverage (when activated) | `02-rules/vertical-slice-governance.md` | — | — | — |
 | Production readiness | `03-workflows/production-readiness.md` | — | `resilience-constitution.md` | devops: `[OPS-PRR]`, `[OPS-SCORECARD]` |
 | Deployment / rollback | `stage-7-deployment.md` | — | `resilience-constitution.md` | devops: `[OPS-ROLLBACK]` |
 | Post-launch metrics | `stage-8-post-launch.md` | — | `perf-constitution.md` | devops: `[OPS-DORA]` |
@@ -43,7 +44,7 @@ Until Context Broker is implemented:
 
 > **Constitution path prefix**: `05-references/books/constitutions/`
 > **Prompts**: `backend-prompts.md`, `frontend-prompts.md`, `debugging-prompts.md` in `05-references/prompts/`
-> **Templates**: `06-templates/` (entity-patterns, coding-standards, pre-commit-template, github-security-gate, pull_request_template) — universal, stack-agnostic
+> **Templates**: `06-templates/` contains optional starting points. Validate each template against the project stack/profile before use.
 
 ## Capability Resource Sets (formerly Knowledge Bundles)
 
