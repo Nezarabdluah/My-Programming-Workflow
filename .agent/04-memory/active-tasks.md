@@ -2,34 +2,35 @@
 
 > Current work only. History is archived under `04-memory/archive/`.
 
-## T022 — AOS v8 Convergence Sprint 🔴
-- **State:** Done
-- **Branch:** `aos-v8-convergence`
-- **Purpose:** align runtime, workflows, governance, and memory with ADR-006/ADR-007 before Sprint 2.
-- **Approval:** developer approved implementation after audit/planning.
+## T023 — Sprint 2 Context Broker Foundation 🔴
+- **State:** Executing
+- **Branch:** `aos-v8-sprint2-context`
+- **Purpose:** replace manual selective-loading fallback with deterministic Context Broker + Project/Technology Profiles.
+- **Approval:** Navigator explicitly asked to continue Sprint 2 after v8 convergence merged.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+Draft → Clarify → Approved → Planning → Ready → Executing
 
 ### Acceptance Criteria
-- Canonical runtime entry = `boot-manifest.md`.
-- Seven-layer full-stack policy is profile-scoped, not Core.
-- Context loading follows ADR-007 selective expansion.
-- Governance validates v8 behavior and catches deliberate mutations.
-- Current boot memory excludes historical completed tasks.
-- No merge to `main` before final green verification.
+- Context selection after capability declaration is deterministic and machine-testable.
+- Project Profile records project type, active Technology Profiles, and real verification commands.
+- Profile-gated resources do not load unless the profile is active.
+- Unknown capabilities fail explicitly instead of silently guessing.
+- Boot routes 🟡/🔴 work through Task Contract + Context Broker.
+- Governance and mutation tests prove broker minimality/profile gating.
+- Sprint 2 work stays isolated from `main` until review and green CI.
 
 ### Progress
-- [x] Core/pipeline/rules/memory converged to v8 semantics.
-- [x] Legacy task history archived.
-- [x] Governance hardened; `verify.py` + GitHub Actions added.
-- [x] Draft PR #1 opened, unmerged.
-- [x] Diff review completed; remaining v7 authority drift removed.
-- [x] Final CI after memory compaction passed.
-- [x] T022 closed after green validation.
-
-### Last Evidence
-GitHub Actions run `35436797418`: full verification success after memory compaction.
+- [x] ADR-008 approved.
+- [x] Added executable `context-map.json`.
+- [x] Added `context_broker.py`.
+- [x] Added Project Profile + Technology Profiles.
+- [x] Added structured `task-contracts/current.json`.
+- [x] Added GOV-T12/T13/T14 context tests and runner integration.
+- [x] Boot/init/INDEX/wiring linked to executable broker.
+- [ ] Add broker mutation tests.
+- [ ] Run full CI on Draft PR.
+- [ ] Review diff and move to Validating only if green.
 
 ### Next Step
-Run final CI in Done state so GOV-T09 validates the complete state history before merge.
+Add mutation coverage for broker failure modes, then open Draft PR for GitHub Actions verification.
