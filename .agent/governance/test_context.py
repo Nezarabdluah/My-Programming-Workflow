@@ -105,3 +105,42 @@ def test_gov_t14_current_contract_resolves():
         f"GOV-T14: {task['task_id']} resolved "
         f"{len(result['resources'])} resource entries."
     )
+
+
+def test_gov_t15_context_map_integrity():
+    """GOV-T15: Executable context map stays valid and cataloged."""
+    context_map = _json(".agent/01-core/context-map.json")
+    wiring = Path(".agent/01-core/wiring-registry.md").read_text(encoding="utf-8")
+
+    capabilities = context_map.get("capabilities", {})
+    if not capabilities:
+        return FAIL, "GOV-T15: context map contains no capabilities."
+
+    missing_labels = []
+    missing_paths = []
+    for capability, definition in capabilities.items():
+        label = definition.get("catalog_label")
+        if not label or label not in wiring:
+            missing_labels.append(capability)
+
+        for resource in definition.get("resources", []):
+            path = resource.get("path")
+            if not path or not Path(path).exists():
+                missing_paths.append(f"{capability}:{path}")
+
+    if missing_labels:
+        return FAIL, (
+            "GOV-T15: capability missing from human wiring catalog: "
+            + ", ".join(sorted(missing_labels))
+        )
+
+    if missing_paths:
+        return FAIL, (
+            "GOV-T15: context map points to missing resources: "
+            + ", ".join(sorted(missing_paths))
+        )
+
+    return PASS, (
+        f"GOV-T15: {len(capabilities)} executable capabilities are "
+        "cataloged and all resource paths exist."
+    )
