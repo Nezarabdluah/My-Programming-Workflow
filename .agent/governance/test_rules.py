@@ -430,6 +430,7 @@ def test_gov_t41_readme_complete_capability_map():
     content = path.read_text(encoding="utf-8")
 
     required_sections = [
+        "# ⚡ Quick Start — 3 Steps",
         "# What AOS gives you",
         "# How AOS works",
         "# From install to Done",
@@ -485,6 +486,20 @@ def test_gov_t41_readme_complete_capability_map():
     mermaid_marker = "```" + "mermaid"
     if mermaid_marker in content:
         problems.append("Mermaid remains in README; colored text diagrams are the standard.")
+
+    quick_start_markers = [
+        "python .agent/install.py /path/to/your-project",
+        "Run .agent/03-workflows/init-project.md for this repository.",
+        "There is no always-running AOS process.",
+        "Each project carries its own governed .agent runtime.",
+    ]
+    missing_quick_start = [
+        item for item in quick_start_markers if item not in content
+    ]
+    if missing_quick_start:
+        problems.append(
+            "quick start: " + ", ".join(missing_quick_start)
+        )
 
     if "README is the complete user-facing overview" not in content:
         problems.append("README/source-of-truth boundary missing")
