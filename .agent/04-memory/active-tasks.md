@@ -1,33 +1,32 @@
 # Active Tasks — AOS v8.0-dev
 
-## T027 — Stabilization & Public Contract Sync 🟡
-- **State:** Done
-- **Branch:** `aos-v8-sprint2-stabilization`
-- **Approval:** verified pattern `pattern-existing-local-refactor`.
+## T028 — Merge-Safe Durable Memory 🔴
+- **State:** Executing
+- **Approval:** explicit Navigator approval for the architecture change.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+Draft → Clarify → Approved → Planning → Ready → Executing
 
 ### Acceptance Criteria
-- README matches the current Execution Gate/Context Broker/approval/evidence runtime.
-- Public governance/mutation metrics are current.
-- VERSION and post-PR5 memory are current.
-- GOV-T36 blocks stale public-contract text.
-- Mutation proves GOV-T36 can fail.
-- T027 resolves READY/AUTO_EXECUTE via verified pattern.
-- No merge before final green CI.
+- Boot Memory excludes volatile branch/PR/mergeability/queued-CI state.
+- Immutable completed evidence remains allowed.
+- End-session and boot handoff rules define durable vs volatile state.
+- GOV-T37 detects volatile VCS state in Boot Memory.
+- Mutation proves GOV-T37 can fail.
+- README/public metrics reflect T37 and mutation coverage.
+- Execution Gate approves T028 under explicit human provenance.
+- Final verification remains green before completion.
 
 ### Progress
-- [x] README synchronized to v8 runtime.
-- [x] GOV-T36 + drift mutation.
-- [x] VERSION + post-PR5 memory synchronized.
-- [x] T17/T28 made provenance-aware.
-- [x] Executing-state CI: 36/36 + 23/23.
-- [x] Validating-state CI passed.
-- [x] T027 closed; awaiting Done-state CI for T09.
-
-### Evidence
-Run `35439510825`: 36 PASS, 23/23 mutations, Evidence Bundle PASS, Boot 193/200.
+- [x] ADR-012 approved.
+- [x] Boot + end-session memory rules updated.
+- [x] GOV-T37 + mutation added.
+- [x] README updated to 37 checks / 24 mutations.
+- [x] T028 Task Contract added.
+- [x] Boot Memory rewritten without volatile VCS state.
+- [ ] Run full CI and fix failures.
+- [ ] Validating-state verification.
+- [ ] Done-state verification.
 
 ### Next
-Run Done-state CI; if green, prepare PR #6 for squash merge.
+Validate merge-safe memory semantics and governance evidence.
