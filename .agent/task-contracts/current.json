@@ -1,10 +1,9 @@
 {
   "schema_version": 1,
-  "task_id": "T032",
-  "title": "README colored text visual standard",
+  "task_id": "T033",
+  "title": "README three-step Quick Start and installation model",
   "classification": "medium",
   "capabilities": [
-    "architecture",
     "testing"
   ],
   "affected_areas": [
@@ -25,7 +24,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator explicitly requested colored text diagrams instead of Mermaid."
+    "reference": "Navigator approved simplifying README startup and explaining the installation model."
   },
   "verification": [
     "governance_compile",
