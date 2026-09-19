@@ -55,14 +55,26 @@ def test_gov_t18_hard_stop_requires_human():
     task = {
         "task_id": "t18-hard-stop",
         "classification": "sensitive",
+        "capabilities": ["architecture"],
         "risk": {"destructive": True},
         "approval": {
             "status": "approved",
             "provenance": "approved_pattern",
+            "reference": "test-pattern-allows-destructive",
         },
+        "verification": [],
+    }
+    registry = {
+        "entries": [{
+            "id": "test-pattern-allows-destructive",
+            "type": "approved_pattern",
+            "status": "approved",
+            "capabilities": ["architecture"],
+            "risk_allowlist": ["destructive"],
+        }]
     }
 
-    result = engine.evaluate_approval(task, policy)
+    result = engine.evaluate_approval(task, policy, registry)
     if result.get("decision") != "BLOCKED":
         return FAIL, (
             "GOV-T18: destructive hard-stop bypassed human approval: "
