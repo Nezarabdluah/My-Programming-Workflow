@@ -49,6 +49,15 @@ def validate_task_contract(task: dict) -> dict:
     ):
         raise TaskContractError("capabilities must be a list of non-empty strings")
 
+    affected_areas = task.get("affected_areas", [])
+    if not isinstance(affected_areas, list) or any(
+        not isinstance(item, str) or not item.strip()
+        for item in affected_areas
+    ):
+        raise TaskContractError(
+            "affected_areas must be a list of non-empty strings"
+        )
+
     risk = task.get("risk", {})
     if not isinstance(risk, dict):
         raise TaskContractError("risk must be an object")
