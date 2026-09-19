@@ -2,7 +2,7 @@
 
 > **Status:** Deprecated compatibility file for pre-v8 integrations.
 > **Runtime authority:** `.agent/01-core/boot-manifest.md`
-> **AOS version:** v8.0-dev
+> **AOS version:** v8.0.0-rc.1
 
 This file is intentionally not an operational contract.
 
