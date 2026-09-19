@@ -236,3 +236,26 @@
   * **Performance**: smaller Boot Memory and fewer repair commits.
   * **Maintainability**: memory remains valid across squash/rebase/branch transitions.
   * **Security**: reduces incorrect operational decisions caused by stale repository state.
+
+
+---
+
+## ADR-013: Sanitized two-phase installation for consumer projects
+* **Date**: 2026-09-19
+* **Status**: Approved (release-readiness requirement)
+* **Context & problem**:
+  Copying the repository's entire `.agent` directory into a consumer project also copies source-specific state such as `profiles/project.json`, `task-contracts/current.json`, Boot Memory, and generated evidence. That can make a new project start with AOS's own identity, task, approval, and history.
+* **Approved decision**:
+  (1) Split onboarding into Install and Initialize.
+  (2) Install copies only reusable runtime assets: Core, rules, workflows, references, templates, governance, ADR templates, Technology Profiles, INDEX, AGENTS, VERSION, and evidence documentation.
+  (3) Install must not copy source-specific Project Profile, current Task Contract, Boot Memory, or generated Evidence History.
+  (4) Initialize discovers the target repository and creates target-specific Memory, Project Profile, Task Contract, and verification commands before full governance is expected to pass.
+  (5) Provide an executable installer so users do not need to manually remember the exclusion list.
+* **Rejected alternatives and why**:
+  1. Continue recommending `cp -r .agent` and ask the agent to clean it afterward ← rejected: stale source state is already present during boot and can bias decisions.
+  2. Keep source-specific files but label them examples ← rejected: executable runtime reads them as current state.
+  3. Publish a second manually maintained runtime tree ← rejected: duplicates the source of truth and increases drift.
+* **Technical consequences**:
+  * **Performance**: negligible copy overhead.
+  * **Maintainability**: one source runtime with deterministic exclusions.
+  * **Security**: prevents accidental reuse of source approvals, project identity, and evidence in unrelated repositories.
