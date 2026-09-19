@@ -333,12 +333,13 @@ Current governance covers T01–T39, including:
 
 Mutation tests deliberately corrupt the system and verify governance catches the violation.
 
-Current verified baseline from Sprint 2:
+Current release-readiness baseline:
 
 - **39 governance checks** (Done state may include expected skips),
 - **26/26 mutation violations detected**,
-- **Boot Context 194/200 lines** on the final risk-routing validation,
-- Evidence Bundle and Evidence History verified in CI.
+- **Boot Context 144/150 lines** under the v8 release hard gate,
+- Evidence Bundle and Evidence History verified in CI,
+- sanitized consumer installation verified behaviorally.
 
 ---
 
@@ -385,12 +386,11 @@ Current verified baseline from Sprint 2:
 
 ## Context Budget
 
-Current convergence ceiling:
+Release hard gate:
 
-- Boot Context: **≤200 lines**
-- Final v8 target: **≤150 lines**
+- Boot Context: **≤150 lines**
 
-Task expansion budgets are proportional to task complexity. Context budget is a guardrail, not a reason to omit required security/correctness evidence.
+Task expansion budgets remain proportional to task complexity. The budget is a guardrail, never a reason to omit required security/correctness evidence.
 
 ---
 
@@ -424,6 +424,8 @@ Current v8 direction is defined by:
 - ADR-009 — Approval Engine + executable Evidence Bundle.
 - ADR-010 — verified provenance + autonomous Execution Gate + Evidence History.
 - ADR-011 — risk/affected-area capability routing.
+- ADR-012 — merge-safe durable Boot Memory.
+- ADR-013 — sanitized two-phase consumer installation.
 
 Older ADRs remain in the log as historical decisions and may be superseded by later ADRs.
 
