@@ -1,4 +1,4 @@
-"""AOS Governance — Mutation Tests (v8.0-dev)
+"""AOS Governance — Mutation Tests (v8.0.0-rc.1)
 
 Proves that governance checks actually FAIL when violations are introduced.
 A check that never fails is a rubber-stamp — mutation tests prevent that.
@@ -662,7 +662,7 @@ def mut_t11_boot_too_large():
 
 
 if __name__ == "__main__":
-    print("🧬 [AOS v8.0-dev] Running Mutation Tests...")
+    print("🧬 [AOS v8.0.0-rc.1] Running Mutation Tests...")
     print("=" * 60)
     print("Each test introduces a deliberate violation and verifies")
     print("the governance check correctly detects it.\n")
