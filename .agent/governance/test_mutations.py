@@ -163,26 +163,31 @@ def mut_t10_missing_referenced_adr():
 
 
 def mut_t10_incomplete_adr():
-    """Mutate bundled system ADR into an incomplete decision."""
+    """Mutate every ADR-006 source into the same incomplete decision."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/adr/system-decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
-        content = """# AOS Runtime System Decisions
+        content = """# Decisions
 
 ## ADR-006: Incomplete mutation
 **Status**: Approved
 **Context**: This intentionally lacks Decision and Consequences.
 """
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((path, _backup_and_write(path, content)))
+        return backups
 
     return run_mutation(
         "T10-INCOMPLETE-ADR",
         setup,
         test_gov_t10_decision_consistency,
     )
-
 
 def mut_t10_no_adr_with_rules():
     """Mutate all ADR sources so no ADR exists while policy references remain."""
