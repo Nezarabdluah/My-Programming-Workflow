@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** RC Documentation & Discoverability
-- **Task:** T032 — Done
+- **Task:** T033 — Executing
 
 ## Current
-README is the complete user-facing capability map using lightweight colored text diagrams; executable runtime files remain authoritative.
+README now explains the AOS installation model and provides a three-step Quick Start before the detailed capability showcase.
 
 ## Next
-Maintain colored-text showcase coverage through GOV-T41.
+Verify Quick Start governance, mutation coverage, and Boot budget.
