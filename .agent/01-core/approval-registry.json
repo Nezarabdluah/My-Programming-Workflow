@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "ADR-008",
+      "type": "approved_adr",
+      "status": "approved",
+      "capabilities": ["architecture", "testing"],
+      "risk_allowlist": ["new_architecture"]
+    },
+    {
+      "id": "ADR-009",
+      "type": "approved_adr",
+      "status": "approved",
+      "capabilities": ["architecture", "testing"],
+      "risk_allowlist": ["new_architecture"]
+    },
+    {
+      "id": "pattern-existing-local-refactor",
+      "type": "approved_pattern",
+      "status": "approved",
+      "capabilities": ["architecture", "testing"],
+      "risk_allowlist": []
+    }
+  ]
+}
