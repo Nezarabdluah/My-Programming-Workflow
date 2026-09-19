@@ -108,6 +108,52 @@ def mut_t05_missing_memory_file():
     return run_mutation("T05-MISSING-FILE", setup, test_gov_t05_handoff_validity)
 
 
+def mut_t09_done_without_state_history():
+    """Mutate: completed sensitive task without ordered state history."""
+    from test_state import test_gov_t09_workflow_integrity
+    path = Path(".agent/04-memory/active-tasks.md")
+
+    def setup():
+        content = """# Active Tasks
+
+## T999 — Mutation Test 🔴
+- **State:** **Done**
+- Acceptance criteria: mutation-only test
+- [x] Implementation complete
+"""
+        backup = _backup_and_write(path, content)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T09-DONE-WITHOUT-HISTORY",
+        setup,
+        test_gov_t09_workflow_integrity,
+    )
+
+
+def mut_t10_missing_referenced_adr():
+    """Mutate: policy references ADR-006 but decisions only contains ADR-099."""
+    from test_rules import test_gov_t10_decision_consistency
+    path = Path(".agent/04-memory/decisions.md")
+
+    def setup():
+        content = """# Decisions
+
+## ADR-099: Complete but unrelated
+* **Context & problem**: Mutation test context.
+* **Approved decision**: Keep only ADR-099.
+* **Technical consequences**: Mutation test consequences.
+"""
+        backup = _backup_and_write(path, content)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T10-MISSING-REFERENCED-ADR",
+        setup,
+        test_gov_t10_decision_consistency,
+    )
+
+
 def mut_t10_incomplete_adr():
     """Mutate decisions.md to have an ADR missing required sections."""
     from test_rules import test_gov_t10_decision_consistency
@@ -186,6 +232,8 @@ if __name__ == "__main__":
     mutations = [
         mut_t04_exceed_mistakes_cap,
         mut_t05_missing_memory_file,
+        mut_t09_done_without_state_history,
+        mut_t10_missing_referenced_adr,
         mut_t10_incomplete_adr,
         mut_t10_no_adr_with_rules,
         mut_t03_bad_adr_format,
