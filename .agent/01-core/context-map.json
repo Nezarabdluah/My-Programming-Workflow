@@ -3,49 +3,121 @@
   "capabilities": {
     "architecture": {
       "resources": [
-        {"path": ".agent/02-rules/architecture-and-design.md", "kind": "rule", "mode": "load"},
-        {"path": ".agent/05-references/engineering-rules-catalog-REF.md", "kind": "reference", "mode": "grep", "anchors": ["REF-ARCH-"]}
-      ]
+        {
+          "path": ".agent/02-rules/architecture-and-design.md",
+          "kind": "rule",
+          "mode": "load"
+        },
+        {
+          "path": ".agent/05-references/engineering-rules-catalog-REF.md",
+          "kind": "reference",
+          "mode": "grep",
+          "anchors": [
+            "REF-ARCH-"
+          ]
+        }
+      ],
+      "catalog_label": "Architecture / DDD / modules"
     },
     "database": {
       "resources": [
-        {"path": ".agent/02-rules/database-performance.md", "kind": "rule", "mode": "load"},
-        {"path": ".agent/05-references/engineering-rules-catalog-REF.md", "kind": "reference", "mode": "grep", "anchors": ["REF-DB-"]}
-      ]
+        {
+          "path": ".agent/02-rules/database-performance.md",
+          "kind": "rule",
+          "mode": "load"
+        },
+        {
+          "path": ".agent/05-references/engineering-rules-catalog-REF.md",
+          "kind": "reference",
+          "mode": "grep",
+          "anchors": [
+            "REF-DB-"
+          ]
+        }
+      ],
+      "catalog_label": "Database / queries / performance"
     },
     "security": {
       "resources": [
-        {"path": ".agent/02-rules/security-checklist.md", "kind": "rule", "mode": "load"},
-        {"path": ".agent/05-references/engineering-rules-catalog-REF.md", "kind": "reference", "mode": "grep", "anchors": ["REF-SEC-"]}
-      ]
+        {
+          "path": ".agent/02-rules/security-checklist.md",
+          "kind": "rule",
+          "mode": "load"
+        },
+        {
+          "path": ".agent/05-references/engineering-rules-catalog-REF.md",
+          "kind": "reference",
+          "mode": "grep",
+          "anchors": [
+            "REF-SEC-"
+          ]
+        }
+      ],
+      "catalog_label": "Security / auth / authorization"
     },
     "testing": {
       "resources": [
-        {"path": ".agent/02-rules/testing-and-quality.md", "kind": "rule", "mode": "load"},
-        {"path": ".agent/03-workflows/qa-strategy.md", "kind": "workflow", "mode": "load"}
-      ]
+        {
+          "path": ".agent/02-rules/testing-and-quality.md",
+          "kind": "rule",
+          "mode": "load"
+        },
+        {
+          "path": ".agent/03-workflows/qa-strategy.md",
+          "kind": "workflow",
+          "mode": "load"
+        }
+      ],
+      "catalog_label": "Testing / quality gate"
     },
     "api": {
       "resources": [
-        {"path": ".agent/02-rules/network-and-api.md", "kind": "rule", "mode": "load"},
-        {"path": ".agent/05-references/engineering-rules-catalog-REF.md", "kind": "reference", "mode": "grep", "anchors": ["REF-NET-"]}
-      ]
+        {
+          "path": ".agent/02-rules/network-and-api.md",
+          "kind": "rule",
+          "mode": "load"
+        },
+        {
+          "path": ".agent/05-references/engineering-rules-catalog-REF.md",
+          "kind": "reference",
+          "mode": "grep",
+          "anchors": [
+            "REF-NET-"
+          ]
+        }
+      ],
+      "catalog_label": "API / network / latency"
     },
     "full-stack-vertical": {
       "requires_profile": "full-stack-web",
       "resources": [
-        {"path": ".agent/02-rules/vertical-slice-governance.md", "kind": "rule", "mode": "load"}
-      ]
+        {
+          "path": ".agent/02-rules/vertical-slice-governance.md",
+          "kind": "rule",
+          "mode": "load"
+        }
+      ],
+      "catalog_label": "Full-stack vertical-slice coverage (when activated)"
     },
     "production-readiness": {
       "resources": [
-        {"path": ".agent/03-workflows/production-readiness.md", "kind": "workflow", "mode": "load"}
-      ]
+        {
+          "path": ".agent/03-workflows/production-readiness.md",
+          "kind": "workflow",
+          "mode": "load"
+        }
+      ],
+      "catalog_label": "Production readiness"
     },
     "deployment": {
       "resources": [
-        {"path": ".agent/03-workflows/master-pipeline/stage-7-deployment.md", "kind": "workflow", "mode": "load"}
-      ]
+        {
+          "path": ".agent/03-workflows/master-pipeline/stage-7-deployment.md",
+          "kind": "workflow",
+          "mode": "load"
+        }
+      ],
+      "catalog_label": "Deployment / rollback"
     }
   }
 }
