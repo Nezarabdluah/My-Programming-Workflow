@@ -131,21 +131,29 @@ def mut_t09_done_without_state_history():
     )
 
 
+
 def mut_t10_missing_referenced_adr():
-    """Mutate: policy references ADR-006 but decisions only contains ADR-099."""
+    """Mutate all ADR sources so runtime policy ADR references disappear."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
         content = """# Decisions
 
 ## ADR-099: Complete but unrelated
-* **Context & problem**: Mutation test context.
-* **Approved decision**: Keep only ADR-099.
-* **Technical consequences**: Mutation test consequences.
+**Status**: Approved
+**Context**: Mutation test context.
+**Decision**: Keep only ADR-099.
+**Consequences**: Runtime references must now fail.
 """
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((path, _backup_and_write(path, content)))
+        return backups
 
     return run_mutation(
         "T10-MISSING-REFERENCED-ADR",
@@ -155,37 +163,50 @@ def mut_t10_missing_referenced_adr():
 
 
 def mut_t10_incomplete_adr():
-    """Mutate decisions.md to have an ADR missing required sections."""
+    """Mutate bundled system ADR into an incomplete decision."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    path = Path(".agent/adr/system-decisions.md")
 
     def setup():
-        content = """# Decisions
+        content = """# AOS Runtime System Decisions
 
-## 🏛️ ADR-099: Incomplete Test Decision
-* **Date**: 2026-01-01
-* **Status**: Approved
-* **Context & problem**:
-  This ADR is intentionally missing Decision and Consequences sections.
+## ADR-006: Incomplete mutation
+**Status**: Approved
+**Context**: This intentionally lacks Decision and Consequences.
 """
         backup = _backup_and_write(path, content)
         return [(path, backup)]
 
-    return run_mutation("T10-INCOMPLETE-ADR", setup, test_gov_t10_decision_consistency)
+    return run_mutation(
+        "T10-INCOMPLETE-ADR",
+        setup,
+        test_gov_t10_decision_consistency,
+    )
 
 
 def mut_t10_no_adr_with_rules():
-    """Mutate: rules exist but no ADR recorded."""
+    """Mutate all ADR sources so no ADR exists while policy references remain."""
     from test_rules import test_gov_t10_decision_consistency
-    path = Path(".agent/04-memory/decisions.md")
+    paths = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
     def setup():
-        content = "# Decisions\n\nNo decisions recorded yet.\n"
-        backup = _backup_and_write(path, content)
-        return [(path, backup)]
+        backups = []
+        for path in paths:
+            if path.exists():
+                backups.append((
+                    path,
+                    _backup_and_write(path, "# Decisions\n\nNo decisions recorded.\n"),
+                ))
+        return backups
 
-    return run_mutation("T10-NO-ADR-WITH-RULES", setup, test_gov_t10_decision_consistency)
-
+    return run_mutation(
+        "T10-NO-ADR-WITH-RULES",
+        setup,
+        test_gov_t10_decision_consistency,
+    )
 
 def mut_t03_bad_adr_format():
     """Mutate: ADR exists but missing Consequences section."""
@@ -440,10 +461,11 @@ def mut_t30_forge_registry_source_marker():
     )
 
 
+
 def mut_t31_reject_registry_adr_status():
-    """Mutate ADR-008 source status to Rejected; registry provenance must fail."""
+    """Mutate bundled ADR-008 status to Rejected; registry provenance must fail."""
     from test_execution import test_gov_t30_approval_registry_sources_resolve
-    path = Path(".agent/04-memory/decisions.md")
+    path = Path(".agent/adr/system-decisions.md")
 
     def setup():
         content = path.read_text(encoding="utf-8")
@@ -454,11 +476,11 @@ def mut_t31_reject_registry_adr_status():
         if end < 0:
             end = len(content)
         section = content[start:end]
-        if "* **Status**: Approved" not in section:
+        if "**Status**: Approved" not in section:
             raise RuntimeError("ADR-008 approved status not found")
         section = section.replace(
-            "* **Status**: Approved",
-            "* **Status**: Rejected",
+            "**Status**: Approved",
+            "**Status**: Rejected",
             1,
         )
         mutated = content[:start] + section + content[end:]
@@ -470,7 +492,6 @@ def mut_t31_reject_registry_adr_status():
         setup,
         test_gov_t30_approval_registry_sources_resolve,
     )
-
 
 def mut_t31_remove_security_risk_mapping():
     """Mutate risk map so security_boundary no longer derives Security."""
@@ -714,6 +735,19 @@ if __name__ == "__main__":
         mut_t41_remove_readme_capability_map,
         mut_t11_boot_too_large,
     ]
+
+    from test_rules import _is_aos_source_repo
+    if not _is_aos_source_repo():
+        source_only_mutations = {
+            mut_t36_restore_stale_readme_contract,
+            mut_t38_restore_stale_start_check,
+            mut_t41_remove_readme_capability_map,
+        }
+        mutations = [
+            mutation for mutation in mutations
+            if mutation not in source_only_mutations
+        ]
+        print("Consumer mode: skipped AOS-source-only README/release mutations.\n")
 
     passed = 0
     failed = 0
