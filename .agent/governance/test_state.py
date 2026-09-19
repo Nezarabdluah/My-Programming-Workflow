@@ -41,7 +41,10 @@ def _task_sections(content):
 
 
 def _extract_state(section):
-    match = STATE_PATTERN.search(section)
+    # Normalize common Markdown emphasis so formats such as
+    # "**State:** Executing" and "**State:** **Done**" parse identically.
+    normalized = section.replace("**", "")
+    match = STATE_PATTERN.search(normalized)
     if not match:
         return None
     raw = match.group(1)
