@@ -187,89 +187,103 @@ The agent does not load everything. It declares the task, resolves approval, sel
 
 ---
 
-# From install to Done
+# What bootstrap does under the hood
+
+You do **not** run these phases manually. The one bootstrap command orchestrates them for you.
 
 ```text
-🟦 1. INSTALL AOS
-        │
-        ▼
-🟪 2. INITIALIZE PROJECT
-        │
-        ▼
-🔎 3. DISCOVER STACK + ARCHITECTURE
-        │
-        ▼
-🧩 4. BUILD PROJECT PROFILE
-        │
-        ▼
-📝 5. GIVE THE AGENT A TASK
-        │
-        ▼
-🚦 6. EXECUTION GATE
-        │
-        ▼
-🎯 7. CONTEXT BROKER
-        │
-        ▼
-🛠️ 8. IMPLEMENT
-        │
-        ▼
-🧪 9. VERIFY + RECORD EVIDENCE
-        │
-        ▼
-🛡️ 10. GOVERNANCE
-        │
-        ▼
-🧠 11. UPDATE DURABLE MEMORY
-        │
-        ▼
-✅ 12. DONE
+🔎 1. PREFLIGHT
+      │
+      ▼
+📦 2. SAFE INSTALL / UPGRADE
+      │
+      ▼
+🧠 3. DISCOVER PROJECT
+      │
+      ▼
+🧩 4. CREATE / PRESERVE PROJECT STATE
+      │
+      ▼
+🛡️ 5. VERIFY PORTABLE AOS RUNTIME
+      │
+      ▼
+🟩 READY
+      │
+      ▼
+📝 GIVE THE AGENT A NORMAL TASK
+      │
+      ▼
+🚦 EXECUTION GATE
+      │
+      ▼
+🎯 CONTEXT BROKER
+      │
+      ▼
+🛠️ IMPLEMENT
+      │
+      ▼
+🧪 TEST + EVIDENCE
+      │
+      ▼
+✅ DONE
 ```
 
-## 1) Install the sanitized runtime
+### Preflight
 
-From the AOS repository:
+Before writing anything, AOS checks for:
 
-```bash
-python .agent/install.py /path/to/your-project
-```
+- an existing `.agent`,
+- `AGENTS.md`,
+- `CLAUDE.md`,
+- `.cursorrules`,
+- GitHub Copilot instructions.
 
-The installer copies reusable runtime assets and deliberately excludes source-project state:
+Unknown/foreign agent infrastructure causes `BLOCKED` and **zero AOS writes**.
 
-- `.agent/04-memory/`
-- `.agent/profiles/project.json`
-- `.agent/task-contracts/current.json`
-- `.agent/evidence/current.json`
-- `.agent/evidence/history/`
+### Safe install or upgrade
 
-This prevents a new project from inheriting AOS's own identity, approvals, task, or history.
+For a fresh project, bootstrap installs only the reusable runtime.
 
-## 2) Initialize the target project
+For a recognized existing AOS project, bootstrap upgrades managed runtime files while preserving:
 
-Open the target repository and tell your AI tool:
+- `.agent/04-memory/`,
+- `.agent/profiles/project.json`,
+- `.agent/task-contracts/`,
+- `.agent/evidence/current.json`,
+- `.agent/evidence/history/`.
 
-```text
-Run .agent/03-workflows/init-project.md for this repository.
-Discover the project and create target-specific memory, Project Profile,
-Task Contract, and verification commands.
-After initialization, follow .agent/01-core/boot-manifest.md exactly.
-```
+AOS-managed root adapters are backed up before refresh.
 
-The initialization workflow discovers the actual stack, architecture, tests, commands, CI, and conventions before enabling full governance.
+### Project discovery
 
-## 3) Work normally
+Bootstrap detects only facts supported by files that actually exist, including common Node/TypeScript, .NET, Python, Go, Rust, Maven, and Gradle markers.
 
-For non-trivial work, AOS maintains `.agent/task-contracts/current.json` and runs:
+It can register proven build/test/lint commands in the Project Profile. If stack evidence is weak, bootstrap returns `NEEDS_REVIEW` instead of inventing a stack.
 
-```bash
-python .agent/01-core/execution_gate.py
-```
+### Target-specific initialization
 
-The result is one of:
+Bootstrap creates clean project-owned state:
+
+- Project Profile,
+- baseline Task Contract,
+- project context,
+- active task state,
+- learned mistakes file,
+- project decisions,
+- project knowledge,
+- codebase map.
+
+Source-project Memory and approvals are never copied into a fresh consumer project.
+
+### Portable verification
+
+Bootstrap runs AOS verification inside the target project itself. AOS-source-only README/release checks are skipped there, while portable runtime, context, approval, memory, and evidence checks still run.
+
+After `READY`, normal task execution uses:
 
 | Mode | Meaning |
 |---|---|
-| 🟢 `AUTO_EXECUTE` | Existing verified policy/ADR/pattern covers the task |
+| 🟢 `AUTO_EXECUTE` | Verified policy/ADR/pattern covers the task |
 | 🟡 `HUMAN_APPROVED` | Explicit Navigator approval covers the task |
 | 🔴 `HUMAN_REQUIRED` | Stop before implementation |
 
