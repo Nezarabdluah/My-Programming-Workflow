@@ -1,6 +1,6 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
-## T032 — README Colored Text Visual Standard 🟡
+## T033 — README Three-Step Quick Start 🟡
 - **State:** Done
 - **Approval:** explicit Navigator approval.
 
@@ -8,21 +8,19 @@
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- Five README visuals use plain text + arrows/boxes + colored emoji.
-- No Mermaid remains in README.
-- Capability coverage and source-of-truth boundary remain intact.
-- ADR-014 and GOV-T41 enforce the colored-text visual standard.
-- Existing GOV-T41 mutation detects showcase regression.
+- README begins with a simple 3-step startup path.
+- Installation model is explicit: one AOS source copy, per-project `.agent`, no background service.
+- Windows and generic install examples are shown.
+- Initialization and normal task usage are understandable without browsing internal files.
+- GOV-T41 protects the Quick Start markers.
 - Full verification remains green; Boot stays ≤150.
 
 ### Result
-- [x] Mermaid removed from all five README visuals.
-- [x] Colored text visual legend + diagrams added.
-- [x] ADR-014 refined and GOV-T41 updated.
+- [x] Three-step Quick Start added.
+- [x] Installation model explained.
+- [x] Windows/generic examples added.
+- [x] GOV-T41 protects Quick Start markers.
 - [x] Executing + Validating verification passed.
 
-### Evidence
-Validating run `35443054857`: full verification success.
-
 ### Next
-Use colored text diagrams as the README visual standard.
+Keep startup simple: install → initialize → give the agent a task.
