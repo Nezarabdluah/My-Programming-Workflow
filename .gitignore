@@ -1,4 +1,4 @@
-# AOS v7.0 — gitignore (keeps the published repo lean; local copies stay untouched)
+# AOS v8.0-dev — generated/local artifacts
 # Third-party reference-only skills library (full external git clone, thousands of files).
 # PROFESSIONAL INTEGRATION PATH: track it as a submodule instead of ignoring it:
 #   git submodule add https://github.com/anthropics/skills.git .agent/06-templates/claude-skills
@@ -10,3 +10,6 @@ __pycache__/
 *.pyc
 # Local machine notes (never commit machine-specific paths)
 *.local.md
+
+# Generated executable evidence for the active task
+.agent/evidence/current.json
