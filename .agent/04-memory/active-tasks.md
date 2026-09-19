@@ -3,13 +3,13 @@
 > Current work only. History is archived under `04-memory/archive/`.
 
 ## T022 — AOS v8 Convergence Sprint 🔴
-- **State:** Validating
+- **State:** Done
 - **Branch:** `aos-v8-convergence`
 - **Purpose:** align runtime, workflows, governance, and memory with ADR-006/ADR-007 before Sprint 2.
 - **Approval:** developer approved implementation after audit/planning.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - Canonical runtime entry = `boot-manifest.md`.
@@ -25,11 +25,11 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] Governance hardened; `verify.py` + GitHub Actions added.
 - [x] Draft PR #1 opened, unmerged.
 - [x] Diff review completed; remaining v7 authority drift removed.
-- [ ] Final CI after memory compaction.
-- [ ] Mark Done only if final CI is green.
+- [x] Final CI after memory compaction passed.
+- [x] T022 closed after green validation.
 
 ### Last Evidence
-GitHub Actions run `35436769705`: 10/11 governance PASS, 8/8 mutations; only GOV-T11 failed because boot memory grew to 212 lines.
+GitHub Actions run `35436797418`: full verification success after memory compaction.
 
 ### Next Step
-Compact boot memory below 200, rerun CI, then close T022 if green.
+Run final CI in Done state so GOV-T09 validates the complete state history before merge.
