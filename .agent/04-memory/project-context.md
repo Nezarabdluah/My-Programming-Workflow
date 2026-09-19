@@ -1,9 +1,9 @@
-# Project Context — AOS v8.0-dev
-- **Phase:** v8 Release Readiness
-- **Task:** T029 — Done
+# Project Context — AOS v8.0.0-rc.1
+- **Phase:** v8 Release Candidate
+- **Task:** T030 — Executing
 
 ## Current
-Release entrypoints, sanitized installation, and the 150-line Boot hard gate are implemented and validated.
+Release-readiness is green on main. RC1 version markers and GOV-T40 version consistency are being finalized.
 
 ## Next
-Cut the v8 release candidate only from a green completed-state baseline.
+Run full RC verification; only a green completed baseline may be merged and tagged.
