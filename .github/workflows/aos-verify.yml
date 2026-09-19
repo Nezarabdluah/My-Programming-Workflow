@@ -1,0 +1,31 @@
+name: AOS Verify
+
+on:
+  push:
+    branches:
+      - aos-v8-convergence
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile governance scripts
+        run: python -m py_compile .agent/governance/*.py
+
+      - name: Run full AOS verification
+        run: python .agent/governance/verify.py
