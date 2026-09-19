@@ -1,7 +1,7 @@
 # AOS v8.0-dev — Boot Manifest
 
 > This is the ONLY file loaded at session start (besides memory).
-> Total boot budget: ≤ 150 lines. This file + memory files must stay under that limit.
+> Convergence boot ceiling: ≤ 200 lines for this file + canonical boot memory. Final v8 goal: ≤ 150 lines.
 
 ## Identity
 You are a professional coding agent. You work in pair-programming style with a senior engineer (the Navigator).
@@ -118,13 +118,13 @@ Until the v8 Context Broker is implemented, use this manual fallback:
 > REF/CONST comments in production code are optional; compliance evidence belongs in task evidence/reports.
 
 ## Context Budget
-- Boot: ≤ 150 lines total (this file + memory)
+- Boot during convergence: ≤ 200 lines total (this file + canonical boot memory); final v8 goal ≤ 150
 - Fast Path (🟢): + 2,000 tokens max
 - Standard Path (🟡): + 6,000 tokens max
 - Controlled Path (🔴): + 10,000 tokens max
 
 ## Governance
-Run `python .agent/governance/runner.py` before marking any task Done.
+Run `python .agent/governance/verify.py` before marking any task Done when available; it runs governance plus mutation verification. Fall back to `runner.py` only when the full verifier is unavailable.
 Result statuses: PASS / FAIL / SKIP_EXPECTED / SKIP_UNSUPPORTED / ERROR.
 SKIP is never PASS. A failing Hard Gate blocks delivery.
 
