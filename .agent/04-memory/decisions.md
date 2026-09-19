@@ -1,4 +1,4 @@
-# 📐 Architectural & Design Decision Log (ADR Log - AOS v7.0)
+# Architectural & Design Decision Log — AOS v8.0-dev
 
 > **Contract**: updated whenever a critical architectural decision is made or amended. Records decisions, alternatives, and consequences.
 
@@ -126,3 +126,22 @@
   * **Performance**: [e.g.: slightly higher memory use but faster seeks]
   * **Maintainability**: [e.g.: full isolation of the data-access layer]
   * **Security**: [e.g.: double input hardening]
+
+
+---
+
+## ADR-008: Deterministic Context Broker with machine-readable task and project contracts
+* **Date**: 2026-09-19
+* **Status**: Approved (Sprint 2 direction accepted by the Navigator)
+* **Context & problem**:
+  ADR-007 made context loading selective, but the current runtime still relies on the agent manually interpreting Markdown wiring. That keeps resource selection partly heuristic, difficult to test, and vulnerable to loading too much or silently missing relevant context.
+* **Approved decision**:
+  Introduce a deterministic Context Broker. A structured Task Contract supplies classification and explicit capabilities; a Project Profile supplies project type, activated Technology Profiles, and executable verification commands; a machine-readable Context Map is the single executable capability→resource mapping. The broker returns the minimum ordered resource set and never infers architecture from file count alone. Human/model reasoning may decide capabilities, but resource resolution after that decision is deterministic and testable.
+* **Rejected alternatives and why**:
+  1. Natural-language-only broker ← rejected: difficult to test and reproduces the same heuristic loading problem.
+  2. Duplicate the existing Markdown wiring into several profile files ← rejected: creates multiple truth sources and drift.
+  3. Require external YAML libraries ← rejected for Core: AOS governance should run on stock Python; JSON is used for executable contracts.
+* **Technical consequences**:
+  * **Performance**: predictable minimal context expansion and zero external parser dependency.
+  * **Maintainability**: capability routing becomes machine-testable; Markdown registry becomes documentation over the executable map.
+  * **Security**: sensitive capabilities can deterministically require security resources and stronger verification without depending on prompt memory.
