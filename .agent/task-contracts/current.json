@@ -1,39 +1,31 @@
 {
   "schema_version": 1,
-  "task_id": "T030",
-  "title": "v8.0.0-rc.1 release candidate cut",
+  "task_id": "T031",
+  "title": "README showcase and complete capability map",
   "classification": "sensitive",
   "capabilities": [
     "architecture",
-    "testing",
-    "deployment"
+    "testing"
   ],
   "affected_areas": [
     "README.md",
-    "AGENTS.md",
-    ".agent/AGENTS.md",
-    ".agent/VERSION",
-    ".agent/01-core",
-    ".agent/03-workflows",
-    ".agent/04-memory",
-    ".agent/05-references/books/00-master-index.md",
     ".agent/governance",
-    ".agent/INDEX.md",
+    ".agent/04-memory",
     ".agent/task-contracts"
   ],
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": false,
+    "new_architecture": true,
     "security_boundary": false,
-    "production_change": true,
+    "production_change": false,
     "breaking_external_contract": false,
     "data_migration": false
   },
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator approved continuing to the v8 release-candidate cut after green release-readiness."
+    "reference": "Navigator explicitly approved making README the complete user-facing project overview."
   },
   "verification": [
     "governance_compile",
