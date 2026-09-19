@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0--dev-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-35%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-22%2F22%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-36%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-23%2F23%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
@@ -325,8 +325,8 @@ Mutation tests deliberately corrupt the system and verify governance catches the
 
 Current verified baseline from Sprint 2:
 
-- **35 governance checks** (Done state may include expected skips),
-- **22/22 mutation violations detected**,
+- **36 governance checks** (Done state may include expected skips),
+- **23/23 mutation violations detected**,
 - **Boot Context 194/200 lines** on the final risk-routing validation,
 - Evidence Bundle and Evidence History verified in CI.
 
