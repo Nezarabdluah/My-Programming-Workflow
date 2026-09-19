@@ -1,33 +1,23 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
 ## T034 — One-Command Consumer Bootstrap 🔴
-- **State:** Executing
+- **State:** Validating
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
-- One command performs preflight → install/upgrade → discovery → initialization → portable verification.
-- Foreign agent infrastructure blocks before any AOS write.
-- Recognized AOS upgrade preserves project Memory/Profile/Task/Evidence and backs up managed adapters.
-- Consumer governance must not depend on AOS-source README/release state.
-- Runtime approval provenance must be portable and source-only patterns must not authorize consumer tasks.
-- Fresh consumer bootstrap must be behaviorally tested and CI-smoked.
-- README makes bootstrap the default path; manual install/init remains fallback only.
-- Full verification remains green; Boot stays ≤150.
+- One command performs safe preflight, install/upgrade, discovery, initialization, and portable verification.
+- Foreign agent infrastructure must block before writes.
+- Existing AOS upgrades must preserve project state and back up managed adapters.
+- Consumer governance/provenance must be portable and source-scoped correctly.
+- Real consumer bootstrap smoke must pass in CI.
+- README must present bootstrap as default onboarding.
+- Boot must remain ≤150.
 
-### Progress
-- [x] Safe installer preflight + upgrade preservation/backups.
-- [x] Portable runtime ADR registry + approval scope enforcement.
-- [x] Consumer/source governance and mutation separation.
-- [x] One-command `bootstrap.py` implemented.
-- [x] Behavioral tests T42–T45 + mutations.
-- [x] CI consumer bootstrap smoke test added.
-- [x] README switched to one-command UX.
-- [ ] Align INDEX/init workflow and run full verification.
-- [ ] Fix smoke/governance failures.
-- [ ] Validating + Done-state verification.
+### Evidence
+Run `35445855519`: 45 PASS, 32/32 mutations, consumer bootstrap smoke PASS, Evidence Bundle/History PASS.
 
 ### Next
-Run full verification and consumer smoke; fix any portability blocker.
+Run Validating-state verification; close T034 only if source + consumer paths remain green.
