@@ -347,6 +347,75 @@ def mut_t20_evidence_always_passes():
     )
 
 
+def mut_t23_revoke_registered_adr():
+    """Mutate approval registry so ADR-008 is no longer approved."""
+    import json
+    from test_execution import test_gov_t23_registered_adr_auto_execute
+    path = Path(".agent/01-core/approval-registry.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for entry in data.get("entries", []):
+            if entry.get("id") == "ADR-008":
+                entry["status"] = "revoked"
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T23-REVOKE-REGISTERED-ADR",
+        setup,
+        test_gov_t23_registered_adr_auto_execute,
+    )
+
+
+def mut_t26_disable_archive_integrity_check():
+    """Mutate evidence verification so tampered archives are accepted."""
+    from test_execution import test_gov_t26_evidence_history_detects_tampering
+    path = Path(".agent/01-core/evidence_recorder.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        start = original.index("def verify_archive(path: Path) -> bool:")
+        end = original.index("\ndef run_named_check(", start)
+        mutated = (
+            original[:start]
+            + "def verify_archive(path: Path) -> bool:\n    return True\n\n"
+            + original[end + 1:]
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T26-DISABLE-ARCHIVE-INTEGRITY",
+        setup,
+        test_gov_t26_evidence_history_detects_tampering,
+    )
+
+
+def mut_t27_allow_unknown_risk():
+    """Mutate Task Contract schema to accept an invented risk flag."""
+    from test_execution import test_gov_t27_task_contract_rejects_unknown_risk
+    path = Path(".agent/01-core/task_contract.py")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original.replace(
+            '    "data_migration",\n}',
+            '    "data_migration",\n    "invented_risk",\n}',
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T27-ALLOW-UNKNOWN-RISK",
+        setup,
+        test_gov_t27_task_contract_rejects_unknown_risk,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -381,6 +450,9 @@ if __name__ == "__main__":
         mut_t16_missing_technology_profile,
         mut_t18_remove_destructive_hard_stop,
         mut_t20_evidence_always_passes,
+        mut_t23_revoke_registered_adr,
+        mut_t26_disable_archive_integrity_check,
+        mut_t27_allow_unknown_risk,
         mut_t11_boot_too_large,
     ]
 
