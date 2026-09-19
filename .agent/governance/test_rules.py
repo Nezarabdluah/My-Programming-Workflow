@@ -152,25 +152,22 @@ def test_gov_t08_dead_references():
 
 
 def test_gov_t10_decision_consistency():
-    """GOV-T10: Verify runtime policy references real approved ADRs.
+    """GOV-T10: Runtime policy references real system/project ADRs."""
+    sources = [
+        Path(".agent/adr/system-decisions.md"),
+        Path(".agent/04-memory/decisions.md"),
+    ]
 
-    Deterministic checks:
-    1. decisions.md exists and real ADR entries are structurally complete.
-    2. ADR IDs referenced by active Core/rule policy files exist in decisions.md.
-    3. v8 migration policy cannot cite a missing ADR.
+    existing = [path for path in sources if path.exists()]
+    if not existing:
+        return FAIL, "GOV-T10: no system/project ADR source exists."
 
-    This check intentionally does not infer file chronology from filesystem
-    modification timestamps because checkout/copy operations make that signal
-    unreliable.
-    """
-    decisions_path = Path(".agent/04-memory/decisions.md")
-    if not decisions_path.exists():
-        return FAIL, "GOV-T10: decisions.md is missing."
-
-    decisions_content = decisions_path.read_text(encoding="utf-8")
+    decisions_content = "\n\n".join(
+        path.read_text(encoding="utf-8") for path in existing
+    )
     adr_ids = set(re.findall(r"## .*?(ADR-\d+)", decisions_content))
     if not adr_ids:
-        return FAIL, "GOV-T10: decisions.md contains no ADR entries."
+        return FAIL, "GOV-T10: no ADR entries found in runtime/project sources."
 
     incomplete = []
     for adr_id in sorted(adr_ids):
@@ -182,11 +179,9 @@ def test_gov_t10_decision_consistency():
         if not match:
             continue
         section = match.group(0)
-        if "[Architectural Decision Title]" in section:
-            continue
-        required_labels = ("Context", "decision", "consequences")
         lowered = section.lower()
-        missing = [label for label in required_labels if label.lower() not in lowered]
+        required_labels = ("context", "decision", "consequences")
+        missing = [label for label in required_labels if label not in lowered]
         if missing:
             incomplete.append(f"{adr_id} (missing: {', '.join(missing)})")
 
@@ -206,8 +201,7 @@ def test_gov_t10_decision_consistency():
         path = Path(rel_path)
         if not path.exists():
             continue
-        content = path.read_text(encoding="utf-8")
-        refs = set(re.findall(r"ADR-\d+", content))
+        refs = set(re.findall(r"ADR-\d+", path.read_text(encoding="utf-8")))
         checked_refs.update(refs)
         for ref in refs:
             if ref not in adr_ids:
@@ -217,10 +211,9 @@ def test_gov_t10_decision_consistency():
         return FAIL, "GOV-T10: Policy references missing ADRs: " + "; ".join(missing_refs)
 
     return PASS, (
-        f"GOV-T10: {len(adr_ids)} ADR(s) structurally valid; "
+        f"GOV-T10: {len(adr_ids)} system/project ADR(s) valid; "
         f"{len(checked_refs)} runtime ADR reference(s) resolve."
     )
-
 
 def test_gov_t36_public_contract_sync():
     """GOV-T36: README public contract must match the current v8 runtime."""
