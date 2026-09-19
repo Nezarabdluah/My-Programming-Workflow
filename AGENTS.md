@@ -1,3 +1,4 @@
+<!-- AOS-MANAGED-ADAPTER -->
 # AGENTS.md — Agent Entry Point (AOS v8.0.0-rc.1)
 
 > Read `.agent/01-core/boot-manifest.md` and follow it exactly.
