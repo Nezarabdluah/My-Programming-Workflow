@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0-dev
 - **Phase:** v8 Release Readiness
-- **Task:** T029 — Executing
+- **Task:** T029 — Validating
 
 ## Current
-Entrypoints and sanitized onboarding are implemented and verified. Boot contract is compressed for the final ≤150-line release budget.
+Entrypoints, sanitized installation, public docs, and the 150-line Boot hard gate are implemented. Completed verification `35440351468` passed 39 governance checks and 26/26 mutations with Boot at 144/150.
 
 ## Next
-Enforce the 150-line hard gate, rerun full verification, then decide RC readiness.
+Validate the release-readiness state, then decide whether v8 is ready for an RC cut.
