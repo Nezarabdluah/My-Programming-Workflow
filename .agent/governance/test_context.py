@@ -144,3 +144,42 @@ def test_gov_t15_context_map_integrity():
         f"GOV-T15: {len(capabilities)} executable capabilities are "
         "cataloged and all resource paths exist."
     )
+
+
+def test_gov_t16_project_profile_integrity():
+    """GOV-T16: Project Profile references real Technology Profiles and commands."""
+    project = _json(".agent/profiles/project.json")
+    profiles = project.get("technology_profiles", [])
+    if not isinstance(profiles, list):
+        return FAIL, "GOV-T16: technology_profiles must be a list."
+
+    missing_profiles = []
+    for profile_id in profiles:
+        path = Path(f".agent/profiles/technology/{profile_id}.json")
+        if not path.exists():
+            missing_profiles.append(profile_id)
+
+    if missing_profiles:
+        return FAIL, (
+            "GOV-T16: missing Technology Profile file(s): "
+            + ", ".join(sorted(missing_profiles))
+        )
+
+    commands = project.get("commands", {})
+    if not isinstance(commands, dict) or not commands:
+        return FAIL, "GOV-T16: project commands are missing."
+
+    empty_commands = [
+        name for name, command in commands.items()
+        if not isinstance(command, str) or not command.strip()
+    ]
+    if empty_commands:
+        return FAIL, (
+            "GOV-T16: empty project command(s): "
+            + ", ".join(sorted(empty_commands))
+        )
+
+    return PASS, (
+        f"GOV-T16: {len(profiles)} Technology Profile(s) resolve and "
+        f"{len(commands)} project command(s) are defined."
+    )
