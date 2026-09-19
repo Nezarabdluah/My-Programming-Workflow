@@ -3,10 +3,11 @@ name: AOS Verify
 on:
   push:
     branches:
-      - aos-v8-convergence
+      - main
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
