@@ -1,27 +1,28 @@
-# Active Tasks — AOS v8.0-dev
+# Active Tasks — AOS v8.0.0-rc.1
 
-## T029 — v8 Release Readiness & Sanitized Installation 🔴
-- **State:** Done
+## T030 — v8.0.0-rc.1 Release Candidate Cut 🔴
+- **State:** Executing
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+Draft → Clarify → Approved → Planning → Ready → Executing
 
 ### Acceptance Criteria
-- Entrypoints/CI must match Execution Gate + executable evidence.
-- Consumer install must exclude source project state.
-- GOV-T38/T39 + mutations must enforce release/onboarding contracts.
-- Boot must remain ≤150 lines before RC.
+- VERSION and active runtime/public markers must be v8.0.0-rc.1.
+- GOV-T40 must detect version drift; mutation must prove it fails.
+- Public metrics must show 40 governance checks / 27 mutations.
+- Boot must remain ≤150 lines.
+- Release candidate must pass Execution Gate, Evidence Bundle/History, governance, and mutations.
+- No tag/release until completed-state verification and main push verification are green.
 
-### Result
-- [x] Entrypoints, start/init flow, CI triggers, README, and INDEX aligned.
-- [x] ADR-013 + sanitized installer behaviorally verified.
-- [x] GOV-T38/T39 with 26/26 mutation coverage.
-- [x] Boot hard gate set to 150 and validated below ceiling.
-- [x] T029 completed; final Done-state verification is the completion evidence.
-
-### Evidence
-Completed validation `35440422576`: 39 PASS, 26/26 mutations, Boot 146/150, Evidence Bundle/History PASS.
+### Progress
+- [x] VERSION set to 8.0.0-rc.1.
+- [x] Active runtime/public version markers migrated.
+- [x] GOV-T40 + version-drift mutation added.
+- [x] README metrics updated to 40 / 27.
+- [ ] Run full RC verification.
+- [ ] Validating + Done-state verification.
+- [ ] Merge RC cut and verify main push before tag/release.
 
 ### Next
-Use this baseline for the v8 release-candidate cut after completed-state verification.
+Run the full RC verification and fix any version-consistency blocker.
