@@ -16,8 +16,8 @@ gate:
   requires:
     - approved architecture from stage 2
     - feature specs from stage 1
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 3 row"
+  context_candidates:
+    - "optional index: 05-references/books/00-master-index.md → Stage 3 row"
     - constitutions: security-constitution (Zero Trust, XSS, BOLA, TOCTOU)
     - 02-rules/security-checklist.md
     - wiring-registry → REF-SEC contracts
@@ -85,7 +85,7 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
