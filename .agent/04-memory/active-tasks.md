@@ -1,22 +1,31 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
 ## T031 — README Showcase & Complete Capability Map 🔴
-- **State:** Executing
+- **State:** Validating
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
-- A new user can understand AOS purpose, capabilities, lifecycle, and first-run flow from README alone.
-- README visibly covers Architecture, Security, QA, DevOps, Reliability, Performance, API, UX, Mobile QA, Memory, Governance, Evidence, and Knowledge.
-- Mermaid diagrams explain runtime flow and engineering lifecycle.
-- Quick Start separates install, initialize, task execution, verification, and completion.
-- README clearly states that executable runtime files remain the source of truth.
-- GOV-T41 protects required overview sections/capabilities/visuals.
-- Mutation proves GOV-T41 can fail.
-- Public baseline updates to 41 governance checks / 28 mutations.
-- Final verification remains green before completion.
+- README must explain purpose, capabilities, lifecycle, and first-run flow from one page.
+- Capability coverage must include Architecture, Security, QA, DevOps, Reliability, Performance, API, UX, Mobile, Memory, Governance, Evidence, and Knowledge.
+- Mermaid diagrams must explain runtime/lifecycle/evidence visually.
+- README must distinguish user-facing overview from executable authority.
+- GOV-T41 + mutation must protect the showcase.
+- Final verification must remain green.
+
+### Result
+- [x] ADR-014 approved.
+- [x] README rebuilt as complete capability showcase.
+- [x] 5 Mermaid diagrams + end-to-end onboarding added.
+- [x] GOV-T41 + mutation added.
+- [x] Executing-state verification: 41/41 + 28/28, Boot 138/150.
+- [ ] Validating-state verification.
+- [ ] Done-state verification.
+
+### Evidence
+Run `35441879771`: 41 PASS, 28/28 mutations, 5 Mermaid diagrams, Boot 138/150.
 
 ### Next
-Build the README showcase, add governance protection, then validate.
+Validate the README showcase, then close T031 only if all gates stay green.
