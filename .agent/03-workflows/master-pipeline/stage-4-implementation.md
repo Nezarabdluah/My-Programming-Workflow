@@ -17,15 +17,11 @@ gate:
     - 🟢: completed intake (stage 0)
     - 🟡: approved specs (stage 1)
     - 🔴: approved architecture + threat model (stages 2-3)
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 4 row"
-    - constitutions: arch-constitution + ddd-constitution + perf-constitution + security-constitution
-    - 02-rules/architecture-and-design.md (if architecture task)
-    - 02-rules/database-performance.md (if DB task)
-    - 02-rules/network-and-api.md (if API task)
-    - prompts: backend-prompts.md (if backend) | frontend-prompts.md (if frontend)
-    - templates: entity-patterns.md + coding-standards.md
-    - wiring-registry → relevant REF contracts
+  context_candidates:
+    - choose only rules/references relevant to capabilities actually touched
+    - use wiring-registry as discovery
+    - use 00-master-index as an optional stage resource index
+    - load prompts/templates/constitutions only when they materially help
   decision: proceed
 ```
 
@@ -33,18 +29,17 @@ gate:
 
 ## Task: code implementation in MVP increments
 
-### 4.1 — Vertical Slice Execution
+### 4.1 — Increment Execution
 
 ```
 □ For each task from the approved plan:
-  1. Load the relevant rule file from wiring-registry (one at a time)
-  2. Implement as a vertical slice covering all applicable layers:
-     Database → Domain → Application → API → Frontend → UI/UX → Tests
-  3. Cite applied REF contracts in code comments:
-     e.g. // [REF-DB-N1]: prevent N+1 query
-          // [REF-ARCH-DEP]: one-way dependency flow
+  1. Identify the project areas actually affected.
+  2. Load at most one directly relevant rule file at a time when needed.
+  3. Implement an independently valuable/testable increment using existing project patterns.
+  4. Verify all affected areas before moving on.
+  5. Record material rule/decision evidence in the task report; source-code REF/CONST comments are optional.
 
-□ Follow 02-rules/vertical-slice-governance.md for the mandatory coverage report
+□ If the project/profile explicitly activates full-stack vertical-slice guidance, use 02-rules/vertical-slice-governance.md.
 ```
 
 ### 4.2 — Incremental Delivery
@@ -76,14 +71,14 @@ gate:
 ```
 □ Produce a brief implementation summary:
   - Files created/modified (with line references)
-  - REF contracts applied
+  - Material rules/decisions applied (when relevant)
   - Known limitations or deferred items
   - Ready for testing gate: yes | no (with blockers)
 ```
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
