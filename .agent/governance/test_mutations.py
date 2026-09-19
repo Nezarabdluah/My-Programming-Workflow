@@ -561,6 +561,24 @@ def mut_t36_restore_stale_readme_contract():
     )
 
 
+def mut_t37_add_volatile_branch_state():
+    """Mutate project context with volatile branch/PR transport state."""
+    from test_memory import test_gov_t37_merge_safe_boot_memory
+    path = Path(".agent/04-memory/project-context.md")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        mutated = original + "\n- **Branch:** `temporary-feature`\n## Next\nMerge PR #999 next.\n"
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T37-ADD-VOLATILE-BRANCH-STATE",
+        setup,
+        test_gov_t37_merge_safe_boot_memory,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -604,6 +622,7 @@ if __name__ == "__main__":
         mut_t33_remove_workflow_area_mapping,
         mut_t35_unknown_derived_capability,
         mut_t36_restore_stale_readme_contract,
+        mut_t37_add_volatile_branch_state,
         mut_t11_boot_too_large,
     ]
 
