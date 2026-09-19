@@ -5,8 +5,9 @@
 ## 🔑 Entry Point & Sync
 | File | Description |
 |------|-------------|
+| `../bootstrap.sh` / `../bootstrap.ps1` | Public zero-setup launchers: temporary download → governed bootstrap → cleanup |
 | `01-core/boot-manifest.md` | Canonical runtime contract: boot, routing, budget, governance, handoff |
-| `bootstrap.py` | **Default consumer entrypoint**: preflight → safe install/upgrade → discovery → initialization → portable verification |
+| `bootstrap.py` | Governed bootstrap engine used by the public launchers: preflight → safe install/upgrade → discovery → initialization → portable verification |
 | `install.py` | Advanced/internal safe installer used by bootstrap; supports write-free preflight and state-preserving upgrades |
 | `start.py` | Boot prompt helper; `--check` runs full `governance/verify.py` |
 | `VERSION` | Version number, last sync date, and source path |

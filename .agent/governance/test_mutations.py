@@ -781,6 +781,31 @@ def mut_t45_allow_source_approval_in_consumer():
     )
 
 
+def mut_t46_bypass_governed_bootstrap():
+    """Mutate the public POSIX launcher so it no longer routes through bootstrap.py."""
+    from test_rules import test_gov_t46_zero_setup_launchers_are_thin_and_safe
+    path = Path("bootstrap.sh")
+
+    def setup():
+        original = path.read_text(encoding="utf-8")
+        old = '"$AOS_TEMP_DIR/.agent/bootstrap.py" "$AOS_TARGET"'
+        if old not in original:
+            raise RuntimeError("POSIX launcher execution marker not found")
+        mutated = original.replace(
+            old,
+            '"$AOS_TEMP_DIR/.agent/install.py" "$AOS_TARGET"',
+            1,
+        )
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T46-BYPASS-GOVERNED-BOOTSTRAP",
+        setup,
+        test_gov_t46_zero_setup_launchers_are_thin_and_safe,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -833,6 +858,7 @@ if __name__ == "__main__":
         mut_t43_copy_source_memory_on_upgrade,
         mut_t44_break_node_detection,
         mut_t45_allow_source_approval_in_consumer,
+        mut_t46_bypass_governed_bootstrap,
         mut_t11_boot_too_large,
     ]
 
@@ -846,6 +872,7 @@ if __name__ == "__main__":
             mut_t42_disable_foreign_agent_conflict,
             mut_t43_copy_source_memory_on_upgrade,
             mut_t44_break_node_detection,
+            mut_t46_bypass_governed_bootstrap,
         }
         mutations = [
             mutation for mutation in mutations

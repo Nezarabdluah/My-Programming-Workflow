@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0.0--rc.1-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-45%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-32%2F32%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-46%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-33%2F33%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/boot-%E2%89%A4150%20lines-success" alt="boot budget">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
@@ -23,89 +23,29 @@
 
 # ⚡ Quick Start — One Command
 
-> AOS is **not** a Windows service and does not stay running in the background.
-> Keep one AOS source copy on your machine and bootstrap any project with one safe command.
+Open a terminal **inside your project** and paste one command.
 
-```text
-🟦 ONE AOS SOURCE COPY
-   C:\Tools\AOS   or   ~/tools/AOS
-              │
-              ├──────────────► Project A\.agent
-              ├──────────────► Project B\.agent
-              └──────────────► Project C\.agent
-
-Each project gets its own local AOS runtime + memory + profile.
-```
-
-From the AOS source repository:
+**macOS / Linux:**
 
 ```bash
-python .agent/bootstrap.py /path/to/your-project
+curl --proto '=https' --tlsv1.2 -LsSf https://raw.githubusercontent.com/Nezarabdluah/My-Programming-Workflow/main/bootstrap.sh | sh
 ```
 
-**Windows example:**
+**Windows PowerShell:**
 
 ```powershell
-python .agent\bootstrap.py C:\Projects\MyApp
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Nezarabdluah/My-Programming-Workflow/main/bootstrap.ps1 | iex"
 ```
 
-That single command performs:
+Requires Git and Python 3. AOS downloads to a temporary folder, bootstraps the current project, then removes the temporary copy.
 
-```text
-🔎 PREFLIGHT
-   │
-   ├─ foreign .agent / AGENTS / CLAUDE / Cursor files?
-   │      └─ 🟥 BLOCKED — no AOS write happens
-   │
-   ▼
-📦 SAFE INSTALL / UPGRADE
-   │
-   ├─ fresh project ───────────► clean AOS runtime
-   └─ existing AOS ────────────► preserve project state + backup adapters
-   │
-   ▼
-🧠 DISCOVER PROJECT
-   stack · languages · build/test/lint commands
-   │
-   ▼
-🧩 INITIALIZE
-   Project Profile · Memory · Task Contract
-   │
-   ▼
-🛡️ PORTABLE AOS VERIFICATION
-   │
-   ├─ 🟩 READY ────────────────► open the project and give the agent a task
-   └─ 🟨 NEEDS_REVIEW ─────────► stack evidence was not strong enough
-```
-
-After `READY`, just open the project in your coding agent and work normally:
+When you see `READY`, open the project in your coding agent and give it a normal task:
 
 ```text
 Add password reset to this project.
 ```
 
-AOS handles the rest:
-
-```text
-TASK → Risk/Approval → Context → Implementation
-     → Tests/Evidence → Governance → Memory → DONE
-```
-
-### Existing agent files are protected
-
-AOS never blindly overwrites agent infrastructure.
-
-| Existing project state | Bootstrap behavior |
-|---|---|
-| No `.agent` / agent instruction files | 🟩 Fresh install |
-| Recognized existing AOS | 🔄 Safe upgrade; Memory/Profile/Task/Evidence preserved |
-| Foreign or unknown `.agent` | 🟥 BLOCKED before any write |
-| Foreign `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, Copilot instructions | 🟥 BLOCKED before any write |
-| AOS-managed adapters during upgrade | 📦 Backed up under `.agent/backups/last-upgrade/` before refresh |
-
-If bootstrap reports `BLOCKED`, AOS does not guess, merge, rename, or delete the conflicting agent system automatically.
-
-**That's it:** one source copy, one bootstrap command per project, then normal coding tasks.
+That is all. Internally AOS performs Preflight → Safe install/upgrade → Discovery → Profile → Memory → Task Contract → Verification. If it finds an unknown `.agent` or foreign agent instructions, it reports `BLOCKED before any write`; a recognized AOS installation receives a Safe upgrade that preserves project state. Weak project evidence returns `NEEDS_REVIEW` instead of guessed commands.
 
 ---
 # What AOS gives you
@@ -127,7 +67,7 @@ AOS turns an AI coding agent from “a model that edits files” into a governed
 | 🤖 **Autonomous Execution** | `AUTO_EXECUTE`, `HUMAN_APPROVED`, `HUMAN_REQUIRED` modes | Execution Gate + Approval Engine |
 | 🎯 **Context Control** | Context Broker selects only relevant rules/workflows/references | `context_broker.py`, `context-map.json` |
 | 🧾 **Executable Evidence** | Named checks, PASS/FAIL from exit code, SHA-256 Evidence History | `evidence_recorder.py`, `.agent/evidence/` |
-| 🛡️ **Governance** | 45 checks + 32 mutation tests proving checks can fail | `.agent/governance/` |
+| 🛡️ **Governance** | 46 checks + 33 mutation tests proving checks can fail | `.agent/governance/` |
 | 📚 **Engineering Knowledge** | 16 distilled books, 6 constitutions, REF/OPS/QA catalogs, prompts/templates | `.agent/05-references/`, `.agent/06-templates/` |
 
 > **Important:** this README is the complete user-facing overview. It is **not** a second runtime authority. Executable truth remains in `boot-manifest.md`, Task Contract, Execution Gate, Context Map, Profiles, and Project Profile.
@@ -595,8 +535,8 @@ python .agent/governance/verify.py
 
 Current RC baseline:
 
-- **45 governance checks**
-- **32/32 mutation violations detected**
+- **46 governance checks**
+- **33/33 mutation violations detected**
 - **Boot Context hard gate: ≤150 lines**
 - Evidence Bundle verified
 - Evidence History verified

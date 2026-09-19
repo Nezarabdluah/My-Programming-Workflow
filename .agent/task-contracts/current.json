@@ -1,20 +1,19 @@
 {
   "schema_version": 1,
-  "task_id": "T034",
-  "title": "One-command consumer bootstrap and collision-safe onboarding",
+  "task_id": "T035",
+  "title": "Zero-setup remote one-command bootstrap and simplified onboarding",
   "classification": "sensitive",
   "capabilities": [
     "architecture",
     "testing"
   ],
   "affected_areas": [
-    ".agent/bootstrap.py",
-    ".agent/install.py",
-    ".agent/01-core",
-    ".agent/adr",
+    "bootstrap.sh",
+    "bootstrap.ps1",
     ".agent/governance",
-    ".agent/profiles",
-    ".agent/03-workflows",
+    ".agent/profiles/project.json",
+    ".agent/03-workflows/init-project.md",
+    ".agent/INDEX.md",
     "README.md",
     ".github/workflows",
     ".agent/04-memory"
@@ -23,7 +22,7 @@
     "destructive": false,
     "irreversible": false,
     "new_architecture": true,
-    "security_boundary": false,
+    "security_boundary": true,
     "production_change": false,
     "breaking_external_contract": false,
     "data_migration": false
@@ -31,7 +30,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator approved continuing one-command bootstrap and safe conflict handling."
+    "reference": "Navigator approved simplifying AOS to a true one-command experience and requested research-backed implementation."
   },
   "verification": [
     "governance_compile",

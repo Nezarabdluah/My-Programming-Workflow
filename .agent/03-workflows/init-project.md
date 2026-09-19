@@ -1,7 +1,7 @@
 # Init Project — AOS v8.0.0-rc.1
 
 > Manual/fallback initialization workflow.
-> **Default onboarding:** run `python .agent/bootstrap.py /path/to/target-project` from the AOS source repository.
+> **Default onboarding:** from the target project, run the public root `bootstrap.sh` or `bootstrap.ps1` one-command launcher documented in README.
 > Use this file only for recovery, manual setup, or reviewing a bootstrap result marked `NEEDS_REVIEW`.
 
 ## 1. Discover the project
