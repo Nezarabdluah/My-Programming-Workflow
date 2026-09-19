@@ -298,10 +298,12 @@ def test_gov_t38_release_contract_entrypoints():
         if "evidence_recorder.py" not in content:
             problems.append(f"{label}: missing Evidence Recorder")
 
-    if "governance/verify.py" not in start:
-        problems.append("start.py: --check must use full verify.py")
-    if "governance/runner.py" in start:
-        problems.append("start.py: stale runner.py quick-check reference")
+    start_verify_path = 'str(agent_dir / "governance" / "verify.py")'
+    start_runner_path = 'str(agent_dir / "governance" / "runner.py")'
+    if start_verify_path not in start:
+        problems.append("start.py: --check must execute full verify.py")
+    if start_runner_path in start:
+        problems.append("start.py: --check still executes runner.py")
 
     for required in ["profiles/", "task-contracts/", "evidence/README.md"]:
         if required not in init:
