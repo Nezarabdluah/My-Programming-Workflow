@@ -16,8 +16,8 @@
 | `task-classification.md` | 🟢/🟡/🔴 classification indicators, keywords, scope, and the Zero-Trust escalation rule |
 | `token-budget.md` | Supplemental selective-loading guidance; boot limits are defined by boot-manifest/governance |
 | `collaboration-rules.md` | Pair-programming protocol: Driver/Navigator roles, step & proof, stop gates, response structure |
-| `context-map.json` | Executable capability→resource map used by Context Broker |
-| `context_broker.py` | Deterministic resolver for Task Contract + Project/Technology Profiles |
+| `context-map.json` | Executable capability→resource map plus generic risk→capability derivation |
+| `context_broker.py` | Deterministic resolver for explicit + risk-derived + affected-area-derived capabilities |
 | `approval-policy.json` | Executable hard-stop/provenance approval policy |
 | `approval-registry.json` | Verified ADR/pattern provenance registry with capability/risk scope |
 | `approval_engine.py` | Deterministic approval evaluator with explicit execution modes |
@@ -29,7 +29,7 @@
 ## profiles/ + task-contracts/ — Sprint 2 execution contracts
 | Path | Description |
 |------|-------------|
-| `profiles/project.json` | Project type, activated Technology Profiles, and executable commands |
+| `profiles/project.json` | Project type, Technology Profiles, commands, and project-specific area→capability rules |
 | `profiles/technology/*.json` | Optional stack/architecture-specific capabilities and constraints |
 | `task-contracts/current.json` | Current non-trivial task classification, capabilities, approval, and verification |
 
