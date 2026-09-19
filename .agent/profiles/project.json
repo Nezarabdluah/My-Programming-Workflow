@@ -17,6 +17,6 @@
   },
   "commands": {
     "governance_verify": "python .agent/governance/verify.py",
-    "governance_compile": "python -m py_compile .agent/governance/*.py .agent/01-core/context_broker.py .agent/01-core/approval_engine.py .agent/01-core/evidence_recorder.py"
+    "governance_compile": "python -m compileall -q .agent/governance .agent/01-core/context_broker.py .agent/01-core/approval_engine.py .agent/01-core/evidence_recorder.py"
   }
 }
