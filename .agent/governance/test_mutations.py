@@ -440,6 +440,38 @@ def mut_t30_forge_registry_source_marker():
     )
 
 
+def mut_t31_reject_registry_adr_status():
+    """Mutate ADR-008 source status to Rejected; registry provenance must fail."""
+    from test_execution import test_gov_t30_approval_registry_sources_resolve
+    path = Path(".agent/04-memory/decisions.md")
+
+    def setup():
+        content = path.read_text(encoding="utf-8")
+        start = content.find("## ADR-008:")
+        if start < 0:
+            raise RuntimeError("ADR-008 heading not found")
+        end = content.find("\n## ", start + 1)
+        if end < 0:
+            end = len(content)
+        section = content[start:end]
+        if "* **Status**: Approved" not in section:
+            raise RuntimeError("ADR-008 approved status not found")
+        section = section.replace(
+            "* **Status**: Approved",
+            "* **Status**: Rejected",
+            1,
+        )
+        mutated = content[:start] + section + content[end:]
+        backup = _backup_and_write(path, mutated)
+        return [(path, backup)]
+
+    return run_mutation(
+        "T31-REJECT-REGISTRY-ADR-STATUS",
+        setup,
+        test_gov_t30_approval_registry_sources_resolve,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -478,6 +510,7 @@ if __name__ == "__main__":
         mut_t26_disable_archive_integrity_check,
         mut_t27_allow_unknown_risk,
         mut_t30_forge_registry_source_marker,
+        mut_t31_reject_registry_adr_status,
         mut_t11_boot_too_large,
     ]
 
