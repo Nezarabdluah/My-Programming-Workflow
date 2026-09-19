@@ -237,8 +237,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "36 governance checks",
-        "23/23 mutation",
+        "37 governance checks",
+        "24/24 mutation",
     ]
     forbidden = [
         "Nothing is optional",
