@@ -1,16 +1,22 @@
 # Project Knowledge
 
 > Loaded on demand only (never automatically).
-> Contains general knowledge acquired about this project.
+> Contains durable knowledge acquired about this project.
 
 ## Technologies in use
-- **Backend**: [auto-filled]
-- **Frontend**: [auto-filled]
-- **Database**: [auto-filled]
-- **Other**: [auto-filled]
+- Python governance/runtime scripts
+- Markdown operational documentation
+- JSON executable contracts
+- YAML GitHub Actions workflow
 
-## Discovered patterns & conventions
-<!-- naming conventions, design patterns in use, etc. -->
+## Approved Patterns
+
+### [PATTERN:existing-local-refactor]
+Use an existing local module/workflow pattern without changing architecture,
+security boundaries, data/schema, production behavior, or external contracts.
+The task must remain within the capabilities declared in its approved registry
+entry and must pass the project's named verification checks.
 
 ## Architectural notes
-<!-- any discovered architectural particularities of the project -->
+- `boot-manifest.md` is the canonical runtime authority.
+- Executable policy lives in machine-readable contracts plus dependency-free Python governance.
