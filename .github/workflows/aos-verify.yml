@@ -34,6 +34,9 @@ jobs:
       - name: Record full verification evidence
         run: python .agent/01-core/evidence_recorder.py --check governance_verify
 
+      - name: One-command consumer bootstrap smoke
+        run: python .agent/governance/bootstrap_smoke.py
+
       - name: Validate current evidence bundle
         run: |
           python - <<'PY'
