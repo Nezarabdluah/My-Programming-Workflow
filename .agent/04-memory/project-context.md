@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** RC Documentation & Discoverability
-- **Task:** T033 — Validating
+- **Task:** T033 — Done
 
 ## Current
-README now explains the AOS installation model and exposes a governed three-step Quick Start; first verification passed 41 checks, 28/28 mutations, and Boot 135/150.
+README starts with a governed three-step Quick Start and clearly explains that AOS is copied into each project as a local `.agent` runtime rather than installed as a background service.
 
 ## Next
-Validate the Quick Start baseline, then close T033 only if green.
+Maintain the simple install → initialize → work flow through GOV-T41.
