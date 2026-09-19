@@ -1,7 +1,7 @@
 # Project Context — AOS v8.0-dev
 ## Current
 - **Phase:** Sprint 2 — Context Broker Foundation
-- **Task:** T023 — Executing
+- **Task:** T023 — Validating
 - **Branch:** `aos-v8-sprint2-context`
 - **Main:** convergence merged via PR #1 / `5e6de0409814d1ae3234a60b3b44876aec889115`
 
@@ -16,5 +16,9 @@
 - GOV-T12/T13/T14 cover minimality, profile gating, and current contract resolution.
 - Boot/init/INDEX/wiring now route non-trivial context through the broker.
 
+## Validation
+- Context Broker + profiles + task contract + T12–T16 are green.
+- Latest GitHub Actions: `35437322891` success.
+
 ## Next
-Get full CI green, review the diff, then move T023 to Validating before Evidence Bundle/Approval Policy work.
+Run final CI in Validating state; then close T023 and prepare PR #2 for merge review.
