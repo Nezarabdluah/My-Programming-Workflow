@@ -237,8 +237,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "40 governance checks",
-        "27/27 mutation",
+        "41 governance checks",
+        "28/28 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -420,3 +420,88 @@ def test_gov_t40_version_consistency():
         return FAIL, "GOV-T40: version drift: " + "; ".join(problems)
 
     return PASS, f"GOV-T40: active runtime/public markers match {label}."
+
+def test_gov_t41_readme_complete_capability_map():
+    """GOV-T41: README must remain a complete user-facing AOS capability map."""
+    path = Path("README.md")
+    if not path.exists():
+        return FAIL, "GOV-T41: README.md missing."
+
+    content = path.read_text(encoding="utf-8")
+
+    required_sections = [
+        "# What AOS gives you",
+        "# How AOS works",
+        "# From install to Done",
+        "# Engineering lifecycle",
+        "# Capability map",
+        "# Core runtime",
+        "# Security model",
+        "# Testing, QA & evidence",
+        "# DevOps, production & release discipline",
+        "# Memory that learns without becoming stale",
+        "# Knowledge system",
+        "# Governance strength",
+        "# Project structure",
+        "# Source of truth",
+    ]
+
+    required_capabilities = [
+        "Architecture",
+        "Security",
+        "Testing & QA",
+        "DevOps",
+        "Reliability",
+        "Database & Performance",
+        "API & Network",
+        "Frontend & UX",
+        "Mobile QA",
+        "Memory & Learning",
+        "Autonomous Execution",
+        "Context Control",
+        "Executable Evidence",
+        "Governance",
+        "Engineering Knowledge",
+    ]
+
+    required_runtime_markers = [
+        "execution_gate.py",
+        "context_broker.py",
+        "evidence_recorder.py",
+        "install.py",
+        "boot-manifest.md",
+        "task-contracts/current.json",
+        "Project + Technology Profiles",
+        "AUTO_EXECUTE",
+        "HUMAN_APPROVED",
+        "HUMAN_REQUIRED",
+    ]
+
+    missing_sections = [item for item in required_sections if item not in content]
+    missing_capabilities = [item for item in required_capabilities if item not in content]
+    missing_runtime = [item for item in required_runtime_markers if item not in content]
+
+    mermaid_count = content.count("```mermaid")
+    if mermaid_count < 3:
+        missing_sections.append(f"Mermaid diagrams >=3 (found {mermaid_count})")
+
+    if "README is the complete user-facing overview" not in content:
+        missing_sections.append("README/source-of-truth boundary")
+    if "Executable authority remains here:" not in content:
+        missing_sections.append("executable-authority table")
+
+    problems = []
+    if missing_sections:
+        problems.append("sections/visuals: " + ", ".join(missing_sections))
+    if missing_capabilities:
+        problems.append("capabilities: " + ", ".join(missing_capabilities))
+    if missing_runtime:
+        problems.append("runtime markers: " + ", ".join(missing_runtime))
+
+    if problems:
+        return FAIL, "GOV-T41: incomplete README showcase: " + "; ".join(problems)
+
+    return PASS, (
+        f"GOV-T41: README preserves complete capability coverage with "
+        f"{mermaid_count} Mermaid diagrams."
+    )
