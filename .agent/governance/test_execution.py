@@ -60,17 +60,19 @@ def test_gov_t18_hard_stop_requires_human():
         "approval": {
             "status": "approved",
             "provenance": "approved_pattern",
-            "reference": "test-pattern-allows-destructive",
+            "reference": "pattern-existing-local-refactor",
         },
         "verification": [],
     }
     registry = {
         "entries": [{
-            "id": "test-pattern-allows-destructive",
+            "id": "pattern-existing-local-refactor",
             "type": "approved_pattern",
             "status": "approved",
             "capabilities": ["architecture"],
             "risk_allowlist": ["destructive"],
+            "source": ".agent/04-memory/project-knowledge.md",
+            "source_marker": "[PATTERN:existing-local-refactor]",
         }]
     }
 
