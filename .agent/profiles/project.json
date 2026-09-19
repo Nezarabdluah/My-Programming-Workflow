@@ -17,7 +17,7 @@
   },
   "commands": {
     "governance_verify": "python .agent/governance/verify.py",
-    "governance_compile": "python -m compileall -q .agent/governance .agent/01-core/context_broker.py .agent/01-core/approval_engine.py .agent/01-core/evidence_recorder.py .agent/01-core/task_contract.py .agent/01-core/execution_gate.py .agent/install.py"
+    "governance_compile": "python -m compileall -q .agent/governance .agent/01-core/context_broker.py .agent/01-core/approval_engine.py .agent/01-core/evidence_recorder.py .agent/01-core/task_contract.py .agent/01-core/execution_gate.py .agent/install.py .agent/bootstrap.py"
   },
   "area_capability_rules": [
     {
