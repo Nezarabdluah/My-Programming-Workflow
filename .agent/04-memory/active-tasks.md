@@ -26,7 +26,7 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] Task Contract validates affected areas.
 - [x] GOV-T31–T35 + routing mutations added.
 - [x] CI green: 35/35 governance + 22/22 mutations.
-- [x] Validating-state CI passed; awaiting Done-state T09.
+- [x] Done-state CI passed; GOV-T09 verified full history.
 
 ### Next
-Run Done-state CI; merge PR #5 only if GOV-T09 and all gates stay green.
+Run final head CI; squash-merge PR #5 only if all gates stay green.
