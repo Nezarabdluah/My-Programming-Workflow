@@ -1,6 +1,6 @@
 # 🚀 Knowledge Bootstrapping — Knowledge Exploitation for Existing Projects & Automation Activation
 
-> **Contract**: this guide runs automatically as soon as any existing or new software project is opened or linked to AOS v7.0.
+> **AOS v8:** run this workflow when Stage 0 or the Navigator requests codebase discovery for an existing project. Do not run automatically on every session.
 
 ---
 
@@ -25,6 +25,8 @@ Engineering excellence relies on evidence, not expectations. Automated tests mus
 
 ---
 
-## 🛠️ Step 3: DevOps Automation & Pre-commit Hooks
-1. **HOOKS**: copy the distributed governance check script from `.agent/governance/runner.py` and wire it into locally available git hooks to prevent commits without governance checks.
-2. **Security gates**: integrate analysis and security gates (e.g. gitleaks and license checks) as part of the pre-commit cycle and pre-deployment verification.
+## Step 3: Automation Discovery
+1. Detect existing CI, hooks, security scanning, and deployment automation.
+2. Record what already exists before proposing additions.
+3. Do not modify hooks/CI automatically; adding or changing repository automation requires an explicit task/plan.
+4. Prefer `python .agent/governance/verify.py` for AOS verification when available.
