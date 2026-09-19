@@ -11,7 +11,7 @@
 - ADR-010: verified provenance + execution modes + tamper-evident history.
 
 ## Current
-Verified provenance, Execution Gate, Evidence History, GOV-T23–T30, 19 mutations, and CI artifact flow are green.
+Verified provenance, Execution Gate, Evidence History, GOV-T23–T30, 19 mutations, Done-state T09, and artifacts are green.
 
 ## Next
-Run Done-state CI; prepare PR #4 for squash merge only if green.
+Run final head CI, then squash-merge PR #4 only if green.
