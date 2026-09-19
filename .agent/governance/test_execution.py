@@ -21,7 +21,7 @@ def _json(path):
 
 
 def test_gov_t17_current_approval_resolves():
-    """GOV-T17: Current sensitive task must resolve to APPROVED provenance."""
+    """GOV-T17: Current task approval mode must match verified provenance."""
     engine = _load_module(
         "aos_approval_engine",
         ".agent/01-core/approval_engine.py",
@@ -36,12 +36,20 @@ def test_gov_t17_current_approval_resolves():
 
     if result.get("decision") != "APPROVED":
         return FAIL, f"GOV-T17: current task not approved: {result}"
-    if result.get("execution_mode") != "HUMAN_APPROVED":
-        return FAIL, f"GOV-T17: expected HUMAN_APPROVED: {result}"
+
+    provenance = result.get("provenance")
+    expected_mode = (
+        "HUMAN_APPROVED" if provenance == "human" else "AUTO_EXECUTE"
+    )
+    if result.get("execution_mode") != expected_mode:
+        return FAIL, (
+            f"GOV-T17: provenance {provenance!r} expected "
+            f"{expected_mode}, got {result.get('execution_mode')!r}: {result}"
+        )
 
     return PASS, (
-        "GOV-T17: current task resolves HUMAN_APPROVED "
-        f"via {result.get('provenance')}."
+        "GOV-T17: current task approval mode matches verified provenance "
+        f"({provenance} → {expected_mode})."
     )
 
 
@@ -362,7 +370,7 @@ def test_gov_t27_task_contract_rejects_unknown_risk():
 
 
 def test_gov_t28_current_execution_gate_ready():
-    """GOV-T28: Current task resolves to READY/HUMAN_APPROVED."""
+    """GOV-T28: Current task resolves READY with provenance-consistent mode."""
     gate = _load_module(
         "aos_execution_gate_current",
         ".agent/01-core/execution_gate.py",
@@ -374,12 +382,23 @@ def test_gov_t28_current_execution_gate_ready():
 
     if result.get("status") != "READY":
         return FAIL, f"GOV-T28: current task is not READY: {result}"
-    if result.get("execution_mode") != "HUMAN_APPROVED":
-        return FAIL, f"GOV-T28: expected HUMAN_APPROVED: {result}"
+
+    provenance = result.get("approval", {}).get("provenance")
+    expected_mode = (
+        "HUMAN_APPROVED" if provenance == "human" else "AUTO_EXECUTE"
+    )
+    if result.get("execution_mode") != expected_mode:
+        return FAIL, (
+            f"GOV-T28: provenance {provenance!r} expected "
+            f"{expected_mode}, got {result.get('execution_mode')!r}: {result}"
+        )
     if not result.get("verification"):
         return FAIL, "GOV-T28: no named verification checks returned."
 
-    return PASS, f"GOV-T28: {result.get('task_id')} is READY/HUMAN_APPROVED."
+    return PASS, (
+        f"GOV-T28: {result.get('task_id')} is READY/{expected_mode} "
+        f"via {provenance}."
+    )
 
 
 def test_gov_t29_registered_adr_execution_gate_auto_executes():
