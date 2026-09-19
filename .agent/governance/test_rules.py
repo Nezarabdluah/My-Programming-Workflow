@@ -248,8 +248,8 @@ def test_gov_t36_public_contract_sync():
         "approval-registry.json",
         "Task Contract",
         "Evidence History",
-        "41 governance checks",
-        "28/28 mutation",
+        "45 governance checks",
+        "32/32 mutation",
     ]
     forbidden = [
         "Nothing is optional",
@@ -333,8 +333,8 @@ def test_gov_t38_release_contract_entrypoints():
         problems.append("workflow: stale convergence branch trigger remains")
 
     readme = Path("README.md").read_text(encoding="utf-8")
-    if ".agent/install.py" not in readme:
-        problems.append("README: sanitized installer entrypoint missing")
+    if ".agent/bootstrap.py" not in readme:
+        problems.append("README: one-command bootstrap entrypoint missing")
     if "Copy `.agent` into your project" in readme:
         problems.append("README: unsafe full-state copy onboarding remains")
 
@@ -448,10 +448,10 @@ def test_gov_t41_readme_complete_capability_map():
     content = path.read_text(encoding="utf-8")
 
     required_sections = [
-        "# ⚡ Quick Start — 3 Steps",
+        "# ⚡ Quick Start — One Command",
         "# What AOS gives you",
         "# How AOS works",
-        "# From install to Done",
+        "# What bootstrap does under the hood",
         "# Engineering lifecycle",
         "# Capability map",
         "# Core runtime",
@@ -476,7 +476,7 @@ def test_gov_t41_readme_complete_capability_map():
 
     required_diagrams = [
         "🟦 TASK",
-        "🟦 1. INSTALL AOS",
+        "🔎 1. PREFLIGHT",
         "🟦 INTAKE",
         "🤖 AOS v8",
         "🟦 NAMED CHECK",
@@ -506,10 +506,13 @@ def test_gov_t41_readme_complete_capability_map():
         problems.append("Mermaid remains in README; colored text diagrams are the standard.")
 
     quick_start_markers = [
-        "python .agent/install.py /path/to/your-project",
-        "Run .agent/03-workflows/init-project.md for this repository.",
-        "There is no always-running AOS process.",
-        "Each project carries its own governed .agent runtime.",
+        "python .agent/bootstrap.py /path/to/your-project",
+        "one bootstrap command per project",
+        "BLOCKED before any write",
+        "no AOS write happens",
+        "Safe upgrade",
+        "NEEDS_REVIEW",
+        "READY",
     ]
     missing_quick_start = [
         item for item in quick_start_markers if item not in content
