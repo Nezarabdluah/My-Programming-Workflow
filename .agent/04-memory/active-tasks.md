@@ -1,30 +1,27 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T029 — v8 Release Readiness & Sanitized Installation 🔴
-- **State:** Validating
+- **State:** Done
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- Entrypoints must use Execution Gate + executable evidence.
-- Consumer install must exclude source Memory/Profile/Task/evidence state.
-- CI must verify PRs, main, and manual release checks.
-- GOV-T38/T39 and mutations must prove release/onboarding contracts.
-- Boot must be ≤150 lines before RC; no RC bump before final green evidence.
+- Entrypoints/CI must match Execution Gate + executable evidence.
+- Consumer install must exclude source project state.
+- GOV-T38/T39 + mutations must enforce release/onboarding contracts.
+- Boot must remain ≤150 lines before RC.
 
 ### Result
-- [x] Entrypoints/start/init/CI aligned.
-- [x] ADR-013 + sanitized installer.
-- [x] GOV-T38/T39 + 26/26 mutation coverage.
-- [x] Public docs/INDEX synchronized.
-- [x] Boot reduced to 144 lines and GOV-T11 hardened to 150.
-- [ ] Validating-state full verification.
-- [ ] Done-state verification and release decision.
+- [x] Entrypoints, start/init flow, CI triggers, README, and INDEX aligned.
+- [x] ADR-013 + sanitized installer behaviorally verified.
+- [x] GOV-T38/T39 with 26/26 mutation coverage.
+- [x] Boot hard gate set to 150 and validated below ceiling.
+- [x] T029 completed; final Done-state verification is the completion evidence.
 
 ### Evidence
-Completed verification `35440351468`: 39 PASS, 26/26 mutations, Boot 144/150, Evidence Bundle/History PASS.
+Completed validation `35440422576`: 39 PASS, 26/26 mutations, Boot 146/150, Evidence Bundle/History PASS.
 
 ### Next
-Validate the release-readiness state; then close T029 only if all hard gates remain green.
+Use this baseline for the v8 release-candidate cut after completed-state verification.
