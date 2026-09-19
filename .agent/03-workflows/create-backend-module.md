@@ -1,6 +1,6 @@
 # Create Backend Module
 
-> General workflow for building a complete backend module with any stack.
+> Layered-backend workflow. Use only when the existing project/profile has comparable business/use-case/persistence/API areas; otherwise adapt to the project's established architecture.
 
 ---
 
@@ -21,10 +21,10 @@ Before implementation:
 ---
 
 ## Step 1: Requirements Analysis
-1. Identify the main Entity: what is its name? Its properties?
-2. Identify relationships: does it relate to other entities?
-3. Identify required operations: CRUD? Custom operations?
-4. Identify Business Rules: what are the invariants?
+1. Identify the use case/business capability and affected data/contracts.
+2. Identify the project components/boundaries involved.
+3. Identify required operations and behavior.
+4. Identify business rules/invariants when the project has a domain model.
 5. **State your assumptions** to the developer before starting.
 
 ---
@@ -47,19 +47,19 @@ Before implementation:
 
 ---
 
-## Step 4: Build the Infrastructure Layer
-1. Implement the repository interface
-2. Set up the database (Schema/Migration)
-3. Add appropriate indexes
-4. ✅ Verify: pagination + indexes + no N+1
+## Step 4: Implement Persistence/Infrastructure (when applicable)
+1. Follow the project's established persistence abstraction.
+2. Change schema/migrations only when required.
+3. Add/query indexes based on actual access patterns when relevant.
+4. Verify query behavior/performance issues relevant to the change.
 
 ---
 
-## Step 5: Build the Presentation Layer (API)
-1. Create the Controller/Router with endpoints
-2. Add error handling
-3. Add documentation (Swagger/OpenAPI)
-4. ✅ Verify: flat DTOs + rate limiting + validation
+## Step 5: Implement the External/API Boundary (when applicable)
+1. Follow the project's existing endpoint/handler pattern.
+2. Add appropriate authorization, validation, and error behavior.
+3. Update API documentation when the project uses it.
+4. Verify the external contract and affected security boundaries.
 
 ---
 
