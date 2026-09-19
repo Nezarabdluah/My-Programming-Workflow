@@ -416,6 +416,30 @@ def mut_t27_allow_unknown_risk():
     )
 
 
+def mut_t30_forge_registry_source_marker():
+    """Mutate ADR registry source marker so durable provenance no longer resolves."""
+    import json
+    from test_execution import test_gov_t30_approval_registry_sources_resolve
+    path = Path(".agent/01-core/approval-registry.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for entry in data.get("entries", []):
+            if entry.get("id") == "ADR-008":
+                entry["source_marker"] = "ADR-DOES-NOT-EXIST"
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T30-FORGE-REGISTRY-SOURCE-MARKER",
+        setup,
+        test_gov_t30_approval_registry_sources_resolve,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -453,6 +477,7 @@ if __name__ == "__main__":
         mut_t23_revoke_registered_adr,
         mut_t26_disable_archive_integrity_check,
         mut_t27_allow_unknown_risk,
+        mut_t30_forge_registry_source_marker,
         mut_t11_boot_too_large,
     ]
 
