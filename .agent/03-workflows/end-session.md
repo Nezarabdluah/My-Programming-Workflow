@@ -14,6 +14,21 @@ Update only what actually changed:
 
 Do not turn active memory into a historical changelog; archive completed history separately when needed.
 
+### Durable vs volatile state
+
+Boot Memory must remain valid across branch/PR transitions.
+
+Do **not** persist as durable memory:
+- current branch name,
+- pull-request state/number as the current state,
+- mergeability,
+- queued/in-progress CI state,
+- instructions such as "merge PR next" or "run final CI next".
+
+Query those facts live from version control when needed.
+
+Durable memory may keep immutable evidence such as completed CI run IDs, commit SHAs, ADR IDs, and completed task states.
+
 ## 2. Verification gate
 
 Evidence, not model claims, determines closeout quality.
