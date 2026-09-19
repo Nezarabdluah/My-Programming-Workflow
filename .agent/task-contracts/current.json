@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "task_id": "T024",
-  "title": "Sprint 2 — Evidence Bundle and Approval Policy",
+  "task_id": "T025",
+  "title": "Sprint 2 — Verified provenance, evidence history, and autonomy gate",
   "classification": "sensitive",
   "capabilities": [
     "architecture",
@@ -12,6 +12,7 @@
     ".agent/evidence",
     ".agent/governance",
     ".agent/task-contracts",
+    ".github/workflows",
     ".agent/04-memory"
   ],
   "risk": {
@@ -26,7 +27,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator explicitly asked to continue Sprint 2 work."
+    "reference": "Navigator explicitly requested continuing Sprint 2 autonomous execution work."
   },
   "verification": [
     "governance_compile",
