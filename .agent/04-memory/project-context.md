@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** One-Command Consumer Onboarding
-- **Task:** T034 — Validating
+- **Task:** T034 — Done
 
 ## Current
-Source verification passed 45 checks / 32 mutations and CI bootstrapped a real temporary Node/TypeScript consumer project successfully.
+One-command bootstrap is implemented and validated across source and a real temporary consumer project; conflict detection and safe upgrade behavior are governed.
 
 ## Next
-Validate the final source + consumer baseline before completing T034.
+Use bootstrap as the default onboarding path and preserve collision-safe semantics.
