@@ -40,42 +40,46 @@ def _find_source_files():
 
 
 def test_gov_t06_rule_linkage():
-    """GOV-T06: Verify canonical boot routes non-trivial context through broker.
+    """GOV-T06: Verify canonical boot routes through the unified Execution Gate.
 
-    AOS v8 Sprint 2 replaces direct manual rule linkage with:
-    Task Contract -> Context Broker -> executable Context Map.
+    Sprint 2 autonomy uses:
+    Boot -> Execution Gate -> Task Contract / Approval / Context / Project Profile.
     """
     boot_path = Path(".agent/01-core/boot-manifest.md")
+    gate_path = Path(".agent/01-core/execution_gate.py")
     if not boot_path.exists():
         return FAIL, "GOV-T06: canonical boot-manifest.md not found."
+    if not gate_path.exists():
+        return FAIL, "GOV-T06: execution_gate.py not found."
 
-    content = boot_path.read_text(encoding="utf-8")
-    required_links = {
+    boot = boot_path.read_text(encoding="utf-8")
+    gate = gate_path.read_text(encoding="utf-8")
+
+    missing = []
+    if "execution_gate.py" not in boot:
+        missing.append("boot→execution gate")
+
+    gate_markers = {
         "task-contracts/current.json": "task contract",
+        "approval_engine.py": "approval engine",
         "context_broker.py": "context broker",
         "profiles/project.json": "project profile",
+        "approval-registry.json": "approval registry",
+        "context-map.json": "context map",
     }
-    missing = [
-        label for marker, label in required_links.items()
-        if marker not in content
-    ]
-
-    broker_path = Path(".agent/01-core/context_broker.py")
-    map_path = Path(".agent/01-core/context-map.json")
-    if not broker_path.exists():
-        missing.append("context broker file")
-    if not map_path.exists():
-        missing.append("context map")
+    for marker, label in gate_markers.items():
+        if marker not in gate:
+            missing.append(label)
 
     if missing:
         return FAIL, (
-            "GOV-T06: Canonical context routing incomplete: "
+            "GOV-T06: Canonical execution routing incomplete: "
             + ", ".join(missing)
         )
 
     return PASS, (
-        "GOV-T06: Boot routes non-trivial context through Task Contract, "
-        "Context Broker, Project Profile, and executable Context Map."
+        "GOV-T06: Boot routes through Execution Gate to validated task, "
+        "approval, context, profiles, registry, and context map."
     )
 
 def test_gov_t07_reference_verification():
