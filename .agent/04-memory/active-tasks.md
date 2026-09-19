@@ -1,12 +1,12 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T025 — Verified Provenance & Autonomous Execution 🔴
-- **State:** Executing
+- **State:** Validating
 - **Branch:** `aos-v8-sprint2-autonomy`
 - **Approval:** Navigator approved Sprint 2 continuation.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating
 
 ### Acceptance Criteria
 - ADR/pattern provenance must resolve to approved scoped registry entries.
@@ -26,8 +26,13 @@ Draft → Clarify → Approved → Planning → Ready → Executing
 - [x] Evidence History archive/hash verification added.
 - [x] GOV-T23–T29 + mutations added.
 - [x] Boot + CI routed through execution gate/history.
-- [ ] Run CI and fix failures.
-- [ ] Validating-state + Done-state CI.
+- [x] CI green: 30/30 governance + 18/18 mutations.
+- [x] Evidence Bundle/History + artifact flow verified.
+- [ ] Final Validating-state CI.
+- [ ] Done-state CI for T09.
+
+### Evidence
+Run `35438279608`: full verification + Evidence History success.
 
 ### Next
-Run PR CI, repair any failures, then validate before merge.
+Run Validating-state CI; close T025 only if green.
