@@ -1,19 +1,25 @@
 {
   "schema_version": 1,
-  "task_id": "T028",
-  "title": "Sprint 2 — Merge-safe durable memory semantics",
+  "task_id": "T029",
+  "title": "v8 release readiness contract and sanitized installation",
   "classification": "sensitive",
   "capabilities": [
     "architecture",
-    "testing"
+    "testing",
+    "deployment"
   ],
   "affected_areas": [
-    ".agent/01-core",
-    ".agent/03-workflows",
+    "README.md",
+    "AGENTS.md",
+    ".agent/AGENTS.md",
+    ".agent/start.py",
+    ".agent/install.py",
+    ".agent/03-workflows/init-project.md",
     ".agent/governance",
-    ".agent/04-memory",
-    ".agent/task-contracts",
-    "README.md"
+    ".agent/profiles",
+    ".github/workflows",
+    ".agent/INDEX.md",
+    ".agent/04-memory"
   ],
   "risk": {
     "destructive": false,
@@ -27,7 +33,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator explicitly requested continuing Sprint 2 work."
+    "reference": "Navigator approved Sprint 2 closeout and v8 release-readiness work."
   },
   "verification": [
     "governance_compile",
