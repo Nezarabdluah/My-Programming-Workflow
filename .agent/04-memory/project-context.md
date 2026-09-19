@@ -1,20 +1,24 @@
 # Project Context — AOS v8.0-dev
 
 ## Current State
-- **Phase:** v8 Convergence Sprint
-- **Task:** T022 — Done
-- **Branch:** `aos-v8-convergence`
-- **Main:** unchanged
-- **PR:** #1 draft, unmerged
+- **Phase:** Sprint 2 — Context Broker Foundation
+- **Task:** T023 — Executing
+- **Branch:** `aos-v8-sprint2-context`
+- **Main:** v8 convergence merged successfully
+- **Merged PR:** #1 via squash commit `5e6de0409814d1ae3234a60b3b44876aec889115`
 
-## Applied Decisions
-- ADR-006: fixed seven-layer vertical-slice governance removed from Core.
-- ADR-007: context/resources load selectively; full bundles and source REF/CONST comments are not mandatory.
+## Active Architecture
+- `boot-manifest.md` is canonical runtime authority.
+- ADR-006: fixed seven-layer web model is profile-scoped.
+- ADR-007: references/resources load selectively.
+- ADR-008: deterministic Context Broker resolves explicit task capabilities against Project/Technology Profiles and executable context map.
 
-## Current Result
-- Core, workflows, rules, INDEX, memory, governance, and CI aligned to v8.
-- GitHub Actions run `35436797418` passed full verification after memory compaction.
-- T022 is closed pending one final Done-state CI check so GOV-T09 validates the full state history.
+## Sprint 2 Work
+- Added Context Broker executable and machine-readable context map.
+- Added project + technology profiles.
+- Added current task contract.
+- Added governance tests for minimal resource selection and profile gating.
+- Boot/init/index now route non-trivial context expansion through the broker.
 
 ## Next
-If Done-state CI remains green, prepare the draft PR for merge review/squash strategy.
+Add mutation tests, run GitHub Actions in a Draft PR, then review before expanding Sprint 2 into Evidence Bundle/Approval Policy.
