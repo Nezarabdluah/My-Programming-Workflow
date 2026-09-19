@@ -127,4 +127,4 @@ A quality gate passes when:
 | E2E smoke tests pass | — | — | ✅ |
 | No P0/P1 open issues | ✅ | ✅ | ✅ |
 | Coverage report complete | — | ✅ | ✅ |
-| Vertical-slice coverage table | — | ✅ | ✅ |
+| Affected-area coverage evidence | proportional | ✅ | ✅ |
