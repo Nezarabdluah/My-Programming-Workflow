@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "full-stack-web",
+  "applies_when": ["explicit-project-activation"],
+  "capabilities": ["full-stack-vertical"],
+  "affected_area_candidates": [
+    "data-persistence",
+    "domain-business-rules",
+    "application-use-cases",
+    "api-integration",
+    "frontend-state",
+    "ui-ux-accessibility",
+    "tests"
+  ]
+}
