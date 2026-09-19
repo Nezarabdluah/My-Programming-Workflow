@@ -1,80 +1,54 @@
-# 🚪 End Session — Session End & Memory Save Protocol (AOS v7.0)
+# End Session — Memory & Evidence Closeout (AOS v8.0-dev)
 
-> **Contract**: executed when the developer asks to end the session or to move work to another AI tool.
+> Use when ending work or handing the project to another agent/tool.
+> Runtime authority remains `01-core/boot-manifest.md`.
 
----
+## 1. Update durable memory
 
-## 💾 Step 1: Comprehensive Local Memory Update
-Update every memory file in `.agent/04-memory/` to match exactly what was accomplished:
-1. `project-context.md` ← document: the last completed task, the pending task, and any critical technical notes.
-2. `active-tasks.md` ← set SDD states precisely for features, and mark completed tasks `[x]` and pending tasks `[ ]`.
-3. `decisions.md` ← record any approved architectural decisions (ADRs).
-4. `learned-mistakes.md` ← add any new mistakes the developer corrected you on.
-5. `project-knowledge.md` & `codebase-map.md` ← document any new patterns or folder structures created.
+Update only what actually changed:
+- `project-context.md` — current state, stopping point, next step
+- `active-tasks.md` — active/pending work and accurate states
+- `decisions.md` — approved architectural decisions
+- `learned-mistakes.md` — developer-corrected/new lessons
+- `project-knowledge.md` / `codebase-map.md` — only when new durable knowledge was discovered
 
----
+Do not turn active memory into a historical changelog; archive completed history separately when needed.
 
-## 🔒 Step 1.5: Governance Enforcement Gate (pre-Done)
+## 2. Verification gate
 
-> **GOV-T11**: the agent must never claim compliance — only **actual evidence** (exit codes, timestamped report files, tool output) counts as proof.
+Evidence, not model claims, determines closeout quality.
 
-### Graduated Enforcement Levels
+Preferred evidence order:
+1. CI checks
+2. repository hooks
+3. `python .agent/governance/runner.py`
+4. manual verification only when automation is unavailable
 
-Declare the enforcement level for this session using the tag below:
+Record:
+- timestamp
+- checks actually run
+- exit/result status
+- blockers or unsupported checks
 
-| Level | Tag | Meaning |
-|-------|-----|---------|
-| CI pipeline ran | `[Enforcement: CI ✅]` | Automated CI/CD ran and passed — highest confidence |
-| Git hooks fired | `[Enforcement: hooks ⚠️]` | Pre-commit/pre-push hooks ran — good confidence |
-| runner.py executed | `[Enforcement: runner.py 🔶]` | Governance runner ran locally — acceptable confidence |
-| Manual checklist | `[Enforcement: manual 🔶]` | No automation — lowest acceptable confidence |
-| Model claim only | `[Enforcement: claim ❌]` | **REJECTED** — never accepted as proof |
+A failed hard gate blocks a clean closeout. SKIP is not PASS.
 
-### Execution Steps
+## 3. Handoff summary
 
-```
-□ If governance/runner.py is available and the project has Python:
-  1. Run: python .agent/governance/runner.py
-  2. Record the exit code and output
-  3. If exit code ≠ 0 → ⛔ GATE FAILED — fix issues before closing session
-  4. If exit code = 0 → ✅ GATE PASSED — proceed to Step 2
+For tool-to-tool handoff, provide:
+- project/task
+- exact stopping point
+- current task state
+- next action
+- material decisions/risks
+- verification evidence available
 
-□ If runner.py is not available or Python is not installed:
-  1. Run the manual governance checklist:
-     - [ ] All memory files updated (project-context, active-tasks, decisions, learned-mistakes)
-     - [ ] No version conflicts (VERSION matches all file headers)
-     - [ ] No orphaned legacy paths
-     - [ ] Active tasks accurately reflect current state
-  2. Tag as [Enforcement: manual 🔶]
-  3. Proceed to Step 2
+## 4. Final report
 
-□ Report format (GOV-T11 — actual evidence required):
-  - Timestamp: [ISO 8601]
-  - Tool: runner.py | manual checklist
-  - Exit code: [0 | N]
-  - Output: [paste actual tool output, not a summary]
-  - Enforcement level: [tag from table above]
-```
+Report only:
+- completed work
+- remaining work
+- new decisions/mistakes
+- verification status
+- memory update status
 
-## 🔄 Step 2: Handoff Summary
-If the session ends for the purpose of moving to another tool, draft and print a formatted handoff summary to copy:
-
-```text
-🔄 Handoff Summary for AOS v7.0
-📋 Project: [project name] | Stack: [type]
-📍 Last stopping point: [describe precisely where work stopped and the last file opened]
-📌 Next step: [what the next agent must start with immediately]
-⚠️ Critical alerts: [any architectural decisions or learned mistakes that must be respected]
-💾 Memory fully updated locally and ready for import ✅.
-```
-
----
-
-## 📝 Step 3: Final Session Report
-Print the approved final report to close the session properly:
-   📋 Session summary:
-   ✅ Completed tasks: [list]
-   ⏳ Pending tasks: [list — saved in active-tasks.md]
-   📝 New mistakes recorded: [count]
-   💾 Memory: all files updated and saved locally ✅
-   👋 Session closed successfully.
+Do not claim full compliance when required checks were not executed.
