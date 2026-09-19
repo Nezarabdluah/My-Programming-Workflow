@@ -1,614 +1,444 @@
 <p align="center">
   <h1 align="center">🤖 AOS — Agent Operating System</h1>
   <p align="center">
-    <strong>v8.0-dev</strong> · Governance & Operating System for AI Coding Agents<br>
+    <strong>v8.0-dev</strong> · Governed execution for AI coding agents<br>
     Language-Agnostic · Framework-Agnostic · Editor-Agnostic
   </p>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0--dev-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-11%2F11%20PASS-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
-  <img src="https://img.shields.io/badge/constitutions-6%20(79%20rules)-orange" alt="constitutions">
+  <img src="https://img.shields.io/badge/governance-35%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-22%2F22%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
-  <img src="https://img.shields.io/badge/mutations-6%2F6%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
 </p>
 
 ---
 
-## ⚡ Start in 30 Seconds (Instant Entry Point)
+## Start in 30 Seconds
 
-Everything you need to run with any AI tool in two simple steps:
-
-### 1️⃣ Step 1: Copy `.agent` to your project
-Copy `.agent` (and optionally `AGENTS.md`) into the root of your project:
-```bash
-cp -r My-Programming-Workflow/.agent  /path/to/your/project/
-cp    My-Programming-Workflow/AGENTS.md /path/to/your/project/
-```
-
----
-
-### 2️⃣ Step 2: Give your AI this direct prompt 💬
-Copy and paste this prompt into your AI chat (Cursor, Claude, Copilot, ChatGPT, Antigravity):
+Copy `.agent` into your project, then tell your AI tool:
 
 ```text
-Read .agent/01-core/boot-manifest.md and follow it exactly. It is the single boot file. All other resources load on demand.
+Read .agent/01-core/boot-manifest.md and follow it exactly.
+It is the canonical runtime contract.
 
-1. Boot: .agent/01-core/boot-manifest.md — contract, classification, budget, governance.
-2. Memory: .agent/04-memory/ (project-context, active-tasks, learned-mistakes, decisions).
-3. Classify every task (🟢/🟡/🔴); 🟡/🔴 need approved spec + plan before code.
-4. Rules: load ONE from 02-rules/ per task. References: grep 05-references/ only.
-5. Run governance: python .agent/governance/runner.py before Done. Never write outside the local project.
+For non-trivial work:
+1. Update .agent/task-contracts/current.json.
+2. Run: python .agent/01-core/execution_gate.py
+3. If HUMAN_REQUIRED, stop for approval.
+4. If HUMAN_APPROVED or AUTO_EXECUTE, use only broker-selected context.
+5. Before Done, run named checks through .agent/01-core/evidence_recorder.py.
+Never fabricate evidence.
+```
+
+Automatic entry adapters are also included for tools that support repository instructions:
+`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, and GitHub Copilot instructions.
+
+---
+
+## What AOS Is
+
+AOS is a small operating system around an AI coding agent. It makes task execution:
+
+- **stateful** — durable memory and SDD state survive sessions,
+- **risk-aware** — classification, explicit risk flags, affected areas,
+- **approval-aware** — deterministic approval provenance and hard-stop policy,
+- **context-efficient** — Context Broker selects only relevant resources,
+- **project-aware** — Project Profile + Technology Profiles,
+- **evidence-driven** — PASS/FAIL comes from executed checks,
+- **self-verifying** — governance + mutation tests prove checks can fail.
+
+The runtime is intentionally deterministic where determinism matters.
+
+---
+
+## Runtime Flow
+
+```text
+Task
+  ↓
+Task Contract
+  - classification
+  - capabilities
+  - affected areas
+  - risk flags
+  - approval provenance
+  - named verification checks
+  ↓
+Execution Gate
+  ├─ HUMAN_REQUIRED → stop
+  ├─ HUMAN_APPROVED → proceed
+  └─ AUTO_EXECUTE → proceed
+  ↓
+Context Broker
+  - explicit capabilities
+  - risk-derived capabilities
+  - affected-area-derived capabilities
+  - Technology Profile gates
+  ↓
+Minimal selected resources
+  ↓
+Implementation
+  ↓
+Evidence Recorder
+  - executes named Project Profile commands
+  - derives PASS/FAIL from exit code
+  ↓
+Evidence Bundle + Evidence History
+  ↓
+Governance + Mutation Tests
 ```
 
 ---
 
-### 🛠️ Automatic Tool Support (Zero-Copy):
-| Tool | Support | How it works |
-|------|---------|--------------|
-| **Cursor** | ✅ Fully Automatic | Auto-reads `.cursorrules` on project open |
-| **Claude Code** | ✅ Fully Automatic | Auto-reads `CLAUDE.md` on project open |
-| **GitHub Copilot** | ✅ Fully Automatic | Auto-reads `.github/copilot-instructions.md` |
-| **Antigravity** | ✅ Fully Automatic | Auto-reads `AGENTS.md` on project open |
-| **Any other AI chat** | 💬 Direct Prompt | Paste the prompt from Step 2 |
+## Canonical Core
+
+| File | Purpose |
+|---|---|
+| `.agent/01-core/boot-manifest.md` | Canonical runtime contract |
+| `.agent/01-core/task_contract.py` | Structured Task Contract validation |
+| `.agent/01-core/execution_gate.py` | Unified pre-execution decision |
+| `.agent/01-core/approval_engine.py` | Approval provenance and hard-stop policy |
+| `.agent/01-core/approval-policy.json` | Executable approval policy |
+| `.agent/01-core/approval-registry.json` | Verified ADR/pattern approval sources |
+| `.agent/01-core/context_broker.py` | Deterministic context resolver |
+| `.agent/01-core/context-map.json` | Executable capability → resource map |
+| `.agent/01-core/evidence_recorder.py` | Executable Evidence Bundle/History recorder |
+| `.agent/01-core/wiring-registry.md` | Human-readable capability/resource catalog |
+
+`context-map.json` is the executable resource source of truth. The Markdown wiring registry is documentation for humans and agents.
 
 ---
 
-## 🎯 What is AOS?
+## Task Contract
 
-AOS turns any AI coding agent into a **governed, memory-aware, knowledge-powered** engineering partner.
+The current non-trivial task lives in:
 
-It's not just rules — it's a **complete knowledge system** built from 16 engineering books, distilled into actionable constitutions, wired together through a dependency injection registry, and enforced by automated governance.
+`.agent/task-contracts/current.json`
 
+It records:
+
+```json
+{
+  "task_id": "T000",
+  "classification": "medium",
+  "capabilities": ["testing"],
+  "affected_areas": ["src/feature"],
+  "risk": {
+    "security_boundary": false,
+    "data_migration": false
+  },
+  "approval": {
+    "status": "approved",
+    "provenance": "approved_pattern",
+    "reference": "pattern-id"
+  },
+  "verification": ["build", "test"]
+}
 ```
-  ┌──────────────────────────────────────────────────────────────┐
-  │                         AOS v8.0                             │
-  │                                                              │
-  │   📚 16 Books ──► 📜 6 Constitutions ──► 📏 34 REF Rules   │
-  │                          │                      │            │
-  │                          ▼                      ▼            │
-  │                   📦 7 Knowledge Bundles                     │
-  │                          │                                   │
-  │                          ▼                                   │
-  │                   🔌 Wiring Registry                         │
-  │                    (connects everything)                     │
-  │                          │                                   │
-  │              ┌───────────┼───────────┐                       │
-  │              ▼           ▼           ▼                       │
-  │         🏭 Pipeline  🤖 Agent   ✅ Governance               │
-  │         (9 stages)   (guided)   (11 checks)                 │
-  │              │           │           │                       │
-  │              └───────────┼───────────┘                       │
-  │                          ▼                                   │
-  │                    💾 Memory                                 │
-  │               (persists across sessions)                     │
-  └──────────────────────────────────────────────────────────────┘
-```
+
+Unknown risks, invalid provenance, missing verification names, and invalid affected areas are rejected by executable validation.
 
 ---
 
-## 📁 Project Structure
+## Approval & Autonomous Execution
 
-```
-your-project/
-├── AGENTS.md                          ← 🚪 Entry point
-└── .agent/
-    ├── 01-core/
-    │   ├── boot-manifest.md           ← 🧠 Loaded every session (~106 lines)
-    │   ├── wiring-registry.md         ← 🔌 Connects everything to everything
-    │   └── task-classification.md     ← 🏷️ Detailed classification rules
-    │
-    ├── 02-rules/                      ← 📏 Engineering rules (one at a time)
-    │   ├── architecture-and-design.md ←    SOLID, DDD, Clean Architecture
-    │   ├── database-performance.md    ←    N+1, SARGable, indexing
-    │   ├── security-checklist.md      ←    OWASP, auth, XSS, BOLA
-    │   ├── testing-and-quality.md     ←    Test pyramid, coverage
-    │   ├── network-and-api.md         ←    API design, latency, resilience
-    │   └── vertical-slice-governance.md ←  Full-stack slice verification
-    │
-    ├── 03-workflows/                  ← 🔄 Step-by-step procedures
-    │   ├── master-pipeline/           ←    🏭 9-stage full project lifecycle
-    │   │   ├── 00-coordinator.md      ←       Orchestrates all stages
-    │   │   ├── stage-0-intake.md      ←       Classify & scope
-    │   │   ├── stage-1-requirements.md←       Specs & user stories
-    │   │   ├── stage-2-architecture.md←       ADR & design
-    │   │   ├── stage-3-threat-model.md←       STRIDE security analysis
-    │   │   ├── stage-4-implementation.md←     Code with full bundles
-    │   │   ├── stage-5-testing.md     ←       Quality gate
-    │   │   ├── stage-6-production-readiness.md ← PRR scorecard
-    │   │   ├── stage-7-deployment.md  ←       Rollout & rollback
-    │   │   └── stage-8-post-launch.md ←       Monitoring & DORA
-    │   ├── mobile-qa/                 ←    📱 Mobile testing (5 steps)
-    │   ├── security-gate/             ←    🔐 Security review (7 steps)
-    │   └── *.md                       ←    Other workflows
-    │
-    ├── 04-memory/                     ← 💾 Persistent across sessions
-    │   ├── project-context.md         ←    Where we stopped
-    │   ├── active-tasks.md            ←    Current work
-    │   ├── learned-mistakes.md        ←    Don't repeat (max 20)
-    │   └── decisions.md               ←    Architecture decisions (ADRs)
-    │
-    ├── 05-references/                 ← 📚 Knowledge base (grep only!)
-    │   ├── engineering-rules-catalog-REF.md  ← 34 REF rules
-    │   ├── books/
-    │   │   ├── 00-master-index.md     ←    Resource Injection Matrix
-    │   │   ├── engineering-books-16-distilled.txt ← 16 books distilled
-    │   │   └── constitutions/         ←    6 constitutions (79 rules)
-    │   ├── prompts/                   ←    Backend/Frontend/Debug prompts
-    │   ├── devops-ops/                ←    DevOps & production reference
-    │   └── qa-testing/                ←    QA strategy reference
-    │
-    └── governance/                    ← ✅ Automated enforcement
-        ├── runner.py                  ←    11 checks + JSON output
-        ├── test_state.py              ←    State machine validation
-        ├── test_rules.py              ←    Rule & ADR verification
-        ├── test_memory.py             ←    Memory & boot budget
-        └── test_mutations.py          ←    Anti-rubber-stamp proofs
-```
+The Execution Gate returns one of three modes:
+
+| Mode | Meaning |
+|---|---|
+| `AUTO_EXECUTE` | Policy/verified ADR/pattern covers the task |
+| `HUMAN_APPROVED` | Explicit Navigator approval covers the task |
+| `HUMAN_REQUIRED` | Stop before implementation |
+
+Hard-stop risks include destructive/irreversible changes, new architecture, security boundaries, production changes, breaking external contracts, and data migrations.
+
+A text string such as `"approved_adr"` is not trusted by itself. ADR/pattern provenance must resolve through `approval-registry.json` to durable source evidence and valid scope.
 
 ---
 
-## 📚 Knowledge System — How Everything Connects
+## Context Broker
 
-This is the heart of AOS. It's not random files — it's a **pipeline from books to code**:
+The broker combines three sources:
 
-```
-  ┌─────────────────────────────────────────────────────────────┐
-  │                    KNOWLEDGE PIPELINE                        │
-  │                                                              │
-  │  📖 16 Engineering Books                                    │
-  │  (Clean Code, DDD, DDIA, OWASP, Accelerate, etc.)          │
-  │       │                                                      │
-  │       ▼ distilled into                                       │
-  │  📜 6 Constitutions (79 actionable rules)                   │
-  │  ┌──────────────┬──────────────┬──────────────┐             │
-  │  │ Architecture │  Security    │  Performance │             │
-  │  │  (15 rules)  │  (17 rules)  │  (11 rules)  │             │
-  │  ├──────────────┼──────────────┼──────────────┤             │
-  │  │     DDD      │  Resilience  │ Integration  │             │
-  │  │  (11 rules)  │  (15 rules)  │  (10 rules)  │             │
-  │  └──────────────┴──────────────┴──────────────┘             │
-  │       │                                                      │
-  │       ▼ organized into                                       │
-  │  📦 7 Knowledge Bundles                                     │
-  │  (each = constitution + rules + templates + prompts + refs) │
-  │       │                                                      │
-  │       ▼ wired through                                        │
-  │  🔌 Wiring Registry (capability → full dependency map)      │
-  │       │                                                      │
-  │       ▼ injected at                                          │
-  │  🏭 The right pipeline stage, at the right time             │
-  └─────────────────────────────────────────────────────────────┘
+1. **Explicit capabilities** from the Task Contract.
+2. **Risk-derived capabilities** from `context-map.json`.
+3. **Affected-area-derived capabilities** from the Project Profile.
+
+Examples:
+
+```text
+security_boundary=true
+  → Security + Testing
+
+data_migration=true
+  → Database + Testing
+
+production_change=true
+  → Production Readiness + Deployment + Testing
+
+.github/workflows/**
+  → Deployment + Testing   (project-specific rule)
 ```
 
-### The 7 Knowledge Bundles
+Capabilities are de-duplicated while preserving provenance such as:
+`explicit`, `risk:security_boundary`, or `area:.github/workflows`.
 
-Each bundle groups **ALL** related resources for a capability:
-
-| Bundle | Constitution | Rules | What it enforces |
-|--------|-------------|-------|-----------------|
-| 🏗️ **Architecture & DDD** | arch + ddd (26 rules) | REF-ARCH-* | Layer isolation, Aggregates, SOLID |
-| 🗄️ **DB Performance** | perf (11 rules) | REF-DB-* | SARGable, N+1 prevention, indexing |
-| 🔒 **Security** | security (17 rules) | REF-SEC-* | OWASP, Zero Trust, XSS, BOLA |
-| 🧪 **Testing & Quality** | security + perf (audit) | REF-TEST-* | Test pyramid, coverage, quality gates |
-| 🔄 **Resilience** | resilience (15 rules) | REF-RES-* | Circuit breaker, concurrency, outbox |
-| 🌐 **API & Integration** | integration (10 rules) | REF-NET-* | API design, latency, boundaries |
-| 🚀 **Production Readiness** | resilience | REF-OPS-* | PRR scorecard, DORA metrics |
-
-### How Bundles Get Loaded
-
-```
-  Task arrives: "Add user authentication"
-       │
-       ▼
-  🏷️ Classify: 🔴 Sensitive (touches auth/security)
-       │
-       ▼
-  🔌 Wiring Registry lookup:
-     capability = "Security / auth"
-       │
-       ▼
-  📦 Load Security Bundle:
-     ├── security-constitution.md (17 rules)
-     ├── security-checklist.md (REF-SEC rules)
-     ├── engineering-rules-catalog-REF.md (grep REF-SEC-*)
-     ├── github-security-gate.yml
-     └── devops reference (grep OPS-SECTEST)
-       │
-       ▼
-  🤖 Agent writes code with ALL 17 security rules enforced
-```
-
-### 🔌 Knowledge Wiring — The 7 Mandatory Steps
-
-Before writing ANY code, the agent MUST follow these steps:
-
-```
-  ┌─────────────────────────────────────────────────────────────┐
-  │              KNOWLEDGE WIRING PROTOCOL                      │
-  │                                                              │
-  │  Step 1  📖 Read wiring-registry.md                         │
-  │               → find your capability row                     │
-  │                        │                                     │
-  │  Step 2  📜 Load Constitution(s)                            │
-  │               arch-constitution.md  (15 rules)               │
-  │               ddd-constitution.md   (11 rules)               │
-  │               security-constitution.md (17 rules)            │
-  │               perf-constitution.md  (11 rules)               │
-  │               resilience-constitution.md (15 rules)          │
-  │               integration-constitution.md (10 rules)         │
-  │                        │                                     │
-  │  Step 3  📏 Load Rule File                                  │
-  │               ONE from 02-rules/ per wiring row              │
-  │                        │                                     │
-  │  Step 4  🔍 Grep REF Contracts                              │
-  │               engineering-rules-catalog-REF.md               │
-  │               grep REF-ARCH-*, REF-DB-*, REF-SEC-*, etc.    │
-  │                        │                                     │
-  │  Step 5  📚 Grep Books (if listed in wiring row)            │
-  │               engineering-books-16-distilled.txt             │
-  │               by lesson number or keyword                    │
-  │                        │                                     │
-  │  Step 6  💬 Load Prompts (if relevant)                      │
-  │               backend-prompts.md                             │
-  │               frontend-prompts.md                            │
-  │               debugging-prompts.md                           │
-  │                        │                                     │
-  │  Step 7  📋 Consult Master Index (for pipeline stages)      │
-  │               books/00-master-index.md                       │
-  │               = stage-by-stage resource injection map        │
-  │                        │                                     │
-  │               ▼▼▼                                            │
-  │  ✅ NOW write code — with every rule enforced               │
-  └─────────────────────────────────────────────────────────────┘
-```
-
-> **Nothing is optional.** Every resource in the wiring row MUST be loaded.
-> A bundle = constitution + rules + templates + prompts + book refs. Load ALL of it.
+Technology-specific resources load only when their Technology Profile is active.
 
 ---
 
-## 🏭 Master Pipeline — From Idea to Production
+## Project & Technology Profiles
 
-For full projects (Path D), AOS guides the agent through 9 stages:
+`.agent/profiles/project.json` defines the current project:
 
-```
-  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-  │ Stage 0 │─►│ Stage 1  │─►│ Stage 2  │─►│ Stage 3  │
-  │ INTAKE  │  │   SPECS  │  │  DESIGN  │  │ SECURITY │
-  │ Classify│  │ Require- │  │ ADR +    │  │ STRIDE   │
-  │ & scope │  │ ments    │  │ Arch     │  │ Threat   │
-  └─────────┘  └──────────┘  └──────────┘  └──────────┘
-       │                                        │
-       │   ┌──────────┐  ┌──────────┐  ┌──────────┐
-       │   │ Stage 6  │◄─│ Stage 5  │◄─│ Stage 4  │
-       │   │   PRR    │  │ TESTING  │  │  BUILD   │
-       │   │Scorecard │  │ Quality  │  │All Bundles│
-       │   └──────────┘  └──────────┘  └──────────┘
-       │        │
-       │   ┌──────────┐  ┌──────────┐
-       └──►│ Stage 7  │─►│ Stage 8  │
-           │ DEPLOY   │  │POSTLAUNCH│
-           │ Rollout  │  │ DORA +   │
-           │& Rollback│  │ Monitor  │
-           └──────────┘  └──────────┘
-```
+- project type,
+- languages,
+- active Technology Profiles,
+- architecture source of truth,
+- named verification commands,
+- affected-area → capability rules.
 
-### Which Stages Run? Depends on Classification:
+Technology Profiles live under:
 
-| Classification | Stages | What you get |
-|---------------|--------|-------------|
-| 🟢 Simple | 0 → 4 → 5 | Quick build + test |
-| 🟡 Medium | 0 → 1 → 4 → 5 | Specs + build + test |
-| 🔴 Sensitive | 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 | **Full pipeline** |
+`.agent/profiles/technology/`
 
-> Each stage has a **Resource Injection Matrix** (`books/00-master-index.md`) that tells the agent exactly which bundles, rules, and references to load.
+The full-stack seven-layer model is optional profile guidance, not a Core assumption.
 
 ---
 
-## 🔌 Wiring Registry — The Connection Map
+## Evidence Bundle & History
 
-The wiring registry is the **single source of truth** that maps capabilities to resources:
-
-```
-  ┌────────────────────┐     ┌──────────────────┐     ┌──────────────┐
-  │   CAPABILITY       │────►│   RULE FILE      │────►│ CONSTITUTION │
-  │   (what you're     │     │   (02-rules/)    │     │ (from books) │
-  │    working on)     │     └──────────────────┘     └──────────────┘
-  └────────────────────┘              │                       │
-                                      ▼                       ▼
-                              ┌──────────────────┐    ┌──────────────┐
-                              │  REF CONTRACTS   │    │ BOOK ANCHORS │
-                              │  (grep catalog)  │    │ (grep books) │
-                              └──────────────────┘    └──────────────┘
-```
-
-| When you're doing... | Load rule | Load constitution | Grep |
-|---------------------|-----------|------------------|------|
-| Architecture / DDD | architecture-and-design.md | arch + ddd | REF-ARCH-* |
-| Database / queries | database-performance.md | perf | REF-DB-* |
-| Security / auth | security-checklist.md | security | REF-SEC-* |
-| Testing / quality | testing-and-quality.md | security + perf (audit) | REF-TEST-* |
-| API / network | network-and-api.md | integration | REF-NET-* |
-| Resilience | testing-and-quality.md §3 | resilience | REF-RES-* |
-| Production readiness | production-readiness.md | resilience | REF-OPS-* |
-
----
-
-## 🔐 Specialized Workflows
-
-### 📱 Mobile QA (5 Steps)
-```
-  Step 1          Step 2         Step 3          Step 7
-  ┌──────────┐   ┌──────────┐  ┌──────────┐   ┌──────────┐
-  │Environment│──►│  Build   │─►│ Scenario │──►│ Evidence │
-  │ Discovery │   │ Verify   │  │Execution │   │  Report  │
-  └──────────┘   └──────────┘  └──────────┘   └──────────┘
-  Detect device    Build OK?    Run test       Screenshot +
-  & platform       Sign OK?     scenarios      log evidence
-```
-
-### 🔒 Security Gate (7 Steps)
-```
-  Step 1         Step 2        Step 3       Step 4
-  ┌─────────┐   ┌─────────┐  ┌─────────┐  ┌─────────┐
-  │ Threat  │──►│  Deps   │─►│ Secret  │─►│ Access  │
-  │ Model   │   │  Check  │  │  Scan   │  │ Review  │
-  └─────────┘   └─────────┘  └─────────┘  └─────────┘
-       Step 5        Step 6        Step 7
-  ┌─────────┐   ┌─────────┐  ┌─────────┐
-  │  Code   │──►│  Test   │─►│  Gate   │
-  │ Review  │   │ Verify  │  │ Report  │
-  └─────────┘   └─────────┘  └─────────┘
-```
-
-### Other Workflows
-| Workflow | File | Purpose |
-|----------|------|---------|
-| 🆕 Init Project | `init-project.md` | Initialize AOS in a new project |
-| 🔧 Backend Module | `create-backend-module.md` | Create a new backend service |
-| 🎨 Frontend Module | `create-frontend-module.md` | Create a new UI component |
-| 🐛 Debug Errors | `debug-common-errors.md` | Systematic error resolution |
-| 📝 Requirements | `requirements-analysis.md` | EARS/Given-When-Then specs |
-| 🎯 UX Improvement | `improve-user-experience.md` | UI/UX enhancement |
-| 🚀 Production Ready | `production-readiness.md` | 10-dimension PRR scorecard |
-| 🧪 QA Strategy | `qa-strategy.md` | Test strategy framework |
-| 📚 Knowledge Bootstrap | `knowledge-bootstrapping.md` | Load knowledge bundles into a new project |
-| ▶️ Start Session | `start-session.md` | Session boot checklist |
-| ⏹️ End Session | `end-session.md` | Save memory + handoff summary |
-
----
-
-## 🔄 How It Works — Session Lifecycle
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                     SESSION LIFECYCLE                         │
-│                                                              │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐ │
-│  │  🟢 BOOT │──►│ 🎯 TASK  │──►│ 🔌 WIRE  │──►│ ⚙️ WORK  │ │
-│  └────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘ │
-│       │              │              │               │        │
-│  Read boot      Classify it    Load the right   Write code   │
-│  manifest +     🟢 🟡 or 🔴   Knowledge Bundle  with rules  │
-│  memory files                  from wiring                   │
-│                                registry                      │
-│                                                              │
-│  ┌──────────┐   ┌──────────┐                                │
-│  │ 💾 SAVE  │◄──│ ✅ CHECK │                                │
-│  └────┬─────┘   └────┬─────┘                                │
-│       │              │                                       │
-│  Update memory  Run governance                               │
-│  for next       (11 checks)                                  │
-│  session                                                     │
-└──────────────────────────────────────────────────────────────┘
-```
-
-### 🏷️ Task Classification
-
-| Color | Type | What happens |
-|-------|------|--------------|
-| 🟢 | **Simple** | Cosmetic edit → just do it |
-| 🟡 | **Medium** | Multi-file logic → spec + plan + approval first |
-| 🔴 | **Sensitive** | Security/architecture → ADR + full pipeline |
-
-> ⬆️ **Escalation only** — never downgrade 🟡→🟢 during execution
-
-### 🔀 Task Routing (Path A / B / C / D)
-
-After classification, the task follows one of four paths:
-
-```
-  ┌──────────────────────────────────────────────────────────┐
-  │                  TASK ROUTING                             │
-  │                                                          │
-  │  Path A ─ New feature (🟡/🔴)                           │
-  │           SDD: Draft → Clarify → Approved → Code         │
-  │           + Load Knowledge Bundle from wiring-registry    │
-  │                                                          │
-  │  Path B ─ Matches a workflow                              │
-  │           Read the matching workflow from 03-workflows/   │
-  │           Follow its steps exactly                        │
-  │                                                          │
-  │  Path C ─ Simple edit (🟢)                               │
-  │           Do it directly → summarize                      │
-  │                                                          │
-  │  Path D ─ Full project lifecycle (🔴)                    │
-  │           master-pipeline: 9 stages (Intake → Post-Launch)│
-  │           🟢 stages 0,4,5 │ 🟡 stages 0,1,4,5           │
-  │           🔴 ALL stages 0–8                               │
-  └──────────────────────────────────────────────────────────┘
-```
-
-### 🧠 Memory System
-
-```
-  SESSION 1                SESSION 2                SESSION 3
-  ┌────────┐              ┌────────┐              ┌────────┐
-  │ Work.. │──── Save ───►│ Resume │──── Save ───►│ Resume │
-  └────────┘   memory     └────────┘   memory     └────────┘
-
-  4 files that persist across sessions:
-  📍 project-context.md  — where we stopped
-  📋 active-tasks.md     — pending work
-  ⚠️ learned-mistakes.md — don't repeat (max 20, escalate at 3)
-  📐 decisions.md        — architecture decisions (ADRs)
-```
-
----
-
-## ✅ Governance — Automated Quality Enforcement
+Verification commands are named in the Project Profile and executed through:
 
 ```bash
-python .agent/governance/runner.py          # human-readable
-python .agent/governance/runner.py --json   # machine-readable
-python .agent/governance/test_mutations.py  # prove checks work
+python .agent/01-core/evidence_recorder.py --check governance_compile
+python .agent/01-core/evidence_recorder.py --check governance_verify
 ```
 
-### The 11 Checks
+Rules:
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                   GOVERNANCE DASHBOARD                    │
-├──────┬───────────────────────────────────┬───────────────┤
-│ Test │ What it checks                    │ Status        │
-├──────┼───────────────────────────────────┼───────────────┤
-│ T01  │ Task state matches state machine  │ ✅ PASS       │
-│ T02  │ Acceptance criteria for 🟡/🔴     │ ✅ PASS       │
-│ T03  │ ADR format (Context+Decision+Con) │ ✅ PASS       │
-│ T04  │ Mistakes under cap (≤20)          │ ✅ PASS       │
-│ T05  │ Memory files exist & non-empty    │ ✅ PASS       │
-│ T06  │ Rules linked from workflow        │ ✅ PASS       │
-│ T07  │ REF citations match catalog       │ ✅ PASS       │
-│ T08  │ No stale/dead references          │ ✅ PASS       │
-│ T09  │ No illegal state jumps            │ ✅ PASS       │
-│ T10  │ ADRs complete & match contract    │ ✅ PASS       │
-│ T11  │ Boot context within budget        │ ✅ PASS       │
-├──────┴───────────────────────────────────┴───────────────┤
-│ 5 Statuses: PASS · FAIL · SKIP_EXPECTED · SKIP_UNSUP · ERROR │
-│ SKIP is never PASS. FAIL blocks delivery.                │
-└──────────────────────────────────────────────────────────┘
+- commands must be declared in the Project Profile,
+- execution is shell-free,
+- PASS/FAIL is derived from the process exit code,
+- current evidence is written to `.agent/evidence/current.json`,
+- completed evidence can be archived with SHA-256 integrity,
+- tampering with archived evidence is detected,
+- CI can upload Evidence History as an artifact.
+
+A prose claim such as “tests passed” is not executable evidence.
+
+---
+
+## Knowledge System
+
+AOS still includes:
+
+- 16 distilled engineering books,
+- 6 constitutions,
+- REF/OPS/QA reference catalogs,
+- specialized engineering rules,
+- prompts and templates.
+
+But knowledge loading is now **on demand**.
+
+```text
+Task Contract
+  ↓
+Context Broker
+  ↓
+selected rule/reference/workflow entries only
 ```
 
-### Mutation Tests (Anti-Rubber-Stamp)
-Every check is proven to actually FAIL when a violation is introduced:
+Heavy references are search/grep-first. Complete bundles are not loaded by default.
+
+---
+
+## Master Pipeline
+
+For full lifecycle work AOS provides nine stages:
+
+```text
+0 Intake
+1 Requirements
+2 Architecture
+3 Threat Model
+4 Implementation
+5 Testing
+6 Production Readiness
+7 Deployment
+8 Post-Launch
 ```
-✅ T04-EXCEED-CAP:      Detects >20 mistakes
-✅ T05-MISSING-FILE:     Detects missing memory
-✅ T10-INCOMPLETE-ADR:   Detects bad ADR format
-✅ T10-NO-ADR-WITH-RULES: Detects missing ADR
-✅ T03-BAD-ADR-FORMAT:   Detects incomplete ADR
-✅ T11-BOOT-TOO-LARGE:   Detects boot overflow
+
+The required depth depends on task risk/classification. Stage resources are selected contextually; the pipeline does not force every project into a fixed full-stack architecture.
+
+---
+
+## Memory & SDD
+
+Canonical states for non-trivial work:
+
+```text
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
+```
+
+Durable memory:
+
+| File | Purpose |
+|---|---|
+| `project-context.md` | Current project/session state |
+| `active-tasks.md` | Current task + SDD state |
+| `learned-mistakes.md` | Active learned mistakes |
+| `decisions.md` | ADR log |
+| `project-knowledge.md` | Durable discovered project patterns |
+| `codebase-map.md` | Discovered project structure |
+
+Completed historical task detail should be archived instead of bloating Boot Context.
+
+---
+
+## Governance
+
+Run full verification with:
+
+```bash
+python .agent/governance/verify.py
+```
+
+Current governance covers T01–T35, including:
+
+- task state and acceptance criteria,
+- ADR/memory integrity,
+- boot context budget,
+- Context Broker minimality/profile gating,
+- Project Profile integrity,
+- Approval Engine behavior,
+- Evidence Bundle semantics,
+- approval provenance/source verification,
+- Execution Gate behavior,
+- Evidence History tamper detection,
+- risk/affected-area capability derivation.
+
+Mutation tests deliberately corrupt the system and verify governance catches the violation.
+
+Current verified baseline from Sprint 2:
+
+- **35 governance checks** (Done state may include expected skips),
+- **22/22 mutation violations detected**,
+- **Boot Context 194/200 lines** on the final risk-routing validation,
+- Evidence Bundle and Evidence History verified in CI.
+
+---
+
+## Project Structure
+
+```text
+.agent/
+├── 01-core/
+│   ├── boot-manifest.md
+│   ├── task_contract.py
+│   ├── execution_gate.py
+│   ├── approval_engine.py
+│   ├── approval-policy.json
+│   ├── approval-registry.json
+│   ├── context_broker.py
+│   ├── context-map.json
+│   └── evidence_recorder.py
+├── 02-rules/
+├── 03-workflows/
+│   └── master-pipeline/
+├── 04-memory/
+├── 05-references/
+├── 06-templates/
+├── profiles/
+│   ├── project.json
+│   └── technology/
+├── task-contracts/
+│   └── current.json
+├── evidence/
+│   ├── README.md
+│   └── history/
+└── governance/
+    ├── runner.py
+    ├── verify.py
+    ├── test_state.py
+    ├── test_rules.py
+    ├── test_memory.py
+    ├── test_context.py
+    ├── test_execution.py
+    └── test_mutations.py
 ```
 
 ---
 
-## 📏 Context Budget
+## Context Budget
 
-AOS minimizes context to keep the agent fast and focused:
+Current convergence ceiling:
 
+- Boot Context: **≤200 lines**
+- Final v8 target: **≤150 lines**
+
+Task expansion budgets are proportional to task complexity. Context budget is a guardrail, not a reason to omit required security/correctness evidence.
+
+---
+
+## Core Principles
+
+1. Security and data integrity.
+2. Accurate context and approved decisions.
+3. Correctness and executable evidence.
+4. Simplicity and reversibility.
+5. Performance and cost.
+6. Stack conventions.
+
+Additional rules:
+
+- evidence over claims,
+- no hidden classification downgrade,
+- no direct AOS self-development writes to `main`,
+- no unconditional full-reference loading,
+- no fixed full-stack assumptions without profile activation,
+- no unverified ADR/pattern string as approval provenance.
+
+---
+
+## Architecture Decisions
+
+Current v8 direction is defined by:
+
+- ADR-006 — Vertical Slice → optional Technology Profile.
+- ADR-007 — references/resources → on-demand.
+- ADR-008 — deterministic Context Broker.
+- ADR-009 — Approval Engine + executable Evidence Bundle.
+- ADR-010 — verified provenance + autonomous Execution Gate + Evidence History.
+- ADR-011 — risk/affected-area capability routing.
+
+Older ADRs remain in the log as historical decisions and may be superseded by later ADRs.
+
+---
+
+## Contributing
+
+Before submitting a change:
+
+```bash
+python .agent/01-core/execution_gate.py
+python .agent/01-core/evidence_recorder.py --check governance_compile
+python .agent/01-core/evidence_recorder.py --check governance_verify
 ```
-  ┌──────────────────────────────────────────────┐
-  │            CONTEXT BUDGET                     │
-  │                                               │
-  │  🟦🟦🟦░░░░░░░░░░░░░░░░░░░░  Boot (≤150)   │
-  │  🟩🟩░░░░░░░░░░░░░░░░░░░░░░  🟢 +2K tokens │
-  │  🟨🟨🟨🟨🟨░░░░░░░░░░░░░░░░  🟡 +6K tokens │
-  │  🟥🟥🟥🟥🟥🟥🟥🟥░░░░░░░░░░  🔴 +10K tokens│
-  │                                               │
-  │  Key: load ONLY what the task needs            │
-  │  Never dump the whole repo or full references  │
-  └──────────────────────────────────────────────┘
-```
+
+Use a branch/PR for AOS self-development. Merge only after final CI and Done-state verification are green.
 
 ---
 
-## 🛡️ Core Principles
+## License
 
-```
-┌─────────────────────────────────────────────────┐
-│              PRIORITY ORDER                      │
-│         (when rules conflict)                    │
-│                                                  │
-│  1. 🔒 Security & data integrity                │
-│  2. 🧠 Memory & context accuracy                │
-│  3. ✅ Correctness & tests                      │
-│  4. 🔄 Simplicity & reversibility               │
-│  5. ⚡ Performance & cost                       │
-│  6. 📏 Language/framework conventions            │
-│                                                  │
-│  Unlisted conflict → STOP and ask developer      │
-└─────────────────────────────────────────────────┘
-```
-
----
-
-## 📐 Architecture Decisions (ADRs)
-
-| ADR | Decision | Status |
-|-----|----------|--------|
-| ADR-001 | Vertical Slice Governance charter | ✅ Approved |
-| ADR-003 | AOS v7.0 Wired Pipeline architecture | ✅ Approved |
-| ADR-004 | Books anchor strategy (grep, don't modify) | ✅ Approved |
-| ADR-005 | English operational, Arabic chat | ✅ Approved |
-| ADR-006 | Vertical Slice → optional Technology Profile | ✅ Approved |
-| ADR-007 | References → on-demand outside Boot | ✅ Approved |
-
----
-
-## 🚫 Forbidden Actions
-
-| ❌ Action | Why |
-|-----------|-----|
-| Write outside project | Safety boundary |
-| Load 2+ rules simultaneously | Context overflow |
-| Read references in full | Grep only — context budget |
-| Skip task classification | Governance requirement |
-| Code before spec (🟡/🔴) | Approval gate |
-| Skip memory update (🟡/🔴) | Session continuity |
-| Fabricate tool output | Evidence integrity |
-| Downgrade classification | Escalation only |
-
----
-
-## 📊 Current Metrics
-
-| Metric | Value |
-|--------|-------|
-| AOS Version | v8.0-dev |
-| Boot Context | 272 lines (goal: 150) |
-| Governance Checks | 11/11 PASS ✅ |
-| Mutation Tests | 6/6 detected ✅ |
-| Architecture Decisions | 7 ADRs |
-| Engineering Books | 16 distilled |
-| Constitutions | 6 (79 rules) |
-| Knowledge Bundles | 7 |
-| Pipeline Stages | 9 |
-| Rule Files | 6 |
-| Workflows | 34 |
-| REF Contracts | 34 |
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo
-2. Make changes in `.agent/`
-3. Run: `python .agent/governance/runner.py`
-4. Run: `python .agent/governance/test_mutations.py`
-5. All green? Submit a PR!
-
----
-
-## 📜 License
-
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
-  <strong>AOS v8.0-dev</strong> · 16 books · 79 rules · 9 stages · 11 checks · 0 rubber-stamps<br>
-  Built for agents, governed by humans 🤝
+  <strong>AOS v8.0-dev</strong> · Deterministic context · Verified approvals · Executable evidence · Mutation-tested governance
 </p>
