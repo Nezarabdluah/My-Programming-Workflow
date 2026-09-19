@@ -2,14 +2,21 @@
   "schema_version": 1,
   "project_id": "my-programming-workflow",
   "project_type": "engineering-workflow-framework",
-  "languages": ["python", "markdown", "json", "yaml"],
-  "technology_profiles": ["python-governance"],
+  "languages": [
+    "python",
+    "markdown",
+    "json",
+    "yaml"
+  ],
+  "technology_profiles": [
+    "python-governance"
+  ],
   "architecture": {
     "style": "policy-and-governance-framework",
     "source_of_truth": ".agent/01-core/boot-manifest.md"
   },
   "commands": {
     "governance_verify": "python .agent/governance/verify.py",
-    "governance_compile": "python -m py_compile .agent/governance/*.py .agent/01-core/context_broker.py"
+    "governance_compile": "python -m compileall -q .agent/governance .agent/01-core/context_broker.py .agent/01-core/approval_engine.py .agent/01-core/evidence_recorder.py"
   }
 }

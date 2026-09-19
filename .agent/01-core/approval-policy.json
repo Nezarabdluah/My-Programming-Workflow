@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "hard_stop_risks": [
+    "destructive",
+    "irreversible",
+    "new_architecture",
+    "security_boundary",
+    "production_change",
+    "breaking_external_contract",
+    "data_migration"
+  ],
+  "accepted_sensitive_provenance": [
+    "human",
+    "approved_adr",
+    "approved_pattern"
+  ],
+  "accepted_medium_provenance": [
+    "policy",
+    "approved_adr",
+    "approved_pattern",
+    "human"
+  ]
+}

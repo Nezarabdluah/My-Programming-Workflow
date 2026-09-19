@@ -18,6 +18,9 @@
 | `collaboration-rules.md` | Pair-programming protocol: Driver/Navigator roles, step & proof, stop gates, response structure |
 | `context-map.json` | Executable capability→resource map used by Context Broker |
 | `context_broker.py` | Deterministic resolver for Task Contract + Project/Technology Profiles |
+| `approval-policy.json` | Executable hard-stop/provenance approval policy |
+| `approval_engine.py` | Deterministic approval evaluator for structured Task Contracts |
+| `evidence_recorder.py` | Runs named Project Profile checks and derives Evidence PASS/FAIL from exit code |
 | `wiring-registry.md` | Human-readable capability/resource catalog mirroring the executable map |
 
 ## profiles/ + task-contracts/ — Sprint 2 execution contracts
@@ -26,6 +29,12 @@
 | `profiles/project.json` | Project type, activated Technology Profiles, and executable commands |
 | `profiles/technology/*.json` | Optional stack/architecture-specific capabilities and constraints |
 | `task-contracts/current.json` | Current non-trivial task classification, capabilities, approval, and verification |
+
+## evidence/ — Execution Evidence
+| Path | Description |
+|------|-------------|
+| `evidence/README.md` | Evidence Bundle semantics and generation rules |
+| `evidence/current.json` | Generated active-task evidence; intentionally gitignored |
 
 ## 📐 02-rules/ — Specialized Rules (broker-selected, ONE at a time)
 | File | Description |
@@ -100,5 +109,5 @@
 |------|-------------|
 | `runner.py` | Core governance runner |
 | `verify.py` | Full verification entry point: governance + mutation checks |
-| `test_memory.py`, `test_rules.py`, `test_state.py`, `test_context.py` | Governance test suite |
+| `test_memory.py`, `test_rules.py`, `test_state.py`, `test_context.py`, `test_execution.py` | Governance test suite |
 | `test_mutations.py` | Mutation suite proving governance checks can fail |

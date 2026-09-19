@@ -24,8 +24,26 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Compile governance scripts
-        run: python -m py_compile .agent/governance/*.py
+      - name: Record compile evidence
+        run: python .agent/01-core/evidence_recorder.py --check governance_compile
 
-      - name: Run full AOS verification
-        run: python .agent/governance/verify.py
+      - name: Record full verification evidence
+        run: python .agent/01-core/evidence_recorder.py --check governance_verify
+
+      - name: Validate evidence bundle
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path(".agent/evidence/current.json").read_text())
+          checks = {item["check"]: item for item in data["checks"]}
+          required = {"governance_compile", "governance_verify"}
+          missing = required - checks.keys()
+          if missing:
+              raise SystemExit(f"missing evidence checks: {sorted(missing)}")
+          failed = [name for name in required if checks[name]["status"] != "PASS"]
+          if failed:
+              raise SystemExit(f"failed evidence checks: {failed}")
+          print("Evidence Bundle PASS:", sorted(required))
+          PY

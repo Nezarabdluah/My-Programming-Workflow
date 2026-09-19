@@ -145,3 +145,25 @@
   * **Performance**: predictable minimal context expansion and zero external parser dependency.
   * **Maintainability**: capability routing becomes machine-testable; Markdown registry becomes documentation over the executable map.
   * **Security**: sensitive capabilities can deterministically require security resources and stronger verification without depending on prompt memory.
+
+
+---
+
+## ADR-009: Policy-based approval engine and executable Evidence Bundle
+* **Date**: 2026-09-19
+* **Status**: Approved (Sprint 2 continuation authorized by the Navigator)
+* **Context & problem**:
+  AOS currently has a strict approval gate for non-trivial work, but the runtime does not distinguish between genuinely new/high-risk decisions and work already covered by approved policy/ADR/patterns. This causes unnecessary interruptions. Separately, verification evidence is spread across reports/logs and can be asserted textually instead of being captured as structured execution results.
+* **Approved decision**:
+  (1) Add a deterministic Approval Engine driven by Task Contract classification, explicit risk flags, and approval provenance.
+  (2) Hard-stop risks (destructive/irreversible operations, new architecture/security boundary, production changes, breaking external contracts, data migration) require human approval unless an explicit approved ADR/policy reference permits the exact action.
+  (3) Low-risk Simple work is policy-approved automatically; Medium work inside established patterns may proceed when risk flags are clear; Sensitive work requires accepted provenance (human/approved ADR/approved pattern) and never silently self-approves a hard-stop risk.
+  (4) Add an executable Evidence Bundle recorder that runs declared verification commands and records command, exit code, timestamp, source, and PASS/FAIL. PASS is derived from exit code and cannot be authored manually.
+* **Rejected alternatives and why**:
+  1. Ask the developer before every 🟡/🔴 task ← rejected: excessive interruption and poor autonomy.
+  2. Let the model decide approval in free text ← rejected: not deterministic or auditable.
+  3. Store verification only as prose in memory/PRs ← rejected: claims are not executable evidence.
+* **Technical consequences**:
+  * **Performance**: fewer unnecessary approval pauses; small execution overhead for structured verification.
+  * **Maintainability**: approval logic and evidence semantics become testable/versioned.
+  * **Security**: hard-stop risks cannot auto-approve merely because the model says a pattern exists.

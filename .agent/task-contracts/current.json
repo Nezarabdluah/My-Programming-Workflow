@@ -1,23 +1,35 @@
 {
   "schema_version": 1,
-  "task_id": "T023",
-  "title": "AOS v8 Sprint 2 — Context Broker foundation",
+  "task_id": "T024",
+  "title": "Sprint 2 — Evidence Bundle and Approval Policy",
   "classification": "sensitive",
-  "capabilities": ["architecture", "testing"],
+  "capabilities": [
+    "architecture",
+    "testing"
+  ],
   "affected_areas": [
     ".agent/01-core",
-    ".agent/profiles",
-    ".agent/task-contracts",
+    ".agent/evidence",
     ".agent/governance",
+    ".agent/task-contracts",
     ".agent/04-memory"
   ],
+  "risk": {
+    "destructive": false,
+    "irreversible": false,
+    "new_architecture": true,
+    "security_boundary": false,
+    "production_change": false,
+    "breaking_external_contract": false,
+    "data_migration": false
+  },
   "approval": {
     "status": "approved",
-    "source": "navigator",
-    "reason": "User explicitly requested to continue Sprint 2 after the v8 convergence merge."
+    "provenance": "human",
+    "reference": "Navigator explicitly asked to continue Sprint 2 work."
   },
   "verification": [
-    "python -m py_compile .agent/governance/*.py .agent/01-core/context_broker.py",
-    "python .agent/governance/verify.py"
+    "governance_compile",
+    "governance_verify"
   ]
 }
