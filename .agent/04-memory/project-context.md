@@ -14,4 +14,4 @@
 Risk/area routing is green: 35/35 governance, 22/22 mutations, T026 derives Testing.
 
 ## Next
-Run Done-state CI, then prepare PR #5 for squash merge if green.
+Run final head CI, then squash-merge PR #5 only if green.
