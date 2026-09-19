@@ -6,7 +6,7 @@ globs: []
 requires: []
 ---
 
-# Wiring Registry — Capability & Resource Registry (AOS v8.0-dev)
+# Wiring Registry — Capability & Resource Registry (AOS v8.0.0-rc.1)
 
 > **How this works**: every capability row below declares its dependencies **by ID** (declarative wiring).
 > Resolution is **lazy** — load a resource only at the moment its capability becomes active.
