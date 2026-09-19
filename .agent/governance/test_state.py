@@ -1,4 +1,4 @@
-"""AOS Governance — State Tests (v8.0-dev)
+"""AOS Governance — State Tests (v8.0.0-rc.1)
 
 GOV-T01: Current task state validity
 GOV-T02: Acceptance criteria for active non-trivial tasks
