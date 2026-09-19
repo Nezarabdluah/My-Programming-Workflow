@@ -1,4 +1,4 @@
-"""AOS Governance — Rule Tests (v8.0-dev)
+"""AOS Governance — Rule Tests (v8.0.0-rc.1)
 
 GOV-T06: Canonical boot contract links to task rules
 GOV-T07: REF citation validity (project-agnostic source discovery)
@@ -388,7 +388,7 @@ def test_gov_t40_version_consistency():
         if f"aos_version: {version}" not in content:
             problems.append("init-project: VERSION example mismatch")
 
-    if version != "8.0.0-dev":
+    if not version.endswith("-dev"):
         stale_markers = (
             "v8.0-" + "dev",
             "8.0.0-" + "dev",
