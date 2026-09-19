@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** One-Command Consumer Onboarding
-- **Task:** T034 — Executing
+- **Task:** T034 — Validating
 
 ## Current
-AOS now has write-free collision preflight, safe upgrades, portable runtime ADRs/governance, and a one-command bootstrap that initializes and verifies consumer projects.
+Source verification passed 45 checks / 32 mutations and CI bootstrapped a real temporary Node/TypeScript consumer project successfully.
 
 ## Next
-Align remaining onboarding docs/index and validate source + consumer CI paths.
+Validate the final source + consumer baseline before completing T034.
