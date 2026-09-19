@@ -1,23 +1,30 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
 ## T034 — One-Command Consumer Bootstrap 🔴
-- **State:** Validating
+- **State:** Done
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- One command performs safe preflight, install/upgrade, discovery, initialization, and portable verification.
-- Foreign agent infrastructure must block before writes.
-- Existing AOS upgrades must preserve project state and back up managed adapters.
-- Consumer governance/provenance must be portable and source-scoped correctly.
-- Real consumer bootstrap smoke must pass in CI.
-- README must present bootstrap as default onboarding.
-- Boot must remain ≤150.
+- One command safely installs/upgrades, discovers, initializes, and verifies a consumer project.
+- Foreign agent infrastructure blocks before any AOS write.
+- Existing AOS upgrades preserve project state and back up managed adapters.
+- Consumer governance/provenance remains portable and source-scoped.
+- Real consumer bootstrap smoke passes in CI.
+- README exposes bootstrap as the default onboarding path.
+- Boot remains ≤150.
+
+### Result
+- [x] Collision-safe installer + safe upgrade/backups.
+- [x] Portable runtime ADR/provenance + consumer/source governance split.
+- [x] One-command bootstrap + T42–T45 + 32/32 mutations.
+- [x] CI consumer bootstrap smoke.
+- [x] Executing + Validating verification passed.
 
 ### Evidence
-Run `35445855519`: 45 PASS, 32/32 mutations, consumer bootstrap smoke PASS, Evidence Bundle/History PASS.
+Run `35445890991`: 45 PASS, 32/32 mutations, bootstrap smoke PASS, Boot 139/150.
 
 ### Next
-Run Validating-state verification; close T034 only if source + consumer paths remain green.
+Use `bootstrap.py` as the default consumer onboarding command.
