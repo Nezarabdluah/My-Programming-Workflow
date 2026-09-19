@@ -17,8 +17,8 @@ gate:
     - all tests passing (stage 5)
     - architecture approved (stage 2)
     - threat model approved (stage 3)
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 6 row"
+  context_candidates:
+    - "optional index: 05-references/books/00-master-index.md → Stage 6 row"
     - constitutions: resilience-constitution (Circuit Breaker, Outbox, Concurrency)
     - 03-workflows/production-readiness.md
     - wiring-registry → OPS-PRR, OPS-SCORECARD, OPS-SIGNALS
@@ -85,7 +85,7 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
