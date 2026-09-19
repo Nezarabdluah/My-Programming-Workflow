@@ -24,13 +24,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Evaluate execution gate
+        run: python .agent/01-core/execution_gate.py
+
       - name: Record compile evidence
         run: python .agent/01-core/evidence_recorder.py --check governance_compile
 
       - name: Record full verification evidence
         run: python .agent/01-core/evidence_recorder.py --check governance_verify
 
-      - name: Validate evidence bundle
+      - name: Validate current evidence bundle
         run: |
           python - <<'PY'
           import json
@@ -47,3 +50,31 @@ jobs:
               raise SystemExit(f"failed evidence checks: {failed}")
           print("Evidence Bundle PASS:", sorted(required))
           PY
+
+      - name: Archive evidence history
+        run: python .agent/01-core/evidence_recorder.py --archive-current
+
+      - name: Verify archived evidence integrity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import importlib.util
+
+          path = Path(".agent/01-core/evidence_recorder.py")
+          spec = importlib.util.spec_from_file_location("evidence_recorder", path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          archives = list(Path(".agent/evidence/history").glob("*.json"))
+          if len(archives) != 1:
+              raise SystemExit(f"expected exactly one evidence archive, got {len(archives)}")
+          module.verify_archive(archives[0])
+          print("Evidence History PASS:", archives[0].name)
+          PY
+
+      - name: Upload evidence history
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-evidence-history
+          path: .agent/evidence/history/*.json
+          if-no-files-found: error
