@@ -19,8 +19,11 @@
 | `context-map.json` | Executable capability→resource map used by Context Broker |
 | `context_broker.py` | Deterministic resolver for Task Contract + Project/Technology Profiles |
 | `approval-policy.json` | Executable hard-stop/provenance approval policy |
-| `approval_engine.py` | Deterministic approval evaluator for structured Task Contracts |
-| `evidence_recorder.py` | Runs named Project Profile checks and derives Evidence PASS/FAIL from exit code |
+| `approval-registry.json` | Verified ADR/pattern provenance registry with capability/risk scope |
+| `approval_engine.py` | Deterministic approval evaluator with explicit execution modes |
+| `task_contract.py` | Machine validation for Task Contract schema/risk/provenance fields |
+| `execution_gate.py` | Unified pre-execution decision: validation → approval → context → checks |
+| `evidence_recorder.py` | Runs named checks, derives PASS/FAIL, archives SHA-256 Evidence History |
 | `wiring-registry.md` | Human-readable capability/resource catalog mirroring the executable map |
 
 ## profiles/ + task-contracts/ — Sprint 2 execution contracts
@@ -35,6 +38,7 @@
 |------|-------------|
 | `evidence/README.md` | Evidence Bundle semantics and generation rules |
 | `evidence/current.json` | Generated active-task evidence; intentionally gitignored |
+| `evidence/history/` | Generated tamper-evident archives; uploaded as CI artifacts, not committed |
 
 ## 📐 02-rules/ — Specialized Rules (broker-selected, ONE at a time)
 | File | Description |
