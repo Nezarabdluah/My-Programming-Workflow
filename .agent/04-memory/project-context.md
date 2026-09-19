@@ -1,9 +1,9 @@
 # Project Context — AOS v8.0.0-rc.1
 - **Phase:** RC Documentation & Discoverability
-- **Task:** T032 — Executing
+- **Task:** T032 — Validating
 
 ## Current
-README remains the complete user-facing capability map; visuals now use lightweight colored text diagrams instead of Mermaid.
+README is the complete user-facing capability map using colored text diagrams; first verification passed 41 checks, 28/28 mutations, and Boot 135/150.
 
 ## Next
-Verify GOV-T41, mutation coverage, capability coverage, and Boot budget.
+Validate the visual standard, then close T032 only from a green baseline.
