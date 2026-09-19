@@ -741,6 +741,7 @@ if __name__ == "__main__":
         source_only_mutations = {
             mut_t36_restore_stale_readme_contract,
             mut_t38_restore_stale_start_check,
+            mut_t39_leak_project_profile,
             mut_t41_remove_readme_capability_map,
         }
         mutations = [
