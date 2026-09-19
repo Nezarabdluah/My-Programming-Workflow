@@ -16,12 +16,10 @@ gate:
   requires:
     - completed implementation (stage 4)
     - test infrastructure identified (or declared unavailable)
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 5 row"
-    - constitutions: security-constitution (AUDIT self-check) + perf-constitution (N+1, SARGable)
-    - 02-rules/testing-and-quality.md
+  context_candidates:
     - 03-workflows/qa-strategy.md
-    - wiring-registry → REF-TEST contracts
+    - 02-rules/testing-and-quality.md when testing guidance is needed
+    - security/performance references only when those risks are actually affected
   decision: proceed
 ```
 
@@ -62,23 +60,17 @@ gate:
   - Result: ✅ PASSED / ⛔ FAILED / NOT_AVAILABLE
 ```
 
-### 5.3 — Vertical Slice Coverage Report
+### 5.3 — Affected-Area Coverage Evidence
 
 ```
-□ Produce the mandatory coverage report (02-rules/vertical-slice-governance.md):
+□ Identify the project areas actually affected by this change.
+□ For each affected area, record:
+  - done → evidence (check result, path, or diff)
+  - deferred → follow-up task/decision
+  - not applicable → only when an area was considered but genuinely does not apply
 
-  | Layer        | Status                                    |
-  |--------------|-------------------------------------------|
-  | Database     | done / not applicable because... / deferred because... |
-  | Domain       | done / not applicable because... / deferred because... |
-  | Application  | done / not applicable because... / deferred because... |
-  | API          | done / not applicable because... / deferred because... |
-  | Frontend     | done / not applicable because... / deferred because... |
-  | UI/UX        | done / not applicable because... / deferred because... |
-  | Tests        | done / not applicable because... / deferred because... |
-
-□ Include: file_path:line for every "done" entry
-□ Any missing layer without justification → ⛔ GATE FAILED
+□ Do not require fixed Database/Domain/API/Frontend/UI layers unless the project/profile declares them.
+□ If full-stack vertical-slice guidance is activated, its dynamic coverage table may be used.
 ```
 
 ### 5.4 — Quality Gate Decision
@@ -90,13 +82,13 @@ gate:
 □ Any test failure without a fix:
   → ⛔ GATE FAILED — return to stage 4 for fixes
 
-□ Coverage report incomplete:
-  → ⛔ GATE FAILED — complete the report before proceeding
+□ Materially affected area has no verification/evidence:
+  → ⛔ GATE FAILED — complete verification before proceeding
 ```
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
@@ -118,7 +110,7 @@ gate_result:
   integration_tests: { passed: 0, failed: 0, status: available | not_available }
   e2e_tests: { passed: 0, failed: 0, status: available | not_available }
   static_analysis: passed | failed | not_available
-  coverage_report: complete | incomplete
+  affected_area_evidence: complete | incomplete
   next_stage: 6 | done              # 6 if 🔴, done if 🟢/🟡
   blockers: []
 ```
