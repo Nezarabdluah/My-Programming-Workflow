@@ -447,44 +447,32 @@ def test_gov_t41_readme_complete_capability_map():
     ]
 
     required_capabilities = [
-        "Architecture",
-        "Security",
-        "Testing & QA",
-        "DevOps",
-        "Reliability",
-        "Database & Performance",
-        "API & Network",
-        "Frontend & UX",
-        "Mobile QA",
-        "Memory & Learning",
-        "Autonomous Execution",
-        "Context Control",
-        "Executable Evidence",
-        "Governance",
-        "Engineering Knowledge",
+        "Architecture", "Security", "Testing & QA", "DevOps",
+        "Reliability", "Database & Performance", "API & Network",
+        "Frontend & UX", "Mobile QA", "Memory & Learning",
+        "Autonomous Execution", "Context Control", "Executable Evidence",
+        "Governance", "Engineering Knowledge",
     ]
 
-    required_runtime_markers = [
-        "execution_gate.py",
-        "context_broker.py",
-        "evidence_recorder.py",
-        "install.py",
-        "boot-manifest.md",
-        "task-contracts/current.json",
-        "Project + Technology Profiles",
-        "AUTO_EXECUTE",
-        "HUMAN_APPROVED",
-        "HUMAN_REQUIRED",
+    required_diagrams = [
+        "🟦 TASK",
+        "🟦 1. INSTALL AOS",
+        "🟦 INTAKE",
+        "🤖 AOS v8",
+        "🟦 NAMED CHECK",
     ]
+
+    required_colors = ["🟦", "🟪", "🟨", "🟩", "🟥"]
 
     missing_sections = [item for item in required_sections if item not in content]
     missing_capabilities = [item for item in required_capabilities if item not in content]
-    missing_runtime = [item for item in required_runtime_markers if item not in content]
+    missing_diagrams = [item for item in required_diagrams if item not in content]
+    missing_colors = [item for item in required_colors if item not in content]
 
-    mermaid_count = content.count("```mermaid")
-    if mermaid_count < 3:
-        missing_sections.append(f"Mermaid diagrams >=3 (found {mermaid_count})")
-
+    if "```mermaid" in content:
+        missing_diagrams.append("Mermaid must not replace colored text diagrams")
+    if "## Visual legend" not in content:
+        missing_sections.append("Visual legend")
     if "README is the complete user-facing overview" not in content:
         missing_sections.append("README/source-of-truth boundary")
     if "Executable authority remains here:" not in content:
@@ -492,16 +480,15 @@ def test_gov_t41_readme_complete_capability_map():
 
     problems = []
     if missing_sections:
-        problems.append("sections/visuals: " + ", ".join(missing_sections))
+        problems.append("sections: " + ", ".join(missing_sections))
     if missing_capabilities:
         problems.append("capabilities: " + ", ".join(missing_capabilities))
-    if missing_runtime:
-        problems.append("runtime markers: " + ", ".join(missing_runtime))
+    if missing_diagrams:
+        problems.append("text diagrams: " + ", ".join(missing_diagrams))
+    if missing_colors:
+        problems.append("visual colors: " + ", ".join(missing_colors))
 
     if problems:
         return FAIL, "GOV-T41: incomplete README showcase: " + "; ".join(problems)
 
-    return PASS, (
-        f"GOV-T41: README preserves complete capability coverage with "
-        f"{mermaid_count} Mermaid diagrams."
-    )
+    return PASS, "GOV-T41: README preserves complete colored-text capability showcase."
