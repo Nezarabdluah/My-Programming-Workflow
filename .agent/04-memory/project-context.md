@@ -1,7 +1,7 @@
 # Project Context — AOS v8.0-dev
 
 - **Phase:** Sprint 2 — Risk-Aware Context Routing
-- **Task:** T026 — Executing
+- **Task:** T026 — Validating
 - **Branch:** `aos-v8-sprint2-risk-routing`
 - **Main:** autonomous execution merged via PR #4 / `af9481fb278c7dd2c61c061c260d4504880c251c`
 
@@ -11,7 +11,7 @@
 - ADR-011: risk/affected areas augment capabilities deterministically.
 
 ## Current
-Risk map, project area rules, broker provenance, T31–T35, mutations, and T026 contract are implemented.
+Risk/area routing is green: 35/35 governance, 22/22 mutations, T026 derives Testing.
 
 ## Next
-Run PR CI, repair failures, then validate before merge.
+Run Validating-state CI, then close T026 only if green.
