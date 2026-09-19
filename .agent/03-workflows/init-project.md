@@ -50,9 +50,23 @@ For an existing project:
 - record established conventions,
 - record architecture only from evidence in the codebase.
 
-Technology Profiles and Project Profile support are Sprint 2 work; do not fabricate them if they are absent.
+Create or validate `.agent/profiles/project.json` from repository evidence:
+- project type and languages,
+- activated Technology Profiles,
+- architecture source of truth,
+- real build/test/lint/E2E commands.
 
-## 5. Write VERSION
+Activate only Technology Profiles that match the project. Do not infer full-stack/DDD/Clean Architecture merely from AOS defaults.
+
+## 5. Validate Context Broker
+
+For a representative non-trivial task:
+1. create/update `.agent/task-contracts/current.json`,
+2. run `python .agent/01-core/context_broker.py`,
+3. verify only relevant resources are returned,
+4. run governance checks.
+
+## 6. Write VERSION
 
 Use the current source version:
 
@@ -62,7 +76,7 @@ last_sync: [today]
 source_path: [YOUR-LOCAL-AOS-PATH]
 ```
 
-## 6. Verify initialization
+## 7. Verify initialization
 
 Run available AOS governance checks and verify required runtime files exist.
 

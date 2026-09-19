@@ -1,20 +1,18 @@
 # Project Context — AOS v8.0-dev
 
-## Current State
-- **Phase:** v8 Convergence Sprint
-- **Task:** T022 — Done
-- **Branch:** `aos-v8-convergence`
-- **Main:** unchanged
-- **PR:** #1 draft, unmerged
+- **Phase:** Sprint 2 Context Broker Foundation
+- **Task:** T023 — Done
+- **Branch:** `aos-v8-sprint2-context`
+- **Main:** convergence merged via PR #1
 
-## Applied Decisions
-- ADR-006: fixed seven-layer vertical-slice governance removed from Core.
-- ADR-007: context/resources load selectively; full bundles and source REF/CONST comments are not mandatory.
+## Architecture
+- Boot manifest is canonical.
+- ADR-006: web seven-layer model is profile-scoped.
+- ADR-007: resources load selectively.
+- ADR-008: Task Contract + Project/Technology Profiles + executable Context Map drive deterministic broker resolution.
 
-## Current Result
-- Core, workflows, rules, INDEX, memory, governance, and CI aligned to v8.
-- GitHub Actions run `35436797418` passed full verification after memory compaction.
-- T022 is closed pending one final Done-state CI check so GOV-T09 validates the full state history.
+## Current
+Broker, profiles, T12–T16, mutations, and PR #2 are implemented. Run `35437378236` passed full verification after memory compaction.
 
 ## Next
-If Done-state CI remains green, prepare the draft PR for merge review/squash strategy.
+Run Done-state CI, then prepare PR #2 for squash merge if green.

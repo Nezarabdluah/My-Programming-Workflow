@@ -29,7 +29,7 @@ SKIP_EXPECTED = "SKIP_EXPECTED"       # check not applicable with evidence
 SKIP_UNSUPPORTED = "SKIP_UNSUPPORTED" # environment cannot run check
 ERROR = "ERROR"                        # checker itself crashed
 
-TEST_MODULES = ["test_state", "test_rules", "test_memory"]
+TEST_MODULES = ["test_state", "test_rules", "test_memory", "test_context"]
 
 ICONS = {
     PASS: "✅",

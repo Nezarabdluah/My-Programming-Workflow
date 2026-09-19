@@ -1,35 +1,31 @@
-# Active Tasks & SDD State — AOS v8.0-dev
+# Active Tasks — AOS v8.0-dev
 
-> Current work only. History is archived under `04-memory/archive/`.
-
-## T022 — AOS v8 Convergence Sprint 🔴
+## T023 — Sprint 2 Context Broker Foundation 🔴
 - **State:** Done
-- **Branch:** `aos-v8-convergence`
-- **Purpose:** align runtime, workflows, governance, and memory with ADR-006/ADR-007 before Sprint 2.
-- **Approval:** developer approved implementation after audit/planning.
+- **Branch:** `aos-v8-sprint2-context`
+- **Approval:** Navigator approved continuing Sprint 2.
 
 ### State History
 Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
-- Canonical runtime entry = `boot-manifest.md`.
-- Seven-layer full-stack policy is profile-scoped, not Core.
-- Context loading follows ADR-007 selective expansion.
-- Governance validates v8 behavior and catches deliberate mutations.
-- Current boot memory excludes historical completed tasks.
-- No merge to `main` before final green verification.
+- Deterministic Task Contract → Context Broker → Context Map resolution.
+- Project/Technology Profiles drive profile-gated context.
+- Unknown capabilities/resource drift fail explicitly.
+- Governance proves minimality, profile gates, map integrity, and profile integrity.
+- No merge to `main` before final green CI.
 
 ### Progress
-- [x] Core/pipeline/rules/memory converged to v8 semantics.
-- [x] Legacy task history archived.
-- [x] Governance hardened; `verify.py` + GitHub Actions added.
-- [x] Draft PR #1 opened, unmerged.
-- [x] Diff review completed; remaining v7 authority drift removed.
-- [x] Final CI after memory compaction passed.
-- [x] T022 closed after green validation.
+- [x] ADR-008, broker, context map, profiles, task contract.
+- [x] Boot/init/INDEX/wiring integrated.
+- [x] GOV-T12–T16 added.
+- [x] Broker/profile/map mutations added.
+- [x] PR #2 CI reached 15/15 before validation-memory update.
+- [x] Final Validating-state CI passed.
+- [x] T023 closed; awaiting Done-state CI for T09.
 
 ### Last Evidence
-GitHub Actions run `35436797418`: full verification success after memory compaction.
+Run `35437378236`: full verification success after memory compaction.
 
-### Next Step
-Run final CI in Done state so GOV-T09 validates the complete state history before merge.
+### Next
+Run Done-state CI; if green, prepare PR #2 for squash merge.

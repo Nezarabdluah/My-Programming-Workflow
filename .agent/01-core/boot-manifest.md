@@ -79,19 +79,20 @@ For 🟡/🔴 changes record only reviewable engineering rationale:
 
 The pipeline's stage depth depends on classification and actual project risk.
 
-## Context Expansion — ADR-007
+## Context Expansion — ADR-007 / ADR-008
 Default = minimum relevant context.
 
-Until Context Broker exists:
-1. Identify capabilities materially affected.
-2. Use `01-core/wiring-registry.md` to discover candidate resources.
-3. Load at most one directly relevant rule file from `02-rules/` at a time.
-4. Grep only targeted REF/OPS/QA anchors needed for a real decision.
-5. Load constitutions/templates/prompts/book lessons only when they materially help.
-6. Use `05-references/books/00-master-index.md` as an index, not an unconditional loader.
+For 🟡/🔴 work:
+1. Record classification + explicit capabilities in `task-contracts/current.json`.
+2. Resolve resources with `python .agent/01-core/context_broker.py`.
+3. Load only returned `mode=load` resources; grep only returned anchors for `mode=grep`.
+4. Respect Technology Profile gates from `profiles/project.json`.
+5. If the broker lacks a required capability, update the executable context map through a reviewed change instead of guessing silently.
+
+For 🟢 work, direct proportional execution may skip a Task Contract when no additional context is needed.
 
 Technology-specific assumptions belong in Technology Profiles.
-REF/CONST production-code comments are optional; compliance evidence belongs in task evidence/reports.
+REF/CONST production-code comments remain optional; compliance evidence belongs in task evidence/reports.
 
 ## Context Budget
 - Canonical Boot: ≤200 lines during convergence; final goal ≤150.

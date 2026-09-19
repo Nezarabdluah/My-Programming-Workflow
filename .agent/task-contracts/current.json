@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "T023",
+  "title": "AOS v8 Sprint 2 — Context Broker foundation",
+  "classification": "sensitive",
+  "capabilities": ["architecture", "testing"],
+  "affected_areas": [
+    ".agent/01-core",
+    ".agent/profiles",
+    ".agent/task-contracts",
+    ".agent/governance",
+    ".agent/04-memory"
+  ],
+  "approval": {
+    "status": "approved",
+    "source": "navigator",
+    "reason": "User explicitly requested to continue Sprint 2 after the v8 convergence merge."
+  },
+  "verification": [
+    "python -m py_compile .agent/governance/*.py .agent/01-core/context_broker.py",
+    "python .agent/governance/verify.py"
+  ]
+}

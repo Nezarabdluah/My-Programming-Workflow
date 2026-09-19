@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "id": "python-governance",
+  "applies_when": ["python"],
+  "commands": {
+    "compile": "python -m py_compile .agent/governance/*.py .agent/01-core/context_broker.py"
+  },
+  "capabilities": ["testing"],
+  "notes": ["Core governance must remain dependency-free on stock Python."]
+}

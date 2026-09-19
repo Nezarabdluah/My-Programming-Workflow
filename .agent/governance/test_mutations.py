@@ -209,6 +209,98 @@ def mut_t03_bad_adr_format():
     return run_mutation("T03-BAD-ADR-FORMAT", setup, test_gov_t03_adr_structure)
 
 
+def mut_t14_unknown_capability():
+    """Mutate current task to reference an unknown capability."""
+    import json
+    from test_context import test_gov_t14_current_contract_resolves
+    path = Path(".agent/task-contracts/current.json")
+
+    def setup():
+        original = json.loads(path.read_text(encoding="utf-8"))
+        original["capabilities"] = ["definitely-unknown-capability"]
+        backup = _backup_and_write(
+            path,
+            json.dumps(original, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T14-UNKNOWN-CAPABILITY",
+        setup,
+        test_gov_t14_current_contract_resolves,
+    )
+
+
+def mut_t13_profile_gate_removed():
+    """Mutate context map so full-stack resource loses its profile gate."""
+    import json
+    from test_context import test_gov_t13_profile_gate
+    path = Path(".agent/01-core/context-map.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["capabilities"]["full-stack-vertical"].pop(
+            "requires_profile", None
+        )
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T13-PROFILE-GATE-REMOVED",
+        setup,
+        test_gov_t13_profile_gate,
+    )
+
+
+def mut_t15_missing_context_resource():
+    """Mutate context map to reference a missing resource path."""
+    import json
+    from test_context import test_gov_t15_context_map_integrity
+    path = Path(".agent/01-core/context-map.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["capabilities"]["security"]["resources"][0]["path"] = (
+            ".agent/02-rules/definitely-missing.md"
+        )
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T15-MISSING-CONTEXT-RESOURCE",
+        setup,
+        test_gov_t15_context_map_integrity,
+    )
+
+
+def mut_t16_missing_technology_profile():
+    """Mutate Project Profile to reference a missing Technology Profile."""
+    import json
+    from test_context import test_gov_t16_project_profile_integrity
+    path = Path(".agent/profiles/project.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["technology_profiles"] = ["definitely-missing-profile"]
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T16-MISSING-TECHNOLOGY-PROFILE",
+        setup,
+        test_gov_t16_project_profile_integrity,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -237,6 +329,10 @@ if __name__ == "__main__":
         mut_t10_incomplete_adr,
         mut_t10_no_adr_with_rules,
         mut_t03_bad_adr_format,
+        mut_t13_profile_gate_removed,
+        mut_t14_unknown_capability,
+        mut_t15_missing_context_resource,
+        mut_t16_missing_technology_profile,
         mut_t11_boot_too_large,
     ]
 
