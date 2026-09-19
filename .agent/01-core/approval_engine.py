@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 
@@ -64,7 +65,11 @@ def _verify_registry_source(entry: dict) -> None:
         start = content.find(marker)
         next_heading = content.find("\n## ", start + len(marker))
         section = content[start: next_heading if next_heading != -1 else len(content)]
-        if "Status" not in section or "Approved" not in section:
+        if not re.search(
+            r"\*\*Status\*\*\s*:\s*Approved\b",
+            section,
+            flags=re.IGNORECASE,
+        ):
             raise ApprovalError(
                 f"ADR approval source is not approved: {marker}"
             )
