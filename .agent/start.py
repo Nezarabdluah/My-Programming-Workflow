@@ -3,7 +3,7 @@
 Usage:
   python .agent/start.py          → prints boot prompt to screen
   python .agent/start.py --copy   → copies to clipboard (Windows)
-  python .agent/start.py --check  → runs governance checks
+  python .agent/start.py --check  → runs full governance + mutation verification
 """
 import sys
 import subprocess
