@@ -83,12 +83,12 @@ The pipeline's stage depth depends on classification and actual project risk.
 Default = minimum relevant context.
 
 For 🟡/🔴 work:
-1. Record classification, capabilities, risk flags, and approval provenance in `task-contracts/current.json`.
-2. Run `python .agent/01-core/approval_engine.py`; do not implement when it returns BLOCKED.
-3. Resolve resources with `python .agent/01-core/context_broker.py`.
-4. Load only returned `mode=load` resources; grep only returned anchors for `mode=grep`.
-5. Respect Technology Profile gates from `profiles/project.json`.
-6. If the broker lacks a required capability, update the executable context map through a reviewed change instead of guessing silently.
+1. Record classification, capabilities, risk flags, approval provenance, and named verification checks in `task-contracts/current.json`.
+2. Run `python .agent/01-core/execution_gate.py`.
+3. If mode = `HUMAN_REQUIRED`, stop before implementation.
+4. If mode = `HUMAN_APPROVED` or `AUTO_EXECUTE`, proceed using only returned broker resources and named checks.
+5. Never treat an unverified ADR/pattern string as approval provenance.
+6. If the gate cannot resolve a capability/profile/check, fix the executable contracts instead of guessing silently.
 
 For 🟢 work, direct proportional execution may skip a Task Contract when no additional context is needed.
 
@@ -107,6 +107,7 @@ Before Done:
 1. Run named verification commands through `01-core/evidence_recorder.py` when the Project Profile defines them.
 2. `governance_verify` must execute `governance/verify.py` (governance + mutations).
 3. PASS/FAIL evidence is derived from process exit code and stored in `evidence/current.json`.
+4. Archive completed verification with SHA-256 integrity via `evidence_recorder.py --archive-current`; CI may publish history as an external artifact.
 Fallback: run `verify.py` directly only when the recorder is unavailable.
 SKIP is never PASS; a failing hard gate blocks clean delivery.
 
