@@ -15,8 +15,9 @@ requires: [REF-SEC-JWT, REF-SEC-IDOR, REF-SEC-VALID, REF-SEC-XSS, REF-SEC-INJECT
 ## 1. JWT & Session Security
 
 ### Token storage:
-- ❌ **Never** store JWTs in localStorage or sessionStorage (XSS-exposed)
-- ✅ Store them in `HttpOnly` + `Secure` + `SameSite=Strict` cookies
+- Prefer server-managed secure sessions or HttpOnly cookies for browser applications when the architecture supports them.
+- Do not put long-lived/high-value bearer tokens in browser storage without an explicit threat-model decision and compensating controls.
+- Cookie attributes (Secure/SameSite) must match the deployment and cross-site flow requirements.
 
 ### Refresh token rotation:
 - ✅ Issue a new Refresh Token with every renewal request
@@ -31,8 +32,8 @@ requires: [REF-SEC-JWT, REF-SEC-IDOR, REF-SEC-VALID, REF-SEC-XSS, REF-SEC-INJECT
 ## 2. Access Control & IDOR
 
 ### Default-deny policy:
-- ✅ All routes and endpoints deny access by default
-- ✅ Grant access explicitly via attributes or middleware
+- Protected resources should use default-deny authorization where the framework/application supports it.
+- Public/anonymous endpoints must be explicit and reviewed.
 
 ### IDOR prevention (Insecure Direct Object Reference):
 - ❌ Never assume the logged-in user owns a resource just because they supplied an ID
@@ -74,6 +75,6 @@ requires: [REF-SEC-JWT, REF-SEC-IDOR, REF-SEC-VALID, REF-SEC-XSS, REF-SEC-INJECT
 
 - ✅ Never expose stack traces or technical details to end users
 - ✅ Log security errors to an internal log with a CorrelationId
-- ✅ Add rate limiting to every public API
-- ✅ Use HTTPS only — no HTTP in any environment
+- Apply rate limiting/abuse controls where exposure, cost, or threat model justifies them; do not add arbitrary throttling to every endpoint without context.
+- Require HTTPS for production and untrusted networks. Local development/test environments may use HTTP when isolated and explicitly configured.
 - ❌ Never store secrets (API keys, passwords) in source code

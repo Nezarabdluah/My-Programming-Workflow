@@ -1,19 +1,20 @@
-# 📝 Project Context (AOS v8.0-dev)
+# Project Context — AOS v8.0-dev
 
-> **Session 5** — 2026-09-12
+## Current State
+- **Phase:** v8 Convergence Sprint
+- **Task:** T022 — Done
+- **Branch:** `aos-v8-convergence`
+- **Main:** unchanged
+- **PR:** #1 draft, unmerged
 
-## State
-- **Version**: v8.0.0-dev | **Phase**: Sprint 1 COMPLETE ✅
-- **Governance**: 11/11 PASS | Mutations: 6/6 ✅
-- **Boot**: 699 → ~300 lines (−57%)
+## Applied Decisions
+- ADR-006: fixed seven-layer vertical-slice governance removed from Core.
+- ADR-007: context/resources load selectively; full bundles and source REF/CONST comments are not mandatory.
 
-## Session 5 Changes
-- ADR-006 (Vertical Slice → Profile) + ADR-007 (references → on-demand)
-- Governance rebuilt: 5 statuses, JSON, real T10, no hardcoded `src/`, T11 boot budget
-- boot-manifest.md created with full Task Routing + Knowledge Wiring
-- README rewritten (1,703 → 435 lines) reflecting entire project
-- Mutation tests: 6/6 ✅
+## Current Result
+- Core, workflows, rules, INDEX, memory, governance, and CI aligned to v8.
+- GitHub Actions run `35436797418` passed full verification after memory compaction.
+- T022 is closed pending one final Done-state CI check so GOV-T09 validates the full state history.
 
-## Next Steps
-- Sprint 2: Technology Profiles, Context Broker, 12 neutral task contracts
-- Boot reduction: target 200 soft → 150 goal
+## Next
+If Done-state CI remains green, prepare the draft PR for merge review/squash strategy.

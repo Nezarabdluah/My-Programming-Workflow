@@ -1,19 +1,17 @@
 # Create Frontend Module
 
-> General workflow for building a frontend UI module with any stack.
+> Frontend UI workflow. Adapt steps to the detected framework, design system, application type, and existing project conventions.
 
 ---
 
-## ⚠️ Mandatory Resource Injection (before writing any code) — MUST, gate blocked without it
-0. Read `05-references/books/00-master-index.md` Stage 4 → load every MUST resource listed there
-1. Read `01-core/wiring-registry.md` → find Architecture / API rows
-2. Load constitutions from `05-references/books/constitutions/`:
-   - `arch-constitution.md` — No Logic in UI, DTO Mandate
-   - `ddd-constitution.md` — UI State Ignorance, Frontend Parity
-   - `security-constitution.md` — Angular Security Bypass Ban, XSS prevention
-   - `integration-constitution.md` — BFF Pattern, Payload Minimization
-3. IF Angular project → inject `05-references/prompts/frontend-prompts.md`
-4. Cite constitutions in code as `// [CONST-XXX-N]` and produce a 1-line Resource Utilization Summary before Done
+## Context Expansion (ADR-007)
+
+Before implementation:
+1. Inspect the existing frontend framework, design system, state patterns, and project conventions.
+2. Use `wiring-registry.md` to discover only relevant resources.
+3. Load security/API guidance for actual risks such as XSS, authorization-driven UI state, or payload design.
+4. Load framework prompts only when they materially help.
+5. Do not require production-code REF/CONST comments; record material evidence in review notes.
 
 ---
 
@@ -30,7 +28,7 @@
 1. Design the Component Tree
 2. Identify reusable components
 3. Identify each component's data sources (API endpoints)
-4. Identify the required State Management
+4. Identify whether local/shared/server state management is actually required
 
 ---
 
@@ -46,7 +44,7 @@
 1. Bind each component to the right API
 2. Add loading states
 3. Add user-facing error handling
-4. ✅ Pagination for every data list
+4. Use pagination/virtualization/infinite loading when dataset size or project conventions justify it
 
 ---
 
@@ -58,7 +56,7 @@
 ---
 
 ## Step 6: User Experience
-1. ✅ Responsive design — works at every size
+1. Verify the target responsive breakpoints/devices defined by the product
 2. ✅ Confirmation before destructive operations (delete, state change)
 3. ✅ Clear success/error messages
 4. ✅ Never disable buttons without a visible reason
@@ -67,5 +65,5 @@
 
 ## Step 7: Verification & Delivery
 1. Build the project ← zero errors
-2. Test in more than one browser
+2. Test the browser/device matrix required by the project when applicable
 3. Update `04-memory/project-context.md`

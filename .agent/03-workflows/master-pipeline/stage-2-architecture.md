@@ -15,11 +15,10 @@ gate:
   previous_stage_status: passed       # stage 1 must pass
   requires:
     - approved specs from stage 1
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 2 row"
-    - constitutions: arch-constitution + ddd-constitution + integration-constitution (if multi-module)
-    - 02-rules/architecture-and-design.md
-    - wiring-registry → REF-ARCH contracts
+  context_candidates:
+    - 02-rules/architecture-and-design.md (when the task uses these architectural patterns)
+    - arch/ddd/integration constitutions only when materially relevant
+    - targeted REF-ARCH anchors when evidence is needed
   decision: proceed | skip
 
 # Skip condition: classification ∈ {🟢, 🟡}
@@ -33,10 +32,10 @@ gate:
 ### 2.1 — Dependency Map
 
 ```
-□ Map the component dependency graph for the feature:
-  - Identify layers: Database → Domain → Application → API → Frontend → UI/UX → Tests
-  - Verify one-way dependency flow (no circular references)
-  - Grep REF-ARCH-DEP in engineering-rules-catalog-REF.md for compliance
+□ Map the components and boundaries actually used by this project/feature.
+□ Verify dependencies against the project's established architecture and approved ADRs.
+□ Check for circular or forbidden dependencies where the chosen architecture defines such constraints.
+□ Use REF-ARCH guidance only when its architectural model applies to this project.
 ```
 
 ### 2.2 — Domain Modeling (if DDD applies)
@@ -79,11 +78,11 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|
-| `02-rules/architecture-and-design.md` | Always at stage entry |
+| `02-rules/architecture-and-design.md` | When Clean Architecture / DDD / module-design guidance applies |
 | Grep `REF-ARCH-DEP, ISOL, AGGR, VO, REPO, SOLID, FACADE` | During dependency and domain modeling |
 | Books: grep `Clean Architecture`, `Aggregate`, `SOLID` | When justifying design decisions |
 

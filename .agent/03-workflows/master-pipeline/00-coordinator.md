@@ -93,34 +93,31 @@ Use these tags explicitly at every gate decision point:
 
 ---
 
-## Mandatory Resource Injection Protocol
+## Context Expansion Protocol (ADR-007)
 
-> **"Availability is not enough — ENFORCEMENT is what separates professional systems from amateur ones."**
+Before entering a stage:
 
-Before entering ANY stage, the model MUST:
+1. Determine which capabilities are actually active in that stage for this task.
+2. Use `01-core/wiring-registry.md` and `05-references/books/00-master-index.md` only to discover candidate resources.
+3. Load the minimum relevant context. Do not load complete bundles by default.
+4. Heavy references are grep/search-first.
+5. Record resources used only when they materially influenced a decision or verification result.
 
-1. **Read `05-references/books/00-master-index.md`** — find the current stage's row.
-2. **Load every MUST resource** listed for that stage (constitutions, rules, prompts, templates).
-3. **Check every IF condition** and load matched resources.
-4. **Cite loaded resources** in a Resource Injection Block at the top of the stage output:
+Example:
 
 ```yaml
-# RESOURCE INJECTION — Stage N: [Name]
-constitutions_loaded:
-  - arch-constitution.md      # [cite specific rules applied]
-  - security-constitution.md  # [cite specific rules applied]
-rules_loaded:
-  - architecture-and-design.md  # REF-ARCH-DEP, REF-ARCH-ISOL
-refs_grepped:
-  - devops: [OPS-SECTEST]       # matched: line 450
-prompts_injected:
-  - backend-prompts.md          # active for .NET generation
-templates_used:
-  - entity-pattern.md           # for new entity creation
-coverage: "5/5 MUST loaded | 1/2 IF triggered"
+context_expansion:
+  stage: N
+  capabilities: [security, database]
+  loaded:
+    - 02-rules/security-checklist.md
+  grepped:
+    - REF-SEC-IDOR
+  skipped_as_irrelevant:
+    - ddd-constitution.md
 ```
 
-5. **Produce a Resource Utilization Summary** before marking stage as Done (see master-index template).
+A gate fails for missing **required evidence or analysis**, not merely because an unrelated resource was not loaded.
 
 ## Handoff Contract — embedded
 

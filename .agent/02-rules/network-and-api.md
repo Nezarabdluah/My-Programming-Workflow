@@ -19,20 +19,20 @@ requires: [REF-NET-EVIDENCE, REF-NET-PAYLOAD, REF-NET-BATCH, REF-NET-LATENCY, RE
 - ✅ Design flat, small DTOs containing only the fields the UI requires
 
 ### Compression:
-- ✅ Enable HTTP compression (GZIP, Brotli) for responses and APIs
-- ✅ Static assets and scripts are served compressed
+- Enable HTTP compression for compressible payloads/assets when it provides material bandwidth benefit.
+- Avoid compressing tiny/already-compressed content or sensitive responses where compression creates a security concern.
 
 ---
 
 ## 2. Request Design (Chunky vs Chatty)
 
-### No queries in loops:
-- ❌ **Never** write client code sending HTTP requests inside a loop
-- ✅ Use the BFF (Backend For Frontend) pattern or an API Gateway to aggregate queries
+### Avoid pathological chatty patterns:
+- Avoid per-item HTTP calls in loops when they create excessive latency/load.
+- Prefer batching, aggregation, parallelism with limits, or an existing BFF/API composition pattern when justified.
 
 ### Aggregated endpoints:
-- ✅ Design "chunky" endpoints returning aggregated data in one round-trip
-- ❌ Never force the client into multiple "chatty" requests to assemble data
+- Aggregate requests when it reduces meaningful network overhead without creating oversized/coupled contracts.
+- Multiple calls can be appropriate when resources have independent lifecycles, caching, permissions, or failure modes.
 
 ---
 
@@ -57,7 +57,7 @@ requires: [REF-NET-EVIDENCE, REF-NET-PAYLOAD, REF-NET-BATCH, REF-NET-LATENCY, RE
 
 - ✅ Use HTTP verbs correctly: GET for reads, POST for creation, PUT for updates, DELETE for deletion
 - ✅ Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
-- ✅ Use API versioning (e.g. `/api/v1/`)
-- ✅ Document every endpoint (OpenAPI/Swagger)
-- ✅ Add rate limiting to every public endpoint
-- ✅ Use pagination on every endpoint returning lists
+- Introduce API versioning when compatibility/lifecycle needs justify it; do not version by default without a consumer contract reason.
+- Maintain API documentation appropriate to the project (OpenAPI/Swagger when applicable).
+- Apply rate limiting/quotas based on exposure and abuse/cost risk.
+- Use pagination/cursors/streaming for potentially large or unbounded list endpoints.

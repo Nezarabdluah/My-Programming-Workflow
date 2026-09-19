@@ -16,8 +16,8 @@ gate:
   requires:
     - successful deployment (stage 7)
     - monitoring infrastructure active
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 8 row"
+  context_candidates:
+    - "optional index: 05-references/books/00-master-index.md → Stage 8 row"
     - constitutions: perf-constitution (query performance in production)
     - wiring-registry → OPS-DORA, OPS-SIGNALS, OPS-OBSERVABILITY
   decision: proceed | skip
@@ -95,7 +95,7 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|

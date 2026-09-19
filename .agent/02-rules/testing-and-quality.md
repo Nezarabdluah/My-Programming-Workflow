@@ -59,14 +59,15 @@ requires: [REF-TEST-BEHAV, REF-TEST-MOCK, REF-OBS-LOG, REF-OBS-TRACE, REF-RES-CI
 ## 3. Resilience
 
 ### Transient failure handling:
-- ✅ Every outbound call (HTTP, DB, network) must be wrapped in:
-  1. **Timeout** — never let a request hang forever
-  2. **Retry + Exponential Backoff + Jitter** — don't flood the failing service
-  3. **Circuit Breaker** — stop calling when the failure rate crosses the threshold
+- Define timeouts for remote/external operations where hanging would harm the system.
+- Retry only failures known to be transient and only when the operation is safe/idempotent or protected against duplicate effects.
+- Use exponential backoff/jitter when retries are appropriate.
+- Use circuit breakers primarily for unstable remote dependencies where failing fast improves resilience.
+- Do not mechanically retry non-idempotent writes or wrap every database call in a circuit breaker.
 
 ### Graceful degradation:
-- ✅ Provide fallback behavior (cache or default data) when an external dependency fails
-- ✅ Expose a `/health` endpoint checking every critical dependency
+- Provide graceful degradation/fallback only when stale/default behavior is safe and useful.
+- Expose health/readiness signals appropriate to the deployment platform and critical dependencies; avoid health checks that create cascading load.
 
 ---
 
@@ -80,6 +81,6 @@ requires: [REF-TEST-BEHAV, REF-TEST-MOCK, REF-OBS-LOG, REF-OBS-TRACE, REF-RES-CI
 - [ ] No console.log or debug print statements
 - [ ] No exposed secrets in code
 - [ ] No stack traces shown to the user
-- [ ] Every data list has pagination
-- [ ] Every new endpoint has input validation
+- [ ] Large/unbounded data lists have an appropriate server/client loading strategy
+- [ ] New external input boundaries have appropriate validation
 <!-- new items are added here when repeated mistakes escalate from learned-mistakes.md -->

@@ -16,8 +16,8 @@ gate:
   requires:
     - PRR passed or conditionally passed (stage 6)
     - deployment target identified (staging / production)
-  resources_loaded:
-    - "⚠️ MANDATORY: read 05-references/books/00-master-index.md → Stage 7 row"
+  context_candidates:
+    - "optional index: 05-references/books/00-master-index.md → Stage 7 row"
     - constitutions: resilience-constitution (rollback design, graceful degradation)
     - wiring-registry → OPS-ROLLBACK
   decision: proceed | skip
@@ -96,7 +96,7 @@ gate:
 
 ---
 
-## Resource Injection (from wiring-registry)
+## Context Expansion (selective)
 
 | Resource | When |
 |----------|------|

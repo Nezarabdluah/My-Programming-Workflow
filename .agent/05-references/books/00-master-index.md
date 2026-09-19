@@ -1,22 +1,23 @@
-# AOS Resource Injection Matrix
-<!-- This is the SINGLE SOURCE OF TRUTH mapping ALL AOS resources to ALL pipeline stages -->
-<!-- Every stage MUST consult this file to know what to load, grep, and cite -->
-<!-- Status: MUST = gate blocked without it | SHOULD = recommended | IF = conditional -->
-<!-- Bundle = complete resource set for a capability (constitution + rules + templates + book refs) -->
+# AOS Lifecycle Resource Index — v8.0-dev
+<!-- Maps available AOS resources to lifecycle stages. -->
+<!-- ADR-007: this is an index, not an unconditional loader. -->
+<!-- Legacy MUST/SHOULD/IF labels are migration metadata until Context Broker replaces them. -->
 
 ---
 
 ## How to Use This File
 
-When executing any pipeline stage, the model MUST:
-1. Read this file's section for the current stage
-2. **Load the complete bundle** for each active capability (all files in the bundle, not just one)
-3. Grep reference anchors from the catalog — never read the full reference file
-4. Cite every applied rule: `// [REF-XXX-N]` for rules, `// [CONST-XXX-N]` for constitutions
-5. Produce a Resource Utilization Summary before marking the stage as Done
+ADR-007 governs resource loading.
 
-> **Bundle loading rule**: when a bundle is listed, load ALL files in it — not selectively.
-> This ensures every piece of knowledge (books, rules, templates, prompts) is applied.
+When a lifecycle stage needs additional context:
+1. Identify the concrete capability/question first.
+2. Use the stage table below to discover candidate resources.
+3. Load only the smallest subset that materially helps make or verify the decision.
+4. Grep heavy references by anchor/keyword; never full-read them by default.
+5. Production-source REF/CONST comments are optional; evidence belongs in task reports/evidence.
+6. If no listed resource is relevant, load none.
+
+> Legacy `MUST/SHOULD/IF` values describe the old v7 mapping and are retained temporarily for migration visibility. They do not override ADR-007 selective loading.
 
 ---
 
@@ -146,7 +147,7 @@ When executing any pipeline stage, the model MUST:
 
 ---
 
-## Resource Utilization Summary Template
+## Optional Resource Utilization Summary Template
 
 At the end of each pipeline run, produce this report:
 

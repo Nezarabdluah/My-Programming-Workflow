@@ -1,6 +1,6 @@
 # Create Backend Module
 
-> General workflow for building a complete backend module with any stack.
+> Layered-backend workflow. Use only when the existing project/profile has comparable business/use-case/persistence/API areas; otherwise adapt to the project's established architecture.
 
 ---
 
@@ -8,60 +8,58 @@
 - ✅ Task classified (Simple/Medium/Sensitive)
 - ✅ The relevant rules file is loaded
 
-## ⚠️ Mandatory Resource Injection (before writing any code) — MUST, gate blocked without it
-0. Read `05-references/books/00-master-index.md` Stage 4 → load every MUST resource listed there
-1. Read `01-core/wiring-registry.md` → find Architecture / DDD / Database rows
-2. Load constitutions from `05-references/books/constitutions/`:
-   - `arch-constitution.md` — Dependency Rule, Layer Isolation, DTO Mandate
-   - `ddd-constitution.md` — Aggregate Root, Repository rules, Ubiquitous Language
-   - `perf-constitution.md` — SARGable queries, N+1 prevention
-   - `security-constitution.md` — Mass Assignment, Validation layering
-3. Load rules: `02-rules/architecture-and-design.md` → cite `REF-ARCH-*` contracts in code as `// [REF-ARCH-X]`
-4. Load templates: `06-templates/entity-patterns.md` (entity design) + `06-templates/coding-standards.md` (coding standards)
-5. Cite constitutions in code as `// [CONST-XXX-N]` and produce a 1-line Resource Utilization Summary before Done
+## Context Expansion (ADR-007)
+
+Before implementation:
+1. Inspect the project's existing backend architecture and conventions.
+2. Use `wiring-registry.md` to discover only resources relevant to the task.
+3. Load architecture/DDD guidance only if the project actually uses those patterns.
+4. Load DB/security/API rules only when those capabilities are affected.
+5. Use templates/prompts as optional accelerators, not mandatory architecture.
+6. Record material compliance in evidence/review notes; source REF/CONST comments are optional.
 
 ---
 
 ## Step 1: Requirements Analysis
-1. Identify the main Entity: what is its name? Its properties?
-2. Identify relationships: does it relate to other entities?
-3. Identify required operations: CRUD? Custom operations?
-4. Identify Business Rules: what are the invariants?
+1. Identify the use case/business capability and affected data/contracts.
+2. Identify the project components/boundaries involved.
+3. Identify required operations and behavior.
+4. Identify business rules/invariants when the project has a domain model.
 5. **State your assumptions** to the developer before starting.
 
 ---
 
-## Step 2: Build the Domain Layer
+## Step 2: Implement the Project's Business/Domain Area
 1. Create the entity with its properties
 2. Add invariants — no invalid state
 3. Create Value Objects if needed
-4. Declare the Repository interface
-5. ✅ Verify: the Domain has zero external dependencies
+4. Use repository abstractions only when they match the project's architecture
+5. Verify dependencies against the project's established boundaries
 
 ---
 
-## Step 3: Build the Application Layer
+## Step 3: Implement the Use-Case/Application Area
 1. Create DTOs: input (Create/Update) + output (Response)
 2. Create the Application Service
 3. Add input validation
 4. Add authorization checks
-5. ✅ Verify: the service uses the interface, not the implementation
+5. Verify the implementation follows the project's dependency conventions
 
 ---
 
-## Step 4: Build the Infrastructure Layer
-1. Implement the repository interface
-2. Set up the database (Schema/Migration)
-3. Add appropriate indexes
-4. ✅ Verify: pagination + indexes + no N+1
+## Step 4: Implement Persistence/Infrastructure (when applicable)
+1. Follow the project's established persistence abstraction.
+2. Change schema/migrations only when required.
+3. Add/query indexes based on actual access patterns when relevant.
+4. Verify query behavior/performance issues relevant to the change.
 
 ---
 
-## Step 5: Build the Presentation Layer (API)
-1. Create the Controller/Router with endpoints
-2. Add error handling
-3. Add documentation (Swagger/OpenAPI)
-4. ✅ Verify: flat DTOs + rate limiting + validation
+## Step 5: Implement the External/API Boundary (when applicable)
+1. Follow the project's existing endpoint/handler pattern.
+2. Add appropriate authorization, validation, and error behavior.
+3. Update API documentation when the project uses it.
+4. Verify the external contract and affected security boundaries.
 
 ---
 

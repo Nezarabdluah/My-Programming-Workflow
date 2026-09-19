@@ -4,16 +4,14 @@
 
 ---
 
-## ⚠️ Mandatory Resource Injection (before any UI changes) — MUST, gate blocked without it
-0. Read `05-references/books/00-master-index.md` Stage 4 → load every MUST resource listed there
-1. Read `01-core/wiring-registry.md` → find Architecture / API rows
-2. Load constitutions:
-   - `arch-constitution.md` — No Logic in UI
-   - `ddd-constitution.md` — UI State Ignorance (backend provides boolean flags)
-   - `security-constitution.md` — XSS prevention, bypassSecurityTrust ban
-   - `integration-constitution.md` — Payload Minimization, BFF pattern
-3. IF Angular → inject `05-references/prompts/frontend-prompts.md`
-4. Cite constitutions in code as `// [CONST-XXX-N]` and produce a 1-line Resource Utilization Summary before Done
+## Context Expansion (ADR-007)
+
+Before UI changes, load only the guidance that materially applies:
+1. Inspect the existing UI patterns and project conventions first.
+2. Use `wiring-registry.md` to discover relevant security/API/architecture resources when needed.
+3. Load frontend prompts only when they add value for the detected framework.
+4. Grep targeted references for actual risks such as XSS, payload shape, accessibility, or API behavior.
+5. Do not require REF/CONST comments in production UI code; record material compliance in evidence/review notes.
 
 ---
 

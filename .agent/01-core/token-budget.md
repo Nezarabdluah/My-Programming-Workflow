@@ -1,46 +1,54 @@
 ---
 id: core-token-budget
-description: Token budget policy and selective loading rules. Load when planning session reading or when context usage approaches limits.
+description: Supplemental context-budget and selective-loading guidance for AOS v8.
 alwaysApply: false
 globs: []
 requires: [REF-AI-CONTRACT]
 ---
 
-# Token Budget — Token Policy & Selective Loading
+# Token Budget — AOS v8.0-dev
 
----
+> Canonical boot limits live in `01-core/boot-manifest.md` and are enforced by GOV-T11.
 
-## Total ceiling: ≤ 400 lines of reading per session
+## Canonical Boot
 
-### Always loaded (permanent, keep lean):
-| File | Size class |
-|------|-----------|
-| `AGENTS.md` | Light |
-| `01-core/operating-contract.md` | Medium |
-| `04-memory/project-context.md` | Light (grows with use — keep it pruned) |
-| `04-memory/learned-mistakes.md` | Light (max 20 active mistakes) |
-| `VERSION` | Tiny |
+Boot only:
+- `01-core/boot-manifest.md`
+- `04-memory/project-context.md`
+- `04-memory/learned-mistakes.md`
+- `04-memory/active-tasks.md`
+- `VERSION`
 
-> Size classes: **Tiny** ≤ 10 lines · **Light** ≤ 60 · **Medium** ≤ 120 · **Heavy** = grep-only. Exact line counts drift — treat classes, not numbers, as the contract.
+During v8 convergence the canonical boot ceiling is 200 lines; final target is 150.
 
-### Loaded per task (ONE file at a time from each):
-| Type | Size class |
-|------|-----------|
-| One rules file from `02-rules/` | Light–Medium |
-| One workflow file from `03-workflows/` (or one step file of a sub-workflow) | Light–Medium |
+Do not preload:
+- INDEX,
+- operating-contract,
+- workflows,
+- rules,
+- profiles,
+- references.
 
-### Never auto-loaded:
-- `05-references/*` ← grep only (resolve anchors via `01-core/wiring-registry.md`)
-- `06-templates/*` ← only during project initialization
-- `04-memory/mistakes-archive.md` ← archive only
-- `04-memory/project-knowledge.md`, `codebase-map.md` ← on demand
-- `04-memory/decisions.md`, `active-tasks.md` ← on demand / conditional per AGENTS.md
+## Task Expansion
 
----
+Load only what the current task needs:
+- one directly relevant rule file at a time,
+- one workflow/stage at a time,
+- project memory on demand,
+- heavy references by search/grep only.
 
-## Token efficiency rules
-1. **No repo dumping**: never read the whole project. Grep first, then read the identified file.
-2. **Targeted reading**: use line ranges. Never read a full file when a function-level check suffices.
-3. **Differential updates**: output only the changes (diff-style). Never rewrite whole files without need.
-4. **70% warning**: when context reaches 70% of the model limit ← warn the developer and propose summarizing progress into memory.
-5. **References guard**: never read `05-references/books/` in full — grep only [REF-AI-CONTRACT].
+Suggested expansion budgets from the boot contract:
+- 🟢 up to ~2K tokens when needed,
+- 🟡 up to ~6K,
+- 🔴 up to ~10K when justified.
+
+These are budgets, not targets.
+
+## Efficiency Rules
+1. Search before broad reading.
+2. Prefer relevant line ranges/functions over whole-file reads.
+3. Do not dump the repository into context.
+4. Do not load a complete knowledge bundle by default.
+5. Summarize durable progress into memory before a tool/session handoff.
+6. When context pressure becomes material, preserve state and reduce loaded context rather than continuing blindly.
+7. Never sacrifice correctness/security merely to hit a token target.

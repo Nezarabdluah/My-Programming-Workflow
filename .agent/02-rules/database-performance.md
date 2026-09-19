@@ -14,10 +14,10 @@ requires: [REF-DB-SARG, REF-DB-COVER, REF-DB-PAG, REF-DB-N1, REF-DB-IMPLICIT, RE
 
 ## 1. Efficient Query Design
 
-### Pagination — mandatory:
-- ❌ **Never** load a full table into memory
-- ✅ Use server-side pagination (LIMIT/OFFSET or cursor-based)
-- ✅ Every data list = mandatory pagination
+### Bounded result handling:
+- Do not materialize large/unbounded tables into application memory.
+- Use server-side pagination, keyset/cursor navigation, streaming, or explicit bounded limits according to the use case.
+- Small bounded lookup/reference sets do not require artificial pagination.
 
 ### N+1 query prevention:
 - ❌ **Never** query inside a loop
@@ -37,8 +37,9 @@ requires: [REF-DB-SARG, REF-DB-COVER, REF-DB-PAG, REF-DB-N1, REF-DB-IMPLICIT, RE
 - ✅ Use range comparisons:
   - Right: `WHERE created_date >= '2023-01-01' AND created_date < '2024-01-01'` ← Index Seek
 
-### Covering Indexes:
-- ✅ If the query performs repeated Key Lookups ← add the required columns to INCLUDE
+### Covering indexes:
+- Consider INCLUDE/covering indexes when execution plans and workload evidence show repeated lookup cost.
+- Do not add covering indexes mechanically; account for write/storage overhead and database capabilities.
 
 ### Plan cache pollution prevention:
 - ✅ Use parameterized queries. Never paste user input into raw SQL.
@@ -50,10 +51,10 @@ requires: [REF-DB-SARG, REF-DB-COVER, REF-DB-PAG, REF-DB-N1, REF-DB-IMPLICIT, RE
 
 ## 3. Document Databases
 
-### Strict indexing:
-- ❌ Never query unindexed fields
-- ✅ Design Compound Indexes by the **ESR** rule: Equality first, Sort second, Range last
-- ✅ Verify with Explain that the query uses an Index Scan, not a Collection Scan
+### Indexing:
+- Index fields/query shapes that matter to the workload; occasional low-volume scans can be acceptable.
+- For MongoDB compound indexes, use ESR as a useful heuristic and verify with execution evidence.
+- Avoid blanket indexes that increase write/storage cost without measurable benefit.
 
 ### Minimizing transferred data:
 - ❌ Never fetch the whole document when you need a few fields

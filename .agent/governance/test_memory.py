@@ -14,12 +14,12 @@ SKIP_EXPECTED = "SKIP_EXPECTED"
 SKIP_UNSUPPORTED = "SKIP_UNSUPPORTED"
 
 # v8 boot context limits
-BOOT_CONTEXT_SOFT_LIMIT = 200  # lines — transitional target
-BOOT_CONTEXT_HARD_LIMIT = 300  # lines — absolute max during v8 migration
-BOOT_CONTEXT_GOAL = 150        # lines — final goal
+BOOT_CONTEXT_HARD_LIMIT = 200  # convergence ceiling
+BOOT_CONTEXT_GOAL = 150        # final v8 target
 
+# Canonical boot context only. Entry adapters such as .agent/AGENTS.md are not
+# counted because boot-manifest.md is the runtime authority.
 BOOT_FILES = [
-    ".agent/AGENTS.md",
     ".agent/01-core/boot-manifest.md",
     ".agent/VERSION",
     ".agent/04-memory/project-context.md",
@@ -141,15 +141,10 @@ def test_gov_t05_handoff_validity():
 
 
 def test_gov_t11_boot_context_budget():
-    """GOV-T11: Verify boot context stays within budget.
+    """GOV-T11: Verify canonical boot context stays within the v8 budget.
 
-    Measures total lines of all files that must be loaded at session start.
-    Hard limit: 300 lines (transitional)
-    Soft limit: 200 lines
-    Goal: 150 lines
-
-    NOTE: During v7→v8 migration this will initially FAIL, which is expected
-    and documents the gap. The fix is part of the v8 boot context reduction work.
+    During convergence, >200 lines is a hard failure.
+    The final v8 optimization goal is <=150 lines.
     """
     total_lines = 0
     missing = []
@@ -165,25 +160,21 @@ def test_gov_t11_boot_context_budget():
         file_stats.append((rel_path, lines))
 
     if missing:
-        return FAIL, (
-            f"GOV-T11: Boot files missing: {', '.join(missing)}"
-        )
+        return FAIL, "GOV-T11: Boot files missing: " + ", ".join(missing)
+
+    detail = "; ".join(
+        f"{name.split('/')[-1]}={count}" for name, count in file_stats
+    )
 
     if total_lines > BOOT_CONTEXT_HARD_LIMIT:
-        detail = "; ".join(f"{name.split('/')[-1]}={n}" for name, n in file_stats)
         return FAIL, (
-            f"GOV-T11: Boot context {total_lines} lines exceeds "
-            f"hard limit {BOOT_CONTEXT_HARD_LIMIT}. [{detail}]"
-        )
-
-    if total_lines > BOOT_CONTEXT_SOFT_LIMIT:
-        return PASS, (
-            f"GOV-T11: Boot context {total_lines} lines — within hard limit "
-            f"but above soft target {BOOT_CONTEXT_SOFT_LIMIT}. "
-            f"Goal: {BOOT_CONTEXT_GOAL}."
+            f"GOV-T11: Canonical boot context {total_lines} lines exceeds "
+            f"convergence ceiling {BOOT_CONTEXT_HARD_LIMIT}. "
+            f"Final goal: {BOOT_CONTEXT_GOAL}. [{detail}]"
         )
 
     return PASS, (
-        f"GOV-T11: Boot context {total_lines} lines — within budget. "
-        f"Goal: {BOOT_CONTEXT_GOAL}."
+        f"GOV-T11: Canonical boot context {total_lines} lines is within "
+        f"convergence ceiling {BOOT_CONTEXT_HARD_LIMIT}. "
+        f"Final goal: {BOOT_CONTEXT_GOAL}. [{detail}]"
     )
