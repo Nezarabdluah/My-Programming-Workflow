@@ -416,3 +416,34 @@ def test_gov_t29_registered_adr_execution_gate_auto_executes():
         return FAIL, f"GOV-T29: expected AUTO_EXECUTE: {result}"
 
     return PASS, "GOV-T29: verified ADR task is READY/AUTO_EXECUTE."
+
+
+def test_gov_t30_approval_registry_sources_resolve():
+    """GOV-T30: Every approval registry entry resolves to durable source evidence."""
+    engine = _load_module(
+        "aos_approval_engine_registry_sources",
+        ".agent/01-core/approval_engine.py",
+    )
+    registry = _json(".agent/01-core/approval-registry.json")
+    entries = registry.get("entries", [])
+    if not entries:
+        return FAIL, "GOV-T30: approval registry has no entries."
+
+    seen = set()
+    for entry in entries:
+        entry_id = entry.get("id")
+        if not isinstance(entry_id, str) or not entry_id.strip():
+            return FAIL, "GOV-T30: registry entry missing id."
+        if entry_id in seen:
+            return FAIL, f"GOV-T30: duplicate registry id: {entry_id}"
+        seen.add(entry_id)
+
+        try:
+            engine._verify_registry_source(entry)
+        except Exception as exc:
+            return FAIL, f"GOV-T30: {entry_id} source invalid: {exc}"
+
+    return PASS, (
+        f"GOV-T30: {len(entries)} approval registry entries resolve "
+        "to durable source evidence."
+    )
