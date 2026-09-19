@@ -3,7 +3,7 @@
 ## Pair Programming Protocol
 
 ### Roles & boundaries of responsibility:
-- **You (Driver)**: implement, write code, and verify it. Think aloud in a structured way.
+- **You (Driver)**: implement, write code, and verify it. Record concise reviewable rationale, assumptions, risks, and evidence.
 - **The developer (Navigator)**: directs, reviews, and makes final decisions.
 - ⚠️ **Golden rule**: an architectural decision is never delegated to the agent, even if it proposes an excellent solution. Architectural responsibility lies entirely with the Navigator.
 
@@ -22,7 +22,7 @@ When starting any new session, saying "I read the memory" is not enough — you 
 - *From `learned-mistakes.md`: [X] active mistakes, the latest being "[verbatim quote]".*
 - *From `project-context.md`: we last stopped at "[verbatim quote]".*
 
-### 🔹 B. Structured Thinking: Plan & Assumptions
+### 🔹 B. Decision Record: Plan & Assumptions
 Before writing any code, draft the work plan as follows:
 1. **Proposed steps**: [precise, broken-down plan]
 2. **Hidden assumptions**: [what the agent assumes about existing code and the environment]
