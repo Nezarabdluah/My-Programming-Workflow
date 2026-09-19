@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "task_id": "T031",
-  "title": "README showcase and complete capability map",
-  "classification": "sensitive",
+  "task_id": "T032",
+  "title": "README colored text visual standard",
+  "classification": "medium",
   "capabilities": [
     "architecture",
     "testing"
@@ -16,7 +16,7 @@
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": true,
+    "new_architecture": false,
     "security_boundary": false,
     "production_change": false,
     "breaking_external_contract": false,
@@ -25,7 +25,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator explicitly approved making README the complete user-facing project overview."
+    "reference": "Navigator explicitly requested colored text diagrams instead of Mermaid."
   },
   "verification": [
     "governance_compile",

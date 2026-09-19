@@ -45,26 +45,55 @@ AOS turns an AI coding agent from “a model that edits files” into a governed
 
 > **Important:** this README is the complete user-facing overview. It is **not** a second runtime authority. Executable truth remains in `boot-manifest.md`, Task Contract, Execution Gate, Context Map, Profiles, and Project Profile.
 
+## Visual legend
+
+🟦 **Input / Context** · 🟪 **Contract / Architecture** · 🟨 **Decision / Gate** · 🟩 **Verified / Safe path** · 🟥 **Stop / Failure** · 🛡️ **Governance** · 🧠 **Memory**
+
 ---
 
 # How AOS works
 
-```mermaid
-flowchart TD
-    A[Task] --> B[Task Contract]
-    B --> C{Execution Gate}
-    C -->|HUMAN_REQUIRED| H[Stop for approval]
-    C -->|HUMAN_APPROVED| D[Context Broker]
-    C -->|AUTO_EXECUTE| D
-    D --> E[Project + Technology Profiles]
-    E --> F[Minimal selected resources]
-    F --> G[Implementation]
-    G --> I[Named verification checks]
-    I --> J[Evidence Bundle]
-    J --> K[Evidence History + SHA-256]
-    K --> L[Governance + Mutation Tests]
-    L --> M[Durable merge-safe Memory]
-    M --> N[Done]
+```text
+                         🟦 TASK
+                            │
+                            ▼
+                   🟪 TASK CONTRACT
+             scope · risk · capabilities
+                            │
+                            ▼
+                  🟨 EXECUTION GATE
+           ┌────────────────┼────────────────┐
+           │                │                │
+           ▼                ▼                ▼
+     🟥 HUMAN         🟩 HUMAN          🟢 AUTO
+       REQUIRED         APPROVED          EXECUTE
+           │                │                │
+           └──── stop ──────┘                │
+                            └────────┬────────┘
+                                     ▼
+                           🟦 CONTEXT BROKER
+                      loads only needed context
+                                     │
+                                     ▼
+                         🟪 PROJECT + TECH PROFILES
+                                     │
+                                     ▼
+                            🟩 IMPLEMENTATION
+                                     │
+                                     ▼
+                           🟨 VERIFICATION CHECKS
+                                     │
+                                     ▼
+                           🟦 EVIDENCE BUNDLE
+                                     │
+                                     ▼
+                    🛡️ GOVERNANCE + MUTATIONS
+                                     │
+                                     ▼
+                         🧠 DURABLE MEMORY
+                                     │
+                                     ▼
+                                  ✅ DONE
 ```
 
 The agent does not load everything. It declares the task, resolves approval, selects the smallest relevant context, executes, verifies, records evidence, and only then completes the task.
@@ -73,19 +102,41 @@ The agent does not load everything. It declares the task, resolves approval, sel
 
 # From install to Done
 
-```mermaid
-flowchart LR
-    A[1. Install AOS] --> B[2. Initialize target project]
-    B --> C[3. Discover stack + architecture]
-    C --> D[4. Create Project Profile]
-    D --> E[5. Give the agent a task]
-    E --> F[6. Execution Gate]
-    F --> G[7. Context Broker]
-    G --> H[8. Implement]
-    H --> I[9. Verify + Evidence]
-    I --> J[10. Governance]
-    J --> K[11. Memory update]
-    K --> L[12. Done]
+```text
+🟦 1. INSTALL AOS
+        │
+        ▼
+🟪 2. INITIALIZE PROJECT
+        │
+        ▼
+🔎 3. DISCOVER STACK + ARCHITECTURE
+        │
+        ▼
+🧩 4. BUILD PROJECT PROFILE
+        │
+        ▼
+📝 5. GIVE THE AGENT A TASK
+        │
+        ▼
+🚦 6. EXECUTION GATE
+        │
+        ▼
+🎯 7. CONTEXT BROKER
+        │
+        ▼
+🛠️ 8. IMPLEMENT
+        │
+        ▼
+🧪 9. VERIFY + RECORD EVIDENCE
+        │
+        ▼
+🛡️ 10. GOVERNANCE
+        │
+        ▼
+🧠 11. UPDATE DURABLE MEMORY
+        │
+        ▼
+✅ 12. DONE
 ```
 
 ## 1) Install the sanitized runtime
@@ -141,16 +192,32 @@ The result is one of:
 
 For full lifecycle work AOS provides nine stages:
 
-```mermaid
-flowchart LR
-    S0[Intake] --> S1[Requirements]
-    S1 --> S2[Architecture]
-    S2 --> S3[Threat Model]
-    S3 --> S4[Implementation]
-    S4 --> S5[Testing]
-    S5 --> S6[Production Readiness]
-    S6 --> S7[Deployment]
-    S7 --> S8[Post-Launch]
+```text
+🟦 INTAKE
+   │
+   ▼
+🟪 REQUIREMENTS
+   │
+   ▼
+🏗️ ARCHITECTURE
+   │
+   ▼
+🔐 THREAT MODEL
+   │
+   ▼
+🛠️ IMPLEMENTATION
+   │
+   ▼
+🧪 TESTING
+   │
+   ▼
+📈 PRODUCTION READINESS
+   │
+   ▼
+🚀 DEPLOYMENT
+   │
+   ▼
+📡 POST-LAUNCH
 ```
 
 | Stage | Typical focus |
@@ -171,40 +238,34 @@ Pipeline depth is proportional to task risk. AOS does not force every task throu
 
 # Capability map
 
-```mermaid
-mindmap
-  root((AOS v8))
-    Engineering
-      Architecture
-      DDD / Clean Architecture
-      API / Network
-      Database / Performance
-    Quality
-      Unit / Integration / E2E
-      Mobile QA
-      Accessibility / UX
-      Mutation-tested Governance
-    Security
-      Threat Modeling
-      Auth / Authorization
-      Secrets / Dependencies
-      Hard-stop Risks
-    Operations
-      DevOps / CI
-      Production Readiness
-      Deployment / Rollback
-      Post-Launch
-    Intelligence
-      Context Broker
-      Technology Profiles
-      16 Distilled Books
-      6 Constitutions
-    Control
-      Execution Gate
-      Approval Provenance
-      Evidence Bundle
-      Evidence History
-      Merge-safe Memory
+```text
+                           🤖 AOS v8
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+       ▼                      ▼                      ▼
+ 🟦 ENGINEERING          🔐 SECURITY            🧪 QUALITY
+ Architecture            Threat Model            Unit Tests
+ DDD / Clean Arch        Auth / AuthZ             Integration
+ API / Network           Secrets                 E2E
+ DB / Performance        Dependencies            Mobile QA
+       │                      │                      │
+       └──────────────┬───────┴──────────┬───────────┘
+                      │                  │
+                      ▼                  ▼
+               🚀 OPERATIONS        🧠 INTELLIGENCE
+               CI / DevOps           Context Broker
+               Deployment            Tech Profiles
+               Rollback              16 Books
+               Post-Launch           6 Constitutions
+                      │                  │
+                      └─────────┬────────┘
+                                ▼
+                           🛡️ CONTROL
+                         Execution Gate
+                      Approval Provenance
+                       Evidence History
+                       Merge-safe Memory
 ```
 
 ---
@@ -328,16 +389,29 @@ Rules:
 - CI can upload Evidence History,
 - tampering with archived evidence is detected.
 
-```mermaid
-flowchart LR
-    A[Named Check] --> B[Execute Process]
-    B --> C{Exit Code}
-    C -->|0| D[PASS]
-    C -->|non-zero| E[FAIL]
-    D --> F[Evidence Bundle]
-    E --> F
-    F --> G[SHA-256 History]
-    G --> H[Governance]
+```text
+🟦 NAMED CHECK
+      │
+      ▼
+⚙️ EXECUTE PROCESS
+      │
+      ▼
+   EXIT CODE
+   ┌────┴────┐
+   │         │
+   ▼         ▼
+🟩 0       🟥 NON-ZERO
+ PASS        FAIL
+   │         │
+   └────┬────┘
+        ▼
+🧾 EVIDENCE BUNDLE
+        │
+        ▼
+🔒 SHA-256 HISTORY
+        │
+        ▼
+🛡️ GOVERNANCE
 ```
 
 ---
