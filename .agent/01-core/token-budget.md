@@ -6,7 +6,7 @@ globs: []
 requires: [REF-AI-CONTRACT]
 ---
 
-# Token Budget — AOS v8.0-dev
+# Token Budget — AOS v8.0.0-rc.1
 
 > Canonical boot limits live in `01-core/boot-manifest.md` and are enforced by GOV-T11.
 
