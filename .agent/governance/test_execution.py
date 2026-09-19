@@ -362,7 +362,7 @@ def test_gov_t27_task_contract_rejects_unknown_risk():
 
 
 def test_gov_t28_current_execution_gate_ready():
-    """GOV-T28: Current T025 resolves to READY/HUMAN_APPROVED."""
+    """GOV-T28: Current task resolves to READY/HUMAN_APPROVED."""
     gate = _load_module(
         "aos_execution_gate_current",
         ".agent/01-core/execution_gate.py",
@@ -379,7 +379,7 @@ def test_gov_t28_current_execution_gate_ready():
     if not result.get("verification"):
         return FAIL, "GOV-T28: no named verification checks returned."
 
-    return PASS, "GOV-T28: T025 is READY with HUMAN_APPROVED execution mode."
+    return PASS, f"GOV-T28: {result.get('task_id')} is READY/HUMAN_APPROVED."
 
 
 def test_gov_t29_registered_adr_execution_gate_auto_executes():
