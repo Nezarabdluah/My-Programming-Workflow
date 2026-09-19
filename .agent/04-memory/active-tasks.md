@@ -1,11 +1,11 @@
 # Active Tasks — AOS v8.0.0-rc.1
 
 ## T032 — README Colored Text Visual Standard 🟡
-- **State:** Validating
+- **State:** Done
 - **Approval:** explicit Navigator approval.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - Five README visuals use plain text + arrows/boxes + colored emoji.
@@ -15,8 +15,14 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - Existing GOV-T41 mutation detects showcase regression.
 - Full verification remains green; Boot stays ≤150.
 
+### Result
+- [x] Mermaid removed from all five README visuals.
+- [x] Colored text visual legend + diagrams added.
+- [x] ADR-014 refined and GOV-T41 updated.
+- [x] Executing + Validating verification passed.
+
 ### Evidence
-Run `35443018159`: 41 PASS, 28/28 mutations, GOV-T41 PASS, Boot 135/150.
+Validating run `35443054857`: full verification success.
 
 ### Next
-Run Validating-state verification; close T032 only if green.
+Use colored text diagrams as the README visual standard.
