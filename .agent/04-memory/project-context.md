@@ -1,18 +1,16 @@
 # Project Context — AOS v8.0-dev
 
-- **Phase:** Sprint 2 Context Broker Foundation
-- **Task:** T023 — Done
-- **Branch:** `aos-v8-sprint2-context`
-- **Main:** convergence merged via PR #1
+- **Phase:** Sprint 2 — Evidence & Approval
+- **Task:** T024 — Executing
+- **Branch:** `aos-v8-sprint2-evidence-approval`
+- **Main:** Context Broker foundation merged via PR #2 / `058dddc9fb141a38f6d7b63c1c04af602149a9a4`
 
 ## Architecture
-- Boot manifest is canonical.
-- ADR-006: web seven-layer model is profile-scoped.
-- ADR-007: resources load selectively.
-- ADR-008: Task Contract + Project/Technology Profiles + executable Context Map drive deterministic broker resolution.
+- ADR-008: deterministic Context Broker + Project/Technology Profiles.
+- ADR-009: deterministic Approval Engine + executable Evidence Bundle.
 
 ## Current
-Broker, profiles, T12–T16, mutations, and PR #2 are implemented. Run `35437378236` passed full verification after memory compaction.
+Approval engine, Evidence recorder, T024 contract, GOV-T17–T22, mutations, and CI evidence generation are implemented.
 
 ## Next
-Run Done-state CI, then prepare PR #2 for squash merge if green.
+Run PR CI, fix any failures, then validate before merge.
