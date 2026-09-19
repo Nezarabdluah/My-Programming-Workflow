@@ -5,22 +5,41 @@
       "id": "ADR-008",
       "type": "approved_adr",
       "status": "approved",
-      "capabilities": ["architecture", "testing"],
-      "risk_allowlist": ["new_architecture"]
+      "capabilities": [
+        "architecture",
+        "testing"
+      ],
+      "risk_allowlist": [
+        "new_architecture"
+      ],
+      "source": ".agent/04-memory/decisions.md",
+      "source_marker": "ADR-008"
     },
     {
       "id": "ADR-009",
       "type": "approved_adr",
       "status": "approved",
-      "capabilities": ["architecture", "testing"],
-      "risk_allowlist": ["new_architecture"]
+      "capabilities": [
+        "architecture",
+        "testing"
+      ],
+      "risk_allowlist": [
+        "new_architecture"
+      ],
+      "source": ".agent/04-memory/decisions.md",
+      "source_marker": "ADR-009"
     },
     {
       "id": "pattern-existing-local-refactor",
       "type": "approved_pattern",
       "status": "approved",
-      "capabilities": ["architecture", "testing"],
-      "risk_allowlist": []
+      "capabilities": [
+        "architecture",
+        "testing"
+      ],
+      "risk_allowlist": [],
+      "source": ".agent/04-memory/project-knowledge.md",
+      "source_marker": "[PATTERN:existing-local-refactor]"
     }
   ]
 }
