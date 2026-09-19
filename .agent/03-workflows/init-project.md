@@ -22,6 +22,9 @@ Copy the current AOS runtime structure into the project's `.agent/` directory, i
 - `05-references/`
 - `06-templates/`
 - `governance/`
+- `profiles/`
+- `task-contracts/`
+- `evidence/README.md`
 - `adr/`
 - `INDEX.md`
 - `AGENTS.md`
@@ -58,13 +61,14 @@ Create or validate `.agent/profiles/project.json` from repository evidence:
 
 Activate only Technology Profiles that match the project. Do not infer full-stack/DDD/Clean Architecture merely from AOS defaults.
 
-## 5. Validate Context Broker
+## 5. Validate Execution Runtime
 
 For a representative non-trivial task:
 1. create/update `.agent/task-contracts/current.json`,
-2. run `python .agent/01-core/context_broker.py`,
-3. verify only relevant resources are returned,
-4. run governance checks.
+2. validate the Project/Technology Profiles,
+3. run `python .agent/01-core/execution_gate.py`,
+4. confirm approval mode, broker-selected resources, and named checks are correct,
+5. run named verification through `.agent/01-core/evidence_recorder.py`.
 
 ## 6. Write VERSION
 
@@ -78,6 +82,6 @@ source_path: [YOUR-LOCAL-AOS-PATH]
 
 ## 7. Verify initialization
 
-Run available AOS governance checks and verify required runtime files exist.
+Run `python .agent/governance/verify.py` and verify required runtime files exist.
 
 Then hand off to `01-core/boot-manifest.md` for normal operation.
