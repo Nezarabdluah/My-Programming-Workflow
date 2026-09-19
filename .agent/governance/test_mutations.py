@@ -279,6 +279,28 @@ def mut_t15_missing_context_resource():
     )
 
 
+def mut_t16_missing_technology_profile():
+    """Mutate Project Profile to reference a missing Technology Profile."""
+    import json
+    from test_context import test_gov_t16_project_profile_integrity
+    path = Path(".agent/profiles/project.json")
+
+    def setup():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["technology_profiles"] = ["definitely-missing-profile"]
+        backup = _backup_and_write(
+            path,
+            json.dumps(data, indent=2) + "\n",
+        )
+        return [(path, backup)]
+
+    return run_mutation(
+        "T16-MISSING-TECHNOLOGY-PROFILE",
+        setup,
+        test_gov_t16_project_profile_integrity,
+    )
+
+
 def mut_t11_boot_too_large():
     """Mutate: inflate boot-manifest.md beyond hard limit."""
     from test_memory import test_gov_t11_boot_context_budget
@@ -310,6 +332,7 @@ if __name__ == "__main__":
         mut_t13_profile_gate_removed,
         mut_t14_unknown_capability,
         mut_t15_missing_context_resource,
+        mut_t16_missing_technology_profile,
         mut_t11_boot_too_large,
     ]
 
