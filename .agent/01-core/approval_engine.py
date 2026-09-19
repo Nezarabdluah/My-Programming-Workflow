@@ -75,6 +75,20 @@ def _verify_registry_source(entry: dict) -> None:
             )
 
 
+def _is_aos_source_repo() -> bool:
+    path = Path(".agent/profiles/project.json")
+    if not path.exists():
+        return False
+    try:
+        profile = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        profile.get("project_id") == "my-programming-workflow"
+        and profile.get("project_type") == "engineering-workflow-framework"
+    )
+
+
 def _registry_entry(task: dict, registry: dict) -> dict | None:
     approval = task.get("approval", {})
     provenance = approval.get("provenance")
@@ -91,11 +105,16 @@ def _registry_entry(task: dict, registry: dict) -> dict | None:
     if not isinstance(entries, list):
         raise ApprovalError("approval registry entries must be a list")
 
+    source_repo = _is_aos_source_repo()
     matches = [
         entry for entry in entries
         if entry.get("id") == reference
         and entry.get("type") == provenance
         and entry.get("status") == "approved"
+        and (
+            entry.get("scope", "runtime") != "aos-source"
+            or source_repo
+        )
     ]
     if len(matches) != 1:
         raise ApprovalError(
