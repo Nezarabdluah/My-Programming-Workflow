@@ -1,12 +1,12 @@
 # Active Tasks — AOS v8.0-dev
 
 ## T027 — Stabilization & Public Contract Sync 🟡
-- **State:** Validating
+- **State:** Done
 - **Branch:** `aos-v8-sprint2-stabilization`
 - **Approval:** verified pattern `pattern-existing-local-refactor`.
 
 ### State History
-Draft → Clarify → Approved → Planning → Ready → Executing → Validating
+Draft → Clarify → Approved → Planning → Ready → Executing → Validating → Done
 
 ### Acceptance Criteria
 - README matches the current Execution Gate/Context Broker/approval/evidence runtime.
@@ -23,11 +23,11 @@ Draft → Clarify → Approved → Planning → Ready → Executing → Validati
 - [x] VERSION + post-PR5 memory synchronized.
 - [x] T17/T28 made provenance-aware.
 - [x] Executing-state CI: 36/36 + 23/23.
-- [ ] Validating-state CI.
-- [ ] Done-state CI for T09.
+- [x] Validating-state CI passed.
+- [x] T027 closed; awaiting Done-state CI for T09.
 
 ### Evidence
 Run `35439510825`: 36 PASS, 23/23 mutations, Evidence Bundle PASS, Boot 193/200.
 
 ### Next
-Run Validating-state CI, then close T027 only if green.
+Run Done-state CI; if green, prepare PR #6 for squash merge.
