@@ -1,23 +1,24 @@
 {
   "schema_version": 1,
-  "task_id": "T027",
-  "title": "Sprint 2 — Stabilization and public contract sync",
-  "classification": "medium",
+  "task_id": "T028",
+  "title": "Sprint 2 — Merge-safe durable memory semantics",
+  "classification": "sensitive",
   "capabilities": [
     "architecture",
     "testing"
   ],
   "affected_areas": [
-    "README.md",
+    ".agent/01-core",
+    ".agent/03-workflows",
     ".agent/governance",
-    ".agent/VERSION",
+    ".agent/04-memory",
     ".agent/task-contracts",
-    ".agent/04-memory"
+    "README.md"
   ],
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": false,
+    "new_architecture": true,
     "security_boundary": false,
     "production_change": false,
     "breaking_external_contract": false,
@@ -25,8 +26,8 @@
   },
   "approval": {
     "status": "approved",
-    "provenance": "approved_pattern",
-    "reference": "pattern-existing-local-refactor"
+    "provenance": "human",
+    "reference": "Navigator explicitly requested continuing Sprint 2 work."
   },
   "verification": [
     "governance_compile",
