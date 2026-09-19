@@ -5,6 +5,7 @@ GOV-T07: REF citation validity (project-agnostic source discovery)
 GOV-T08: Dead/stale reference detection (project-agnostic)
 GOV-T10: ADR consistency — actually verifies changes (not rubber-stamp)
 """
+import json
 import re
 from pathlib import Path
 
@@ -12,6 +13,20 @@ PASS = "PASS"
 FAIL = "FAIL"
 SKIP_EXPECTED = "SKIP_EXPECTED"
 SKIP_UNSUPPORTED = "SKIP_UNSUPPORTED"
+
+
+def _is_aos_source_repo():
+    path = Path(".agent/profiles/project.json")
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        data.get("project_id") == "my-programming-workflow"
+        and data.get("project_type") == "engineering-workflow-framework"
+    )
 
 
 def _find_source_files():
@@ -217,6 +232,9 @@ def test_gov_t10_decision_consistency():
 
 def test_gov_t36_public_contract_sync():
     """GOV-T36: README public contract must match the current v8 runtime."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t36_public_contract_sync: AOS-source-only check."
+
     readme = Path("README.md")
     if not readme.exists():
         return FAIL, "GOV-T36: README.md missing."
@@ -261,6 +279,9 @@ def test_gov_t36_public_contract_sync():
 
 def test_gov_t38_release_contract_entrypoints():
     """GOV-T38: Public/runtime entrypoints must route through current v8 execution."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t38_release_contract_entrypoints: AOS-source-only check."
+
     files = {
         "root AGENTS": Path("AGENTS.md"),
         "nested AGENTS": Path(".agent/AGENTS.md"),
@@ -350,7 +371,6 @@ def test_gov_t40_version_consistency():
     label = f"v{version}"
 
     required = {
-        "README.md": label,
         "AGENTS.md": label,
         ".agent/AGENTS.md": label,
         ".agent/INDEX.md": label,
@@ -364,6 +384,8 @@ def test_gov_t40_version_consistency():
         ".agent/04-memory/active-tasks.md": label,
         ".agent/04-memory/learned-mistakes.md": label,
     }
+    if _is_aos_source_repo():
+        required["README.md"] = label
 
     problems = []
     for rel, marker in required.items():
@@ -416,6 +438,9 @@ def test_gov_t40_version_consistency():
 
 def test_gov_t41_readme_complete_capability_map():
     """GOV-T41: README must preserve the complete colored-text capability showcase."""
+    if not _is_aos_source_repo():
+        return SKIP_EXPECTED, "test_gov_t41_readme_complete_capability_map: AOS-source-only check."
+
     path = Path("README.md")
     if not path.exists():
         return FAIL, "GOV-T41: README.md missing."
