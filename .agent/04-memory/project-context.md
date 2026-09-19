@@ -1,16 +1,13 @@
 # Project Context — AOS v8.0-dev
 
 - **Phase:** Sprint 2 — Merge-Safe Memory
-- **Task:** T028 — Validating
+- **Task:** T028 — Done
 
 ## Architecture
-- ADR-008: deterministic Context Broker.
-- ADR-010: verified provenance + Execution Gate + Evidence History.
-- ADR-011: risk/affected-area capability routing.
-- ADR-012: durable Boot Memory excludes volatile VCS transport state.
+ADR-008 Context Broker · ADR-010 Execution Gate/Evidence History · ADR-011 risk routing · ADR-012 merge-safe durable memory.
 
 ## Current
-Merge-safe memory rules, GOV-T37, mutation coverage, and public documentation are implemented. Completed verification `35439761791` passed 37 governance checks and 24/24 mutations.
+Merge-safe memory is implemented and validated. Completed verification `35439819747` passed 37 governance checks and 24/24 mutations.
 
 ## Next
-Validate completion semantics and final evidence before closing T028.
+Use durable memory only for stable engineering facts and immutable completed evidence; query VCS transport state live.
