@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-8.0.0--rc.1-blue" alt="version">
-  <img src="https://img.shields.io/badge/governance-41%20checks-brightgreen" alt="governance">
-  <img src="https://img.shields.io/badge/mutations-28%2F28%20detected-brightgreen" alt="mutations">
+  <img src="https://img.shields.io/badge/governance-45%20checks-brightgreen" alt="governance">
+  <img src="https://img.shields.io/badge/mutations-32%2F32%20detected-brightgreen" alt="mutations">
   <img src="https://img.shields.io/badge/boot-%E2%89%A4150%20lines-success" alt="boot budget">
   <img src="https://img.shields.io/badge/pipeline-9%20stages-red" alt="pipeline">
   <img src="https://img.shields.io/badge/books-16%20distilled-purple" alt="books">
@@ -21,88 +21,93 @@
 
 ---
 
-# ⚡ Quick Start — 3 Steps
+# ⚡ Quick Start — One Command
 
-> You do **not** install AOS as a Windows service or background application.
-> Keep one AOS source copy on your machine, then add a clean `.agent` runtime to each project you want AOS to govern.
+> AOS is **not** a Windows service and does not stay running in the background.
+> Keep one AOS source copy on your machine and bootstrap any project with one safe command.
 
 ```text
-🟦 KEEP ONE AOS SOURCE COPY
+🟦 ONE AOS SOURCE COPY
    C:\Tools\AOS   or   ~/tools/AOS
               │
               ├──────────────► Project A\.agent
               ├──────────────► Project B\.agent
               └──────────────► Project C\.agent
 
-AOS does not stay running in the background.
-Each project carries its own governed .agent runtime.
+Each project gets its own local AOS runtime + memory + profile.
 ```
-
-## ① Add AOS to your project
 
 From the AOS source repository:
 
 ```bash
-python .agent/install.py /path/to/your-project
+python .agent/bootstrap.py /path/to/your-project
 ```
 
 **Windows example:**
 
 ```powershell
-python .agent\install.py C:\Projects\MyApp
+python .agent\bootstrap.py C:\Projects\MyApp
 ```
 
-This copies the reusable AOS runtime into:
+That single command performs:
 
 ```text
-MyApp/
-└── .agent/
+🔎 PREFLIGHT
+   │
+   ├─ foreign .agent / AGENTS / CLAUDE / Cursor files?
+   │      └─ 🟥 BLOCKED — no AOS write happens
+   │
+   ▼
+📦 SAFE INSTALL / UPGRADE
+   │
+   ├─ fresh project ───────────► clean AOS runtime
+   └─ existing AOS ────────────► preserve project state + backup adapters
+   │
+   ▼
+🧠 DISCOVER PROJECT
+   stack · languages · build/test/lint commands
+   │
+   ▼
+🧩 INITIALIZE
+   Project Profile · Memory · Task Contract
+   │
+   ▼
+🛡️ PORTABLE AOS VERIFICATION
+   │
+   ├─ 🟩 READY ────────────────► open the project and give the agent a task
+   └─ 🟨 NEEDS_REVIEW ─────────► stack evidence was not strong enough
 ```
 
-It intentionally does **not** copy AOS's own project memory, current task, Project Profile, or evidence history.
-
-## ② Initialize that project
-
-Open the target project in your AI coding tool and say:
-
-```text
-Run .agent/03-workflows/init-project.md for this repository.
-```
-
-AOS then discovers the real project and creates the project-specific profile, memory, task contract, and verification commands.
-
-## ③ Give the agent your task normally
-
-Example:
+After `READY`, just open the project in your coding agent and work normally:
 
 ```text
 Add password reset to this project.
 ```
 
-From there AOS handles the engineering flow:
+AOS handles the rest:
 
 ```text
-TASK
-  ↓
-Risk + Approval
-  ↓
-Relevant Context
-  ↓
-Implementation
-  ↓
-Tests + Evidence
-  ↓
-Governance
-  ↓
-Memory
-  ↓
-DONE
+TASK → Risk/Approval → Context → Implementation
+     → Tests/Evidence → Governance → Memory → DONE
 ```
 
-**That's it.** You only keep the AOS source repository available when you want to install/update AOS in another project. There is no always-running AOS process.
+### Existing agent files are protected
+
+AOS never blindly overwrites agent infrastructure.
+
+| Existing project state | Bootstrap behavior |
+|---|---|
+| No `.agent` / agent instruction files | 🟩 Fresh install |
+| Recognized existing AOS | 🔄 Safe upgrade; Memory/Profile/Task/Evidence preserved |
+| Foreign or unknown `.agent` | 🟥 BLOCKED before any write |
+| Foreign `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, Copilot instructions | 🟥 BLOCKED before any write |
+| AOS-managed adapters during upgrade | 📦 Backed up under `.agent/backups/last-upgrade/` before refresh |
+
+If bootstrap reports `BLOCKED`, AOS does not guess, merge, rename, or delete the conflicting agent system automatically.
+
+**That's it:** one source copy, one bootstrap command per project, then normal coding tasks.
 
 ---
-
 # What AOS gives you
 
 AOS turns an AI coding agent from “a model that edits files” into a governed engineering worker with explicit context, risk, approval, verification, memory, and release discipline.
@@ -122,7 +127,7 @@ AOS turns an AI coding agent from “a model that edits files” into a governed
 | 🤖 **Autonomous Execution** | `AUTO_EXECUTE`, `HUMAN_APPROVED`, `HUMAN_REQUIRED` modes | Execution Gate + Approval Engine |
 | 🎯 **Context Control** | Context Broker selects only relevant rules/workflows/references | `context_broker.py`, `context-map.json` |
 | 🧾 **Executable Evidence** | Named checks, PASS/FAIL from exit code, SHA-256 Evidence History | `evidence_recorder.py`, `.agent/evidence/` |
-| 🛡️ **Governance** | 41 checks + 28 mutation tests proving checks can fail | `.agent/governance/` |
+| 🛡️ **Governance** | 45 checks + 32 mutation tests proving checks can fail | `.agent/governance/` |
 | 📚 **Engineering Knowledge** | 16 distilled books, 6 constitutions, REF/OPS/QA catalogs, prompts/templates | `.agent/05-references/`, `.agent/06-templates/` |
 
 > **Important:** this README is the complete user-facing overview. It is **not** a second runtime authority. Executable truth remains in `boot-manifest.md`, Task Contract, Execution Gate, Context Map, Profiles, and Project Profile.
@@ -576,8 +581,8 @@ python .agent/governance/verify.py
 
 Current RC baseline:
 
-- **41 governance checks**
-- **28/28 mutation violations detected**
+- **45 governance checks**
+- **32/32 mutation violations detected**
 - **Boot Context hard gate: ≤150 lines**
 - Evidence Bundle verified
 - Evidence History verified
