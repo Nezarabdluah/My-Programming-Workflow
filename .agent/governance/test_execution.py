@@ -451,7 +451,12 @@ def test_gov_t30_approval_registry_sources_resolve():
         return FAIL, "GOV-T30: approval registry has no entries."
 
     seen = set()
+    source_repo = engine._is_aos_source_repo()
+    checked = 0
     for entry in entries:
+        if entry.get("scope", "runtime") == "aos-source" and not source_repo:
+            continue
+
         entry_id = entry.get("id")
         if not isinstance(entry_id, str) or not entry_id.strip():
             return FAIL, "GOV-T30: registry entry missing id."
@@ -463,9 +468,10 @@ def test_gov_t30_approval_registry_sources_resolve():
             engine._verify_registry_source(entry)
         except Exception as exc:
             return FAIL, f"GOV-T30: {entry_id} source invalid: {exc}"
+        checked += 1
 
     return PASS, (
-        f"GOV-T30: {len(entries)} approval registry entries resolve "
+        f"GOV-T30: {checked} applicable approval registry entries resolve "
         "to durable source evidence."
     )
 
