@@ -1,21 +1,28 @@
 {
   "schema_version": 1,
-  "task_id": "T033",
-  "title": "README three-step Quick Start and installation model",
-  "classification": "medium",
+  "task_id": "T034",
+  "title": "One-command consumer bootstrap and collision-safe onboarding",
+  "classification": "sensitive",
   "capabilities": [
+    "architecture",
     "testing"
   ],
   "affected_areas": [
-    "README.md",
+    ".agent/bootstrap.py",
+    ".agent/install.py",
+    ".agent/01-core",
+    ".agent/adr",
     ".agent/governance",
-    ".agent/04-memory",
-    ".agent/task-contracts"
+    ".agent/profiles",
+    ".agent/03-workflows",
+    "README.md",
+    ".github/workflows",
+    ".agent/04-memory"
   ],
   "risk": {
     "destructive": false,
     "irreversible": false,
-    "new_architecture": false,
+    "new_architecture": true,
     "security_boundary": false,
     "production_change": false,
     "breaking_external_contract": false,
@@ -24,7 +31,7 @@
   "approval": {
     "status": "approved",
     "provenance": "human",
-    "reference": "Navigator approved simplifying README startup and explaining the installation model."
+    "reference": "Navigator approved continuing one-command bootstrap and safe conflict handling."
   },
   "verification": [
     "governance_compile",
