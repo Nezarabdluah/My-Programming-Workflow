@@ -1,6 +1,6 @@
 """AOS Governance — Rule Tests (v8.0-dev)
 
-GOV-T06: Workflow links to rules
+GOV-T06: Canonical boot contract links to task rules
 GOV-T07: REF citation validity (project-agnostic source discovery)
 GOV-T08: Dead/stale reference detection (project-agnostic)
 GOV-T10: ADR consistency — actually verifies changes (not rubber-stamp)
@@ -40,16 +40,34 @@ def _find_source_files():
 
 
 def test_gov_t06_rule_linkage():
-    """GOV-T06: Verify the workflow links to at least one rule in rules/."""
-    prompt_path = Path(".agent/01-core/session-prompt.md")
-    if not prompt_path.exists():
-        return FAIL, "GOV-T06: session-prompt.md not found."
+    """GOV-T06: Verify the canonical v8 boot contract links to task rules.
 
-    content = prompt_path.read_text(encoding="utf-8")
-    if "02-rules/" in content or "rules/" in content:
-        return PASS, "GOV-T06: Workflow links to specialized rule loading."
+    AOS v8 uses boot-manifest.md as the single runtime entry point.
+    Legacy session-prompt.md must not be required for governance success.
+    """
+    boot_path = Path(".agent/01-core/boot-manifest.md")
+    if not boot_path.exists():
+        return FAIL, "GOV-T06: canonical boot-manifest.md not found."
 
-    return FAIL, "GOV-T06: No linkage to specialized rules from rules/."
+    content = boot_path.read_text(encoding="utf-8")
+    has_rule_link = "02-rules/" in content
+    has_wiring_link = "wiring-registry.md" in content
+
+    if has_rule_link and has_wiring_link:
+        return PASS, (
+            "GOV-T06: Canonical boot contract links to specialized rules "
+            "and the wiring registry."
+        )
+
+    missing = []
+    if not has_rule_link:
+        missing.append("02-rules/")
+    if not has_wiring_link:
+        missing.append("wiring-registry.md")
+    return FAIL, (
+        "GOV-T06: Canonical boot contract is missing rule-routing linkage: "
+        + ", ".join(missing)
+    )
 
 
 def test_gov_t07_reference_verification():
